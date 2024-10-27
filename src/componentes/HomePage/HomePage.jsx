@@ -26,7 +26,7 @@ export const HomePage = () => {
         </div>
         
         {/* Contenedor del main page donde salen los posts */}
-        <div className="container">
+        <div className="container text-center" >
           <PostCards>
             {/* Este componente muestra todos los posts de la base de datos como un card */}
           </PostCards>

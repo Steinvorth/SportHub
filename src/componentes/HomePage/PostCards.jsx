@@ -1,5 +1,8 @@
 import React from 'react'
 
+//import bootstrap icons
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 /*
  * Este es un componente para hacer los Bootstrap Cards para los post.
 */
