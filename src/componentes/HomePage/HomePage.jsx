@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react'
-import { PostCards } from './PostCards'
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { PostCards } from './PostCards';
+import 'bootstrap-icons/font/bootstrap-icons.css'; // Import Bootstrap icons
 
 /*
- * Este es el Home Page de La red Social, como por decir cuand uno abre Instagram.
+ * Este es el Home Page de La red Social, como por decir cuando uno abre Instagram.
 */
-
-
 
 export const HomePage = () => {
 
@@ -21,19 +21,33 @@ export const HomePage = () => {
 
   return (
     <>
+      {/* Navbar */}
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container">
-          <h1>Home Page</h1>
+          <a className="navbar-brand" href="/">My Social App</a>
+          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="navbarNav">
+            <ul className="navbar-nav ms-auto">
+              <li className="nav-item">
+                <Link to="/login" className="btn btn-outline-primary">
+                  <i className="bi bi-person-circle"></i> Login / Sign Up
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
-        
-        {/* Contenedor del main page donde salen los posts */}
-        <div className="container  d-flex justify-content-center" >
-          <PostCards>
-            {/* Este componente muestra todos los posts de la base de datos como un card */}
-          </PostCards>
-        </div>
+      </nav>
 
-        {/* Aqui llamamos al componente que hace los cards para los posts */}
+      {/* Main Content */}
+      <div className="container">
+        <h1>Home Page</h1>
+      </div>
+      
+      <div className="container d-flex justify-content-center">
+        <PostCards />
+      </div>
     </>
-    
-  )
-}
+  );
+};
