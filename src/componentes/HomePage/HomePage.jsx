@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PostCards } from './PostCards';
 import 'bootstrap-icons/font/bootstrap-icons.css'; // Import Bootstrap icons
@@ -17,7 +17,12 @@ export const HomePage = () => {
     //     second
     //   }
     // }, [third])
-    
+
+    var authUserToken = localStorage.getItem('user');
+    const [authToken, SetAuthToken] = useState(authUserToken);   
+
+    //use state para manejar el link de login, si hay auth token, vamos al perfil. Si no, vamos a login/sign up.
+    const [loginLink, setLoginLink] = useState(authToken === null ? '/login' : '/profile');
 
   return (
     <>
@@ -31,8 +36,8 @@ export const HomePage = () => {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
-                <Link to="/login" className="btn btn-outline-primary">
-                  <i className="bi bi-person-circle"></i> Login / Sign Up
+                <Link to={loginLink} className="btn btn-outline-primary">
+                  <i className="bi bi-person-circle"></i> { authToken === null ? 'Login / Sign Up' : 'Profile' }
                 </Link>
               </li>
             </ul>
