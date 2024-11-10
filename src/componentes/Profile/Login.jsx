@@ -25,6 +25,9 @@ export const Login = ({ onLoginSuccess }) => {
         //guardamos el access token de Supabase
         localStorage.setItem('user', JSON.stringify(data.session.access_token));
 
+        //guardamos el uuid del usuario
+        localStorage.setItem('userId', JSON.stringify(data.user.id));
+
         setMessage('Account created successfully');
         onLoginSuccess(); // Mandamos devuelta al home
       } else {
@@ -40,6 +43,9 @@ export const Login = ({ onLoginSuccess }) => {
 
         //guardamos el access token de Supabase
         localStorage.setItem('user', JSON.stringify(data.session.access_token));
+
+        //guardamos el uuid del usuario
+        localStorage.setItem('userId', JSON.stringify(data.user.id));
 
         setMessage('Logged in successfully!');
         onLoginSuccess(); // Mandamos devuelta al home

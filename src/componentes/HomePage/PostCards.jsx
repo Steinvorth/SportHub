@@ -10,11 +10,14 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 export const PostCards = () => {
   return (
     <>
-        <div className="card" style={{ width: '18rem' }}>
-            <img src="..." className="card-img-top" alt="imagen post"></img>
+        <div className="card w-50" >
+            <div className="card-header">
+                @username
+            </div>
+            <img src="https://via.placeholder.com/150" className="card-img-top" alt="imagen post"></img>
             <div className="card-body">                
                 <i className="bi bi-trophy"></i> {/* Trofeo para simular el Like */}
-                <p className="card-text">contenido del post</p>
+                <p className="card-text">hoy fui a caminar</p>
             </div>
         </div>
     </>

@@ -18,11 +18,24 @@ export const HomePage = () => {
     //   }
     // }, [third])
 
+    //use state para manejar el auth token
     var authUserToken = localStorage.getItem('user');
     const [authToken, SetAuthToken] = useState(authUserToken);   
 
+    //User UUID para poder hacer el crud relacionado a la cuenta
+    var userId = localStorage.getItem('userId');
+    const [userIdToken, SetUserIdToken] = useState(userId);
+
     //use state para manejar el link de login, si hay auth token, vamos al perfil. Si no, vamos a login/sign up.
     const [loginLink, setLoginLink] = useState(authToken === null ? '/login' : '/profile');
+
+    //funcion para hacer el logout, solamente borramos el token y userId de la local storage.
+    const logout = () => {
+      localStorage.removeItem('user');
+      localStorage.removeItem('userId');
+      SetAuthToken(null);
+      SetUserIdToken(null);
+    }
 
   return (
     <>
@@ -35,11 +48,20 @@ export const HomePage = () => {
           </button>
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
-              <li className="nav-item">
+              <li className="nav-item ms-2">
                 <Link to={loginLink} className="btn btn-outline-primary">
                   <i className="bi bi-person-circle"></i> { authToken === null ? 'Login / Sign Up' : 'Profile' }
                 </Link>
               </li>
+              
+              {/* si tenemos un auth token, entonces mostramos el logout. Si no, entonces esta escondido. */}
+              {authToken && (
+                <li className="nav-item ms-2">
+                  <button className="btn btn-outline-primary" onClick={logout}>
+                    <i className="bi bi-box-arrow-right"></i>
+                  </button>                  
+                </li>
+              )}
             </ul>
           </div>
         </div>
