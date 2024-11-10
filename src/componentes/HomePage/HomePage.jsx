@@ -91,7 +91,10 @@ export const HomePage = () => {
           <label className="btn btn-primary flex-fill text-center" htmlFor="btnradio3">Eventos</label>
         </div>
       </div>
-      
+
+      {/* Dependiendo de lo que se seleccione, se van a mostrar los Posts de Amigos,
+          De todos los que usen el app, o eventos publicados */}
+
       {/* Main Content - Home Feed */}   
       <div className="container d-flex justify-content-center mt-3 ">
         <div className='col-12 col-md-6'>
