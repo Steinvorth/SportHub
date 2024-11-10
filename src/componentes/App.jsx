@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { HomePage } from './HomePage/HomePage';
 import { Login } from './Profile/Login';
 import { Profile } from './Profile/Profile';
+import { Friends } from './Profile/Friends';
 
 
 /*
@@ -20,6 +21,7 @@ export const App = () => {
           <Route index element={<HomePage />} />
           <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/friends" element={<Friends />} />
         </Routes>
       </Router>
     );
