@@ -10,7 +10,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 export const PostCards = () => {
   return (
     <>
-        <div className="card w-50" >
+        <div className="card w-100">
             <div className="card-header">
                 @username
             </div>

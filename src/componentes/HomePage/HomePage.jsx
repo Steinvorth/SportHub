@@ -40,9 +40,9 @@ export const HomePage = () => {
   return (
     <>
       {/* Navbar */}
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+      <nav className="navbar navbar-expand-lg navbar-light bg-light d-flex flex-column">
         <div className="container">
-          <a className="navbar-brand" href="/">My Social App</a>
+          <a className="navbar-brand" href="/">Sport Hub</a>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
@@ -65,15 +65,31 @@ export const HomePage = () => {
             </ul>
           </div>
         </div>
+
+        
       </nav>
 
-      {/* Main Content */}
-      <div className="container">
-        <h1>Home Page</h1>
+      {/* Barra Para toggle Content entre Following, Explorar y Amigos */}
+      <div className="container mt-3 d-flex justify-content-center w-50">
+        <div className="btn-group w-100" role="group" aria-label="Basic radio toggle button group">
+          <input type="radio" className="btn-check" name="btnradio" id="btnradio1" autoComplete="off" defaultChecked />
+          <label className="btn btn-primary flex-fill text-center" htmlFor="btnradio1">Explorar</label>
+
+          <input type="radio" className="btn-check" name="btnradio" id="btnradio2" autoComplete="off" />
+          <label className="btn btn-primary flex-fill text-center" htmlFor="btnradio2">Amigos</label>
+
+          <input type="radio" className="btn-check" name="btnradio" id="btnradio3" autoComplete="off" />
+          <label className="btn btn-primary flex-fill text-center" htmlFor="btnradio3">Eventos</label>
+        </div>
       </div>
-      
-      <div className="container d-flex justify-content-center">
-        <PostCards />
+
+
+      {/* Main Content - Home Feed */}   
+      <div className="container d-flex justify-content-center mt-3 ">
+        <div className='col-12 col-md-6'>
+          <PostCards />
+        </div>
+        
       </div>
     </>
   );
