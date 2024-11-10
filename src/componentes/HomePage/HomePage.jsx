@@ -79,8 +79,8 @@ export const HomePage = () => {
       </nav>
 
       {/* Barra Para toggle Content entre Following, Explorar y Amigos */}
-      <div className="container mt-3 d-flex justify-content-center w-50">
-        <div className="btn-group w-100" role="group" aria-label="Basic radio toggle button group">
+      <div className="container mt-3 d-flex justify-content-center">
+        <div className="btn-group col-12 col-md-6" role="group" aria-label="Basic radio toggle button group">
           <input type="radio" className="btn-check" name="btnradio" id="btnradio1" autoComplete="off" defaultChecked />
           <label className="btn btn-primary flex-fill text-center" htmlFor="btnradio1">Explorar</label>
 
