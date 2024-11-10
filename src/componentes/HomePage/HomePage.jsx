@@ -50,9 +50,17 @@ export const HomePage = () => {
             <ul className="navbar-nav ms-auto">
               <li className="nav-item ms-2">
                 <Link to={loginLink} className="btn btn-outline-primary">
-                  <i className="bi bi-person-circle"></i> { authToken === null ? 'Login / Sign Up' : 'Profile' }
+                  <i className="bi bi-person-circle"></i> { authToken === null ? 'Login / Sign Up' : '' }
                 </Link>
               </li>
+
+              {authToken && (
+                <li>
+                  <Link to="/friends" className="btn btn-outline-primary ms-2">
+                    <i className="bi bi-people-fill"></i>
+                  </Link>
+                </li>
+              )}
               
               {/* si tenemos un auth token, entonces mostramos el logout. Si no, entonces esta escondido. */}
               {authToken && (
@@ -60,8 +68,9 @@ export const HomePage = () => {
                   <button className="btn btn-outline-primary" onClick={logout}>
                     <i className="bi bi-box-arrow-right"></i>
                   </button>                  
-                </li>
-              )}
+                </li>                
+              )}             
+                
             </ul>
           </div>
         </div>
@@ -82,8 +91,7 @@ export const HomePage = () => {
           <label className="btn btn-primary flex-fill text-center" htmlFor="btnradio3">Eventos</label>
         </div>
       </div>
-
-
+      
       {/* Main Content - Home Feed */}   
       <div className="container d-flex justify-content-center mt-3 ">
         <div className='col-12 col-md-6'>
