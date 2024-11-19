@@ -43,7 +43,7 @@ export const PostCards = () => {
             <div className="card-header">
               @{post.user}
             </div>
-            <img src="{https://via.placeholder.com/150}" className="card-img-top" alt="imagen post"></img>
+            <img src="https://via.placeholder.com/150" className="card-img-top" alt="imagen post"></img>
               <div className="card-body">
                 <i className="bi bi-trophy"></i> {/* Trofeo para simular el Like */}
                 <i class="bi bi-chat"></i> {/* Commments */}
