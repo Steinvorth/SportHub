@@ -48,6 +48,15 @@ export const HomePage = () => {
           </button>
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
+
+              {authToken && (
+                <li>
+                  <Link to="/post" className="btn btn-outline-primary ms-2">
+                    <i class="bi bi-card-image"></i>
+                  </Link>
+                </li>
+              )}
+
               <li className="nav-item ms-2">
                 <Link to={loginLink} className="btn btn-outline-primary">
                   <i className="bi bi-person-circle"></i> { authToken === null ? 'Login / Sign Up' : '' }

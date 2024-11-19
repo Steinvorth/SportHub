@@ -4,6 +4,8 @@ import { HomePage } from './HomePage/HomePage';
 import { Login } from './Profile/Login';
 import { Profile } from './Profile/Profile';
 import { Friends } from './Profile/Friends';
+import { ManagePost } from './PostCreation/ManagePost';
+
 
 
 /*
@@ -22,6 +24,7 @@ export const App = () => {
           <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/friends" element={<Friends />} />
+          <Route path="/post" element={<ManagePost />} />
         </Routes>
       </Router>
     );
