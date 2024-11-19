@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import supabase from '../supabase/supabase';
+import { addUsuario } from '../supabase/api';
 
 export const Login = ({ onLoginSuccess }) => {
   const [isSignUp, setIsSignUp] = useState(false); //controlamos si se selecciona sign up o login
@@ -28,6 +29,9 @@ export const Login = ({ onLoginSuccess }) => {
         //guardamos el uuid del usuario
         localStorage.setItem('userId', JSON.stringify(data.user.id));
 
+        //agregamos el usuario a la tabla Usuarios
+        await addUsuario(data.user.id, email);
+
         setMessage('Account created successfully');
         onLoginSuccess(); // Mandamos devuelta al home
       } else {
@@ -46,6 +50,9 @@ export const Login = ({ onLoginSuccess }) => {
 
         //guardamos el uuid del usuario
         localStorage.setItem('userId', JSON.stringify(data.user.id));
+
+        //agregamos el usuario a la tabla Usuarios
+        await addUsuario(data.user.id, email);
 
         setMessage('Logged in successfully!');
         onLoginSuccess(); // Mandamos devuelta al home
