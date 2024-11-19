@@ -51,9 +51,6 @@ export const Login = ({ onLoginSuccess }) => {
         //guardamos el uuid del usuario
         localStorage.setItem('userId', JSON.stringify(data.user.id));
 
-        //agregamos el usuario a la tabla Usuarios
-        await addUsuario(data.user.id, email);
-
         setMessage('Logged in successfully!');
         onLoginSuccess(); // Mandamos devuelta al home
       }
