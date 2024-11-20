@@ -1,11 +1,13 @@
-import supabase from "./supabase";
+import supabase from './supabase';
 
-// **Agregar Usuario**: Inserta un nuevo usuario en la tabla `Usuarios`
+//agregar usuario en sign up a tabla usuarios
 export const addUsuario = async (userAuthId, userName) => {
   try {
     const { data, error } = await supabase
-      .from("Usuarios")
-      .insert([{ User_Auth_Id: userAuthId, UserName: userName }]);
+      .from('Usuarios')
+      .insert([
+        { User_Auth_Id: userAuthId, UserName: userName }
+      ]);
 
     if (error) {
       throw error;
@@ -13,19 +15,22 @@ export const addUsuario = async (userAuthId, userName) => {
 
     return data;
   } catch (error) {
-    console.error("Error al agregar usuario:", error.message);
+    console.error('Error adding user to Usuarios:', error.message);
     return null;
   }
 };
 
-// **Obtener Usuario**: Recupera el username del usuario autenticado
+//get usuario
 export const getUsuarioUsername = async (userId) => {
+  if (!userId) {
+    console.error('Invalid userId:', userId);
+    return null;
+  }
   try {
     const { data, error } = await supabase
-      .from("Usuarios")
-      .select("UserName")
-      .eq("UserId", userId)
-      .single(); // Solo un registro
+      .from('Usuarios')
+      .select('UserName')
+      .eq('UserId', userId);
 
     if (error) {
       throw error;
@@ -33,19 +38,18 @@ export const getUsuarioUsername = async (userId) => {
 
     return data;
   } catch (error) {
-    console.error("Error obteniendo el nombre de usuario:", error.message);
+    console.error('Error getting user from Usuarios:', error.message);
     return null;
   }
 };
 
-
-// **Obtener Posts Públicos**: Recupera los posts con privacidad pública (TRUE)
+//get posts publicos
 export const getPostsPublicos = async () => {
   try {
     const { data, error } = await supabase
-      .from("Posts")
-      .select("*")
-      .eq("Privacidad", "TRUE"); // TRUE indica posts públicos
+      .from('Posts')
+      .select('*')
+      .eq('Privacidad', 'TRUE'); //publico es TRUE, privado es FALSE
 
     if (error) {
       throw error;
@@ -53,16 +57,12 @@ export const getPostsPublicos = async () => {
 
     return data;
   } catch (error) {
-    console.error("Error obteniendo posts públicos:", error.message);
-    return [];
+    console.error('Error getting public posts:', error.message);
+    return null;
   }
+
+  
 };
-
-
-
-
-
-
 // **Obtener UserId por User_Auth_Id**: Devuelve el UserId a partir del User_Auth_Id del usuario logueado
 export const getUserIdByAuthId = async (authId) => {
   try {
@@ -99,5 +99,26 @@ export const getSugerencias = async (userIdActual) => {
   } catch (error) {
     console.error("Error obteniendo usuarios excluyendo uno:", error.message);
     return [];
+  }
+};
+
+
+// **Obtener Usuario**: Recupera el username del usuario autenticado
+export const getUsuario = async (userId) => {
+  try {
+    const { data, error } = await supabase
+      .from("Usuarios")
+      .select("UserName")
+      .eq("UserId", userId)
+      .single(); // Solo un registro
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error obteniendo el nombre de usuario:", error.message);
+    return null;
   }
 };
