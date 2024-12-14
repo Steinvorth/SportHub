@@ -1,7 +1,7 @@
 .profile-pic-container {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
 }
 
 .profile-pic-container:hover .camera-icon {

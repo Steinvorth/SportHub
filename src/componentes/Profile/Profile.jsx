@@ -38,37 +38,39 @@ export const Profile = () => {
   return (
     <div className="container mt-5">
       <div className="card">
-        <div className="card-header d-flex justify-content-between align-items-center">
-          <h2>Profile</h2>
-          <Link to="/settings" className="btn btn-outline-secondary">Settings</Link>
-        </div>
         <div className="card-body">
           <div className="d-flex align-items-center mb-4 position-relative">
             <div className="profile-pic-container">
               <img 
-                src={profileImage || "https://via.placeholder.com/100"} 
+                src={profileImage || "https://via.placeholder.com/150"} 
                 className="rounded-circle profile-pic" 
                 alt="User Avatar" 
-                style={{ width: '100px', height: '100px', objectFit: 'cover' }} 
+                style={{ width: '150px', height: '150px', objectFit: 'cover' }} 
               />
               <input type="file" id="profileImageUpload" className="d-none" onChange={handleImageChange} />
               <label htmlFor="profileImageUpload" className="camera-icon">
                 <i className="bi bi-camera-fill"></i>
               </label>
             </div>
-            <div>
+            <div className="ms-4">
               <h3>{user.UserName}</h3>
+              <div className="d-flex align-items-center mb-2">
+                <Link to="/edit-profile" className="btn btn-outline-primary me-2">Edit Profile</Link>
+                <Link to="/settings" className="btn btn-outline-secondary">
+                  <i className="bi bi-gear"></i>
+                </Link>
+              </div>
+              <div className="d-flex mb-2">
+                <div className="me-4">
+                  <h4>Posts</h4>
+                  <p>{posts.length}</p>
+                </div>
+                <div>
+                  <h4>Friends</h4>
+                  <p>{friendsCount}</p>
+                </div>
+              </div>
               <p>{user.Bio}</p>
-            </div>
-          </div>
-          <div className="d-flex justify-content-between mb-4">
-            <div>
-              <h4>Posts</h4>
-              <p>{posts.length}</p>
-            </div>
-            <div>
-              <h4>Friends</h4>
-              <p>{friendsCount}</p>
             </div>
           </div>
           <div>
