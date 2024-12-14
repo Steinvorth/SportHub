@@ -45,6 +45,8 @@ export const Login = ({ onLoginSuccess }) => {
           throw error;
         }
 
+        console.log(data);
+
         //guardamos el access token de Supabase
         localStorage.setItem('user', JSON.stringify(data.session.access_token));
 

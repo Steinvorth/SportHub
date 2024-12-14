@@ -60,9 +60,8 @@ export const getPostsPublicos = async () => {
     console.error('Error getting public posts:', error.message);
     return null;
   }
-
-  
 };
+
 // **Obtener UserId por User_Auth_Id**: Devuelve el UserId a partir del User_Auth_Id del usuario logueado
 export const getUserIdByAuthId = async (authId) => {
   try {
@@ -102,7 +101,6 @@ export const getSugerencias = async (userIdActual) => {
   }
 };
 
-
 // **Obtener Usuario**: Recupera el username del usuario autenticado
 export const getUsuario = async (userId) => {
   try {
@@ -121,4 +119,50 @@ export const getUsuario = async (userId) => {
     console.error("Error obteniendo el nombre de usuario:", error.message);
     return null;
   }
+};
+
+// **Obtener Usuario por UUID**: Recupera la información del usuario autenticado
+export const getUsuarioByUUID = async (uuid) => {
+  const { data, error } = await supabase
+    .from('Usuarios')
+    .select('*')
+    .eq('User_Auth_Id', uuid)
+    .single();
+
+  if (error) {
+    console.error('Error fetching user:', error);
+    return null;
+  }
+
+  return data;
+};
+
+// **Obtener Posts por Usuario**: Recupera los posts del usuario autenticado
+export const getPostsByUser = async (userId) => {
+  const { data, error } = await supabase
+    .from('Posts')
+    .select('*')
+    .eq('IdUsuario', userId);
+
+  if (error) {
+    console.error('Error fetching posts:', error);
+    return [];
+  }
+
+  return data;
+};
+
+// **Obtener Conteo de Amigos**: Recupera el conteo de amigos del usuario autenticado
+export const getFriendsCount = async (userId) => {
+  const { data, error } = await supabase
+    .from('Friends')
+    .select('*', { count: 'exact' })
+    .eq('UserId', userId);
+
+  if (error) {
+    console.error('Error fetching friends count:', error);
+    return 0;
+  }
+
+  return data.length;
 };
