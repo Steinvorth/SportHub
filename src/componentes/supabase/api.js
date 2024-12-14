@@ -166,3 +166,32 @@ export const getFriendsCount = async (userId) => {
 
   return data.length;
 };
+
+// **Upload User Profile Image**: Uploads a profile image for the user
+export const uploadUserProfileImage = async (userId, file) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+
+  return new Promise((resolve, reject) => {
+    reader.onload = async () => {
+      const base64String = reader.result.split(',')[1];
+
+      const { data, error } = await supabase
+        .from('Usuarios')
+        .update({ ProfilePic: base64String })
+        .eq('User_Auth_Id', userId);
+
+      if (error) {
+        console.error('Error uploading profile image:', error.message);
+        reject(error);
+      } else {
+        resolve(base64String);
+      }
+    };
+
+    reader.onerror = (error) => {
+      console.error('Error reading file:', error);
+      reject(error);
+    };
+  });
+};

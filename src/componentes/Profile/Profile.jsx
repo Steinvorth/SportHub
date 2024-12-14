@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { getUsuarioByUUID, getPostsByUser, getFriendsCount } from '../supabase/api';
+import { getUsuarioByUUID, getPostsByUser, getFriendsCount, uploadUserProfileImage } from '../supabase/api';
 import { Link } from 'react-router-dom';
+import './Profile.css'; // Import the CSS file
 
 export const Profile = () => {
   const [user, setUser] = useState({});
   const [posts, setPosts] = useState([]);
   const [friendsCount, setFriendsCount] = useState(0);
+  const [profileImage, setProfileImage] = useState(null);
 
   const userId = JSON.parse(localStorage.getItem('userId'));
 
@@ -13,6 +15,7 @@ export const Profile = () => {
     const fetchUserData = async () => {
       const userData = await getUsuarioByUUID(userId);
       setUser(userData);
+      setProfileImage(userData.ProfilePic ? `data:image/png;base64,${userData.ProfilePic}` : null);
 
       const userPosts = await getPostsByUser(userId);
       setPosts(userPosts);
@@ -24,6 +27,14 @@ export const Profile = () => {
     fetchUserData();
   }, [userId]);
 
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const base64String = await uploadUserProfileImage(userId, file);
+      setProfileImage(`data:image/png;base64,${base64String}`);
+    }
+  };
+
   return (
     <div className="container mt-5">
       <div className="card">
@@ -32,8 +43,19 @@ export const Profile = () => {
           <Link to="/settings" className="btn btn-outline-secondary">Settings</Link>
         </div>
         <div className="card-body">
-          <div className="d-flex align-items-center mb-4">
-            <img src="https://via.placeholder.com/100" className="rounded-circle me-3" alt="User Avatar" />
+          <div className="d-flex align-items-center mb-4 position-relative">
+            <div className="profile-pic-container">
+              <img 
+                src={profileImage || "https://via.placeholder.com/100"} 
+                className="rounded-circle profile-pic" 
+                alt="User Avatar" 
+                style={{ width: '100px', height: '100px', objectFit: 'cover' }} 
+              />
+              <input type="file" id="profileImageUpload" className="d-none" onChange={handleImageChange} />
+              <label htmlFor="profileImageUpload" className="camera-icon">
+                <i className="bi bi-camera-fill"></i>
+              </label>
+            </div>
             <div>
               <h3>{user.UserName}</h3>
               <p>{user.Bio}</p>

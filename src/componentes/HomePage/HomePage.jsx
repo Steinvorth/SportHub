@@ -52,7 +52,7 @@ export const HomePage = () => {
               {authToken && (
                 <li>
                   <Link to="/post" className="btn btn-outline-primary ms-2">
-                    <i class="bi bi-card-image"></i>
+                    <i className="bi bi-card-image"></i>
                   </Link>
                 </li>
               )}
