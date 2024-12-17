@@ -42,6 +42,20 @@ export const Profile = () => {
     window.location.reload();
   };
 
+  const renderMedia = (postPath) => {
+    const fileExtension = postPath.split('.').pop().toLowerCase();
+    if (fileExtension === 'mp4') {
+      return (
+        <video className="card-img-top" controls={false} muted style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
+          <source src={postPath} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      );
+    } else {
+      return <img src={postPath || "https://via.placeholder.com/150"} className="card-img-top" alt="Post" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
+    }
+  };
+
   return (
     <>
       {/* Navbar */}
@@ -119,8 +133,10 @@ export const Profile = () => {
                 {posts.length > 0 ? (
                   posts.map(post => (
                     <div className="col-md-4 mb-3" key={post.id}>
-                      <div className="card">
-                        <img src={post.PostPath || "https://via.placeholder.com/150"} className="card-img-top" alt="Post" />
+                      <div className="card" style={{ width: '100%', paddingBottom: '75%', position: 'relative' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+                          {renderMedia(post.PostPath)}
+                        </div>
                       </div>
                     </div>
                   ))
