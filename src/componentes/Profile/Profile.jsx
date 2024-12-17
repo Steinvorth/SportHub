@@ -9,29 +9,29 @@ export const Profile = () => {
   const [friendsCount, setFriendsCount] = useState(0);
   const [profileImage, setProfileImage] = useState(null);
 
-  const userId = JSON.parse(localStorage.getItem('userId'));
+  const userUUID = JSON.parse(localStorage.getItem('userId'));
   const authToken = localStorage.getItem('user');
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const userData = await getUsuarioByUUID(userId);
+      const userData = await getUsuarioByUUID(userUUID);
       setUser(userData);
       setProfileImage(userData.ProfilePic ? `data:image/png;base64,${userData.ProfilePic}` : null);
 
-      const userPosts = await getPostsByUser(userId);
+      const userPosts = await getPostsByUser(userUUID);
       setPosts(userPosts);
 
-      const userFriendsCount = await getFriendsCount(userId);
+      const userFriendsCount = await getFriendsCount(userUUID);
       setFriendsCount(userFriendsCount);
     };
 
     fetchUserData();
-  }, [userId]);
+  }, [userUUID]);
 
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const base64String = await uploadUserProfileImage(userId, file);
+      const base64String = await uploadUserProfileImage(userUUID, file);
       setProfileImage(`data:image/png;base64,${base64String}`);
     }
   };
@@ -114,18 +114,20 @@ export const Profile = () => {
               </div>
             </div>
             <div>
-              <h4>User Posts</h4>
-              {posts.length > 0 ? (
-                posts.map(post => (
-                  <div className="card mb-3" key={post.id}>
-                    <div className="card-body">
-                      <p>{post.Descripcion}</p>
+              <h4>Posts</h4>
+              <div className="row">
+                {posts.length > 0 ? (
+                  posts.map(post => (
+                    <div className="col-md-4 mb-3" key={post.id}>
+                      <div className="card">
+                        <img src={post.PostPath || "https://via.placeholder.com/150"} className="card-img-top" alt="Post" />
+                      </div>
                     </div>
-                  </div>
-                ))
-              ) : (
-                <p>No posts available.</p>
-              )}
+                  ))
+                ) : (
+                  <p>No posts available.</p>
+                )}
+              </div>
             </div>
           </div>
         </div>

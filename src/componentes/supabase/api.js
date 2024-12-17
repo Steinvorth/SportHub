@@ -138,11 +138,11 @@ export const getUsuarioByUUID = async (uuid) => {
 };
 
 // **Obtener Posts por Usuario**: Recupera los posts del usuario autenticado
-export const getPostsByUser = async (userId) => {
+export const getPostsByUser = async (userUUID) => {
   const { data, error } = await supabase
     .from('Posts')
     .select('*')
-    .eq('userUUID', userId);
+    .eq('UserUUID', userUUID);
 
   if (error) {
     console.error('Error fetching posts:', error);
@@ -153,11 +153,11 @@ export const getPostsByUser = async (userId) => {
 };
 
 // **Obtener Conteo de Amigos**: Recupera el conteo de amigos del usuario autenticado
-export const getFriendsCount = async (userId) => {
+export const getFriendsCount = async (userUUID) => {
   const { data, error } = await supabase
-    .from('Friends')
+    .from('Amigos')
     .select('*', { count: 'exact' })
-    .eq('UserId', userId);
+    .or(`UserUUID.eq.${userUUID},AmigoUUID.eq.${userUUID}`);
 
   if (error) {
     console.error('Error fetching friends count:', error);
