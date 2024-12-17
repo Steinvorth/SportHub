@@ -8,12 +8,12 @@ import { getPostsPublicos, getUsuarioUsername } from '../supabase/api';
 export const PostCards = () => {
   const [postObj, setPostObj] = useState([]);
 
-  const fetchUser = async (id) => {
-    if (!id) {
-      console.error('Invalid userId:', id);
+  const fetchUser = async (userAuthId) => {
+    if (!userAuthId) {
+      console.error('Invalid userAuthId:', userAuthId);
       return 'null';
     }
-    const user = await getUsuarioUsername(id);
+    const user = await getUsuarioUsername(userAuthId);
     return user && user.length > 0 ? user[0].UserName : 'null';
   }
 
