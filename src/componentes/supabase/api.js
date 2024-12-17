@@ -240,14 +240,8 @@ export const uploadPostImage = async (userUUID, file) => {
     return null;
   }
 
-  const { publicURL, error: urlError } = supabase.storage
-    .from('Posts')
-    .getPublicUrl(filePath);
-
-  if (urlError) {
-    console.error('Error getting public URL for post image:', urlError.message);
-    return null;
-  }
+  // Construct the public URL manually
+  const publicURL = `https://uxiytxuyozhaolqjauzv.supabase.co/storage/v1/object/public/Posts/${filePath}`;
 
   return publicURL;
 };
