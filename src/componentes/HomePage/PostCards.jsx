@@ -25,7 +25,7 @@ export const PostCards = () => {
 
       //por cada post, buscamos el username del usuario para mostrarlo.
       const postsWithUsernames = await Promise.all(posts.map(async post => {
-        const username = await fetchUser(post.IdUsuario);
+        const username = await fetchUser(post.UserUUID);
         return { ...post, user: username };
       }));
 
@@ -43,7 +43,7 @@ export const PostCards = () => {
             <div className="card-header">
               @{post.user}
             </div>
-            <img src="https://via.placeholder.com/150" className="card-img-top" alt="imagen post"></img>
+            <img src={post.PostPath || "https://via.placeholder.com/150"} className="card-img-top" alt="imagen post"></img>
               <div className="card-body">
                 <i className="bi bi-trophy"></i> {/* Trofeo para simular el Like */}
                 <i className="bi bi-chat"></i> {/* Commments */}

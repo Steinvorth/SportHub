@@ -30,7 +30,7 @@ export const getUsuarioUsername = async (userId) => {
     const { data, error } = await supabase
       .from('Usuarios')
       .select('UserName')
-      .eq('UserId', userId);
+      .eq('User_Auth_Id', userId);
 
     if (error) {
       throw error;
@@ -49,7 +49,7 @@ export const getPostsPublicos = async () => {
     const { data, error } = await supabase
       .from('Posts')
       .select('*')
-      .eq('Privacidad', 'TRUE'); //publico es TRUE, privado es FALSE
+      .eq('Privacidad', 'FALSE'); //publico es FALSE, privado es TRUE
 
     if (error) {
       throw error;
@@ -142,7 +142,7 @@ export const getPostsByUser = async (userId) => {
   const { data, error } = await supabase
     .from('Posts')
     .select('*')
-    .eq('IdUsuario', userId);
+    .eq('userUUID', userId);
 
   if (error) {
     console.error('Error fetching posts:', error);
