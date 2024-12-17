@@ -35,20 +35,34 @@ export const PostCards = () => {
     fetchPosts();
   }, []);
 
+  const renderMedia = (postPath) => {
+    const fileExtension = postPath.split('.').pop().toLowerCase();
+    if (fileExtension === 'mp4') {
+      return (
+        <video className="card-img-top" controls>
+          <source src={postPath} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      );
+    } else {
+      return <img src={postPath || "https://via.placeholder.com/150"} className="card-img-top" alt="imagen post" />;
+    }
+  };
+
   return (
     <>
       {
         postObj.map((post) => (
-          <div className="card w-100" key={post.id}>
+          <div className="card w-100 mb-3" key={post.id}>
             <div className="card-header">
               @{post.user}
             </div>
-            <img src={post.PostPath || "https://via.placeholder.com/150"} className="card-img-top" alt="imagen post"></img>
-              <div className="card-body">
-                <i className="bi bi-trophy"></i> {/* Trofeo para simular el Like */}
-                <i className="bi bi-chat"></i> {/* Commments */}
-                <p className="card-text">{post.Descripcion}</p>
-              </div>
+            {renderMedia(post.PostPath)}
+            <div className="card-body">
+              <i className="bi bi-trophy"></i> {/* Trofeo para simular el Like */}
+              <i className="bi bi-chat"></i> {/* Commments */}
+              <p className="card-text">{post.Descripcion}</p>
+            </div>
           </div>
         ))
       }
