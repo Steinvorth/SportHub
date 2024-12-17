@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getUsuarioByUUID, getPostsByUser, getFriendsCount, uploadUserProfileImage } from '../supabase/api';
 import { Link } from 'react-router-dom';
-import './Profile.css'; // Import the CSS file
+import './Profile.css';
 
 export const Profile = () => {
   const [user, setUser] = useState({});
@@ -12,6 +12,7 @@ export const Profile = () => {
   const userUUID = JSON.parse(localStorage.getItem('userId'));
   const authToken = localStorage.getItem('user');
 
+  // Obtener datos del usuario al cargar el componente
   useEffect(() => {
     const fetchUserData = async () => {
       const userData = await getUsuarioByUUID(userUUID);
@@ -28,6 +29,7 @@ export const Profile = () => {
     fetchUserData();
   }, [userUUID]);
 
+  // Manejar cambio de imagen de perfil
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -36,12 +38,14 @@ export const Profile = () => {
     }
   };
 
+  // Cerrar sesión
   const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('userId');
     window.location.reload();
   };
 
+  // Renderizar media (imagen o video) de los posts
   const renderMedia = (postPath) => {
     const fileExtension = postPath.split('.').pop().toLowerCase();
     if (fileExtension === 'mp4') {
@@ -76,7 +80,7 @@ export const Profile = () => {
                 </li>
               )}
               
-              {/* si tenemos un auth token, entonces mostramos el logout. Si no, entonces esta escondido. */}
+              {/* Si tenemos un auth token, entonces mostramos el logout. Si no, entonces está escondido. */}
               {authToken && (
                 <li className="nav-item ms-2">
                   <button className="btn btn-outline-primary" onClick={logout}>
@@ -141,7 +145,7 @@ export const Profile = () => {
                     </div>
                   ))
                 ) : (
-                  <p>No posts available.</p>
+                  <p>No hay Posts disponibles.</p>
                 )}
               </div>
             </div>

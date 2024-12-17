@@ -9,6 +9,7 @@ export const ManagePost = ({ id }) => {
 
   const userUUID = JSON.parse(localStorage.getItem('userId'));
 
+  // Generar UUID para el post al cargar el componente
   useEffect(() => {
     const generatePostUUID = async () => {
       const postCount = await getPostCountByUser(userUUID);
@@ -19,18 +20,22 @@ export const ManagePost = ({ id }) => {
     generatePostUUID();
   }, [userUUID]);
 
+  // Manejar cambio de imagen
   const handlePictureChange = (e) => {
     setPicture(e.target.files[0]);
   };
 
+  // Manejar cambio de descripción
   const handleDescriptionChange = (e) => {
     setDescription(e.target.value);
   };
 
+  // Manejar cambio de privacidad
   const handlePrivacyChange = (e) => {
     setPrivacy(e.target.value);
   };
 
+  // Manejar envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 

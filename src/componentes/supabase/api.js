@@ -1,6 +1,6 @@
 import supabase from './supabase';
 
-//agregar usuario en sign up a tabla usuarios
+// Agregar usuario en sign up a tabla usuarios
 export const addUsuario = async (userAuthId, userName) => {
   try {
     const { data, error } = await supabase
@@ -20,7 +20,7 @@ export const addUsuario = async (userAuthId, userName) => {
   }
 };
 
-//get usuario
+// Obtener usuario por nombre de usuario
 export const getUsuarioUsername = async (userId) => {
   if (!userId) {
     console.error('Invalid userId:', userId);
@@ -43,7 +43,7 @@ export const getUsuarioUsername = async (userId) => {
   }
 };
 
-//get posts publicos
+// Obtener posts públicos
 export const getPostsPublicos = async () => {
   try {
     const { data, error } = await supabase
@@ -62,14 +62,14 @@ export const getPostsPublicos = async () => {
   }
 };
 
-// **Obtener UserId por User_Auth_Id**: Devuelve el UserId a partir del User_Auth_Id del usuario logueado
+// Obtener UserId por User_Auth_Id
 export const getUserIdByAuthId = async (authId) => {
   try {
     const { data, error } = await supabase
       .from("Usuarios")
       .select("UserId")
       .eq("User_Auth_Id", authId)
-      .single(); // Solo  registro
+      .single(); // Solo un registro
 
     if (error) {
       throw error;
@@ -82,7 +82,7 @@ export const getUserIdByAuthId = async (authId) => {
   }
 };
 
-// **Obtener Usuarios Excluyendo Uno**: Devuelve todos los usuarios excepto el actual de sugerencias en la pag friends 
+// Obtener usuarios excluyendo uno
 export const getSugerencias = async (userUUIDActual) => {
   try {
     const { data, error } = await supabase
@@ -101,7 +101,7 @@ export const getSugerencias = async (userUUIDActual) => {
   }
 };
 
-// **Obtener Usuario**: Recupera el username del usuario autenticado
+// Obtener usuario por ID
 export const getUsuario = async (userId) => {
   try {
     const { data, error } = await supabase
@@ -121,7 +121,7 @@ export const getUsuario = async (userId) => {
   }
 };
 
-// **Obtener Usuario por UUID**: Recupera la información del usuario autenticado
+// Obtener usuario por UUID
 export const getUsuarioByUUID = async (uuid) => {
   const { data, error } = await supabase
     .from('Usuarios')
@@ -137,7 +137,7 @@ export const getUsuarioByUUID = async (uuid) => {
   return data;
 };
 
-// **Obtener Posts por Usuario**: Recupera los posts del usuario autenticado
+// Obtener posts por usuario
 export const getPostsByUser = async (userUUID) => {
   const { data, error } = await supabase
     .from('Posts')
@@ -152,7 +152,7 @@ export const getPostsByUser = async (userUUID) => {
   return data;
 };
 
-// **Obtener Conteo de Amigos**: Recupera el conteo de amigos del usuario autenticado
+// Obtener conteo de amigos
 export const getFriendsCount = async (userUUID) => {
   const { data, error } = await supabase
     .from('Amigos')
@@ -167,7 +167,7 @@ export const getFriendsCount = async (userUUID) => {
   return data.length;
 };
 
-// **subir profile picture.
+// Subir imagen de perfil
 export const uploadUserProfileImage = async (userId, file) => {
   const reader = new FileReader();
   reader.readAsDataURL(file);
@@ -196,9 +196,9 @@ export const uploadUserProfileImage = async (userId, file) => {
   });
 };
 
-// ** Subir Imagen **
+// Subir imagen de post
 export const uploadPostImage = async (userUUID, file) => {
-  // Fetch existing files in the user's folder
+  // Obtener archivos existentes en la carpeta del usuario
   const { data: listData, error: listError } = await supabase.storage
     .from('Posts')
     .list(userUUID);
@@ -208,7 +208,7 @@ export const uploadPostImage = async (userUUID, file) => {
     return null;
   }
 
-  // Determine the highest existing index
+  // Determinar el índice más alto existente
   let maxIndex = 0;
   if (listData) {
     listData.forEach(file => {
@@ -222,12 +222,12 @@ export const uploadPostImage = async (userUUID, file) => {
     });
   }
 
-  // Create a new filename with the next index
+  // Crear un nuevo nombre de archivo con el siguiente índice
   const newIndex = maxIndex + 1;
   const fileExtension = file.name.split('.').pop();
   const filePath = `${userUUID}/${userUUID}_${newIndex}.${fileExtension}`;
 
-  // Upload the file
+  // Subir el archivo
   const { data, error } = await supabase.storage
     .from('Posts')
     .upload(filePath, file, {
@@ -240,13 +240,13 @@ export const uploadPostImage = async (userUUID, file) => {
     return null;
   }
 
-  // Construct the public URL manually
+  // Construir la URL pública manualmente
   const publicURL = `https://uxiytxuyozhaolqjauzv.supabase.co/storage/v1/object/public/Posts/${filePath}`;
 
   return publicURL;
 };
 
-// **Crear post **
+// Crear post
 export const createPost = async (userUUID, description, privacy, postPath) => {
   try {
     const { data, error } = await supabase
@@ -266,7 +266,7 @@ export const createPost = async (userUUID, description, privacy, postPath) => {
   }
 };
 
-// ** Get Post **
+// Obtener conteo de posts por usuario
 export const getPostCountByUser = async (userUUID) => {
   const { data, error } = await supabase
     .from('Posts')
@@ -281,7 +281,7 @@ export const getPostCountByUser = async (userUUID) => {
   return data.length;
 };
 
-// **Agregar Amigo**: Inserta una nueva relación de amistad en la tabla Amigos
+// Agregar amigo
 export const addFriend = async (userUUID, amigoUUID) => {
   try {
     const { data, error } = await supabase
@@ -301,7 +301,7 @@ export const addFriend = async (userUUID, amigoUUID) => {
   }
 };
 
-// **Verificar Amistad**: Comprueba si ya existe una relación de amistad entre dos usuarios
+// Verificar amistad
 export const checkFriendship = async (userUUID, amigoUUID) => {
   try {
     const { data, error } = await supabase
@@ -322,7 +322,7 @@ export const checkFriendship = async (userUUID, amigoUUID) => {
   }
 };
 
-// **Obtener Amigos**: Recupera la lista de amigos del usuario autenticado
+// Obtener amigos
 export const getFriends = async (userUUID) => {
   try {
     const { data, error } = await supabase
@@ -344,7 +344,7 @@ export const getFriends = async (userUUID) => {
   }
 };
 
-// **Obtener UserUUID**: Recupera el UserUUID del usuario autenticado
+// Obtener UserUUID
 export const getUserUUID = async () => {
   try {
     const { data: session } = await supabase.auth.getSession();
