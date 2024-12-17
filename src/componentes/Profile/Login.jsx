@@ -286,7 +286,7 @@ export const Login = ({ onLoginSuccess }) => {
       onMouseEnter={(e) => (e.target.style.color = '#357ABD')}
       onMouseLeave={(e) => (e.target.style.color = '#4A90E2')}
     >
-      {isSignUp ? 'Already have an account? Log in' : "Don't have an account? Sign up"}
+      {isSignUp ? 'Ya tienes cuenta? Inicia sesion!' : "No tienes Cuenta? Inscribete!"}
     </button>
   </div>
 </div>
