@@ -83,12 +83,12 @@ export const getUserIdByAuthId = async (authId) => {
 };
 
 // **Obtener Usuarios Excluyendo Uno**: Devuelve todos los usuarios excepto el actual de sugerencias en la pag friends 
-export const getSugerencias = async (userIdActual) => {
+export const getSugerencias = async (userUUIDActual) => {
   try {
     const { data, error } = await supabase
       .from("Usuarios")
-      .select("UserId, UserName")
-      .neq("UserId", userIdActual); // Excluye el usuario actual
+      .select("User_Auth_Id, UserName")
+      .neq("User_Auth_Id", userUUIDActual); // Excluye el usuario actual
 
     if (error) {
       throw error;
@@ -279,4 +279,81 @@ export const getPostCountByUser = async (userUUID) => {
   }
 
   return data.length;
+};
+
+// **Agregar Amigo**: Inserta una nueva relación de amistad en la tabla Amigos
+export const addFriend = async (userUUID, amigoUUID) => {
+  try {
+    const { data, error } = await supabase
+      .from('Amigos')
+      .insert([
+        { UserUUID: userUUID, AmigoUUID: amigoUUID }
+      ]);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error adding friend:', error.message);
+    return null;
+  }
+};
+
+// **Verificar Amistad**: Comprueba si ya existe una relación de amistad entre dos usuarios
+export const checkFriendship = async (userUUID, amigoUUID) => {
+  try {
+    const { data, error } = await supabase
+      .from('Amigos')
+      .select('*')
+      .or(`UserUUID.eq.${userUUID},AmigoUUID.eq.${userUUID}`)
+      .or(`UserUUID.eq.${amigoUUID},AmigoUUID.eq.${amigoUUID}`)
+      .single();
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
+      throw error;
+    }
+
+    return data ? true : false;
+  } catch (error) {
+    console.error('Error checking friendship:', error.message);
+    return false;
+  }
+};
+
+// **Obtener Amigos**: Recupera la lista de amigos del usuario autenticado
+export const getFriends = async (userUUID) => {
+  try {
+    const { data, error } = await supabase
+      .from('Amigos')
+      .select('AmigoUUID, Usuarios!AmigoUUID(UserName)')
+      .eq('UserUUID', userUUID);
+
+    if (error) {
+      throw error;
+    }
+
+    return data.map(friend => ({
+      User_Auth_Id: friend.AmigoUUID,
+      UserName: friend.Usuarios.UserName
+    }));
+  } catch (error) {
+    console.error('Error fetching friends:', error.message);
+    return [];
+  }
+};
+
+// **Obtener UserUUID**: Recupera el UserUUID del usuario autenticado
+export const getUserUUID = async () => {
+  try {
+    const { data: session } = await supabase.auth.getSession();
+    if (session?.session) {
+      return session.session.user.id;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error obteniendo el UserUUID actual:", error.message);
+    return null;
+  }
 };

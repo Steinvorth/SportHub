@@ -1,62 +1,93 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Cambié useHistory por useNavigate
-import { getSugerencias } from "../supabase/api"; // obtener usuarios excepto el actual
-import supabase from "../supabase/supabase"; 
+import { Link, useNavigate } from "react-router-dom";
+import { getSugerencias, addFriend, checkFriendship, getFriends, getUserUUID } from "../supabase/api";
 
 export const Friends = () => {
-  const [userIdActual, setUserIdActual] = useState(null); // Estado para guardar el UserId del usuario autenticado
+  const [userUUID, setUserUUID] = useState(null); // Estado para guardar el UserUUID del usuario autenticado
   const [sugerencias, setSugerencias] = useState([]);
-  const navigate = useNavigate(); // Usamos useNavigate para redirigir
+  const [friends, setFriends] = useState([]);
+  const navigate = useNavigate();
 
   // Función para obtener el usuario actual desde Supabase
-  const fetchUserIdActual = async () => {
+  const fetchUserUUID = async () => {
     try {
-      const { data: session } = await supabase.auth.getSession(); // Obtenemos la sesión actual
-      if (session?.session) {
-        const { data: user, error } = await supabase
-          .from("Usuarios")
-          .select("UserId")
-          .eq("User_Auth_Id", session.session.user.id) // Filtramos por el ID del usuario autenticado
-          .single();
-
-        if (error) {
-          throw error;
-        }
-
-        setUserIdActual(user.UserId); // Guardamos el UserId en el estado
+      const uuid = await getUserUUID();
+      if (uuid) {
+        setUserUUID(uuid); // Guardamos el UserUUID en el estado
       } else {
-        // Si no hay sesión activa, redirige al login
         navigate("/login"); // Redirige a la página de login si no hay sesión
       }
     } catch (error) {
-      console.error("Error obteniendo el UserId actual:", error.message);
+      console.error("Error obteniendo el UserUUID actual:", error.message);
     }
   };
 
-  // Obtener sugerencias de amigos (excluyendo al usuario actual)
+  // Obtener la lista de amigos
+  const fetchFriends = async () => {
+    try {
+      if (!userUUID) return;
+      const data = await getFriends(userUUID);
+      if (data && data.length > 0) {
+        setFriends(data);
+      }
+    } catch (error) {
+      console.error("Error obteniendo amigos:", error.message);
+    }
+  };
+
+  // Obtener sugerencias de amigos (excluyendo al usuario actual y sus amigos)
   const fetchSugerencias = async () => {
     try {
-      if (!userIdActual) return; // Esperamos a que se cargue el userIdActual
-      const data = await getSugerencias(userIdActual); // Llamamos a la API para obtener sugerencias
+      if (!userUUID) return;
+      const data = await getSugerencias(userUUID);
       if (data && data.length > 0) {
-        setSugerencias(data); // Guardamos las sugerencias en el estado
+        // Excluir amigos de las sugerencias
+        const filteredSugerencias = data.filter(sugerencia => !friends.some(friend => friend.User_Auth_Id === sugerencia.User_Auth_Id));
+        setSugerencias(filteredSugerencias);
       }
     } catch (error) {
       console.error("Error obteniendo sugerencias:", error.message);
     }
   };
 
-  // Cargar el UserId actual al montar el componente
+  // Función para agregar un amigo
+  const handleAddFriend = async (amigoUUID) => {
+    try {
+      const friendshipExists = await checkFriendship(userUUID, amigoUUID);
+      if (friendshipExists) {
+        alert("Ya son amigos.");
+        return;
+      }
+
+      const result = await addFriend(userUUID, amigoUUID);
+      if (result) {
+        alert("Amigo agregado exitosamente.");
+        fetchFriends(); // Refresh friends list after adding a friend
+        fetchSugerencias(); // Refresh suggestions after adding a friend
+      }
+    } catch (error) {
+      console.error("Error agregando amigo:", error.message);
+    }
+  };
+
+  // Cargar el UserUUID actual al montar el componente
   useEffect(() => {
-    fetchUserIdActual();
+    fetchUserUUID();
   }, []);
 
-  // Cargar sugerencias una vez que tengamos el UserId actual
+  // Cargar sugerencias y amigos una vez que tengamos el UserUUID actual
   useEffect(() => {
-    if (userIdActual) {
+    if (userUUID) {
+      fetchFriends();
+    }
+  }, [userUUID]);
+
+  // Cargar sugerencias una vez que tengamos la lista de amigos
+  useEffect(() => {
+    if (friends.length > 0) {
       fetchSugerencias();
     }
-  }, [userIdActual]);
+  }, [friends]);
 
   return (
     <div className="container mt-5" style={{ color: "black" }}>
@@ -71,7 +102,15 @@ export const Friends = () => {
         {/* Panel Izquierdo: Amigos */}
         <div className="flex-grow-1 p-3 border" style={{ backgroundColor: "#f9f9f9" }}>
           <h2>Mis Amigos</h2>
-          <p>Lista de amigos (pendiente por implementar).</p>
+          {friends.length > 0 ? (
+            friends.map((friend) => (
+              <div key={friend.User_Auth_Id} className="d-flex justify-content-between align-items-center mb-2">
+                <p>{friend.UserName}</p>
+              </div>
+            ))
+          ) : (
+            <p>No tienes amigos aún.</p>
+          )}
         </div>
 
         {/* Panel Derecho: Sugerencias */}
@@ -80,11 +119,11 @@ export const Friends = () => {
           {sugerencias.length > 0 ? (
             sugerencias.map((sugerencia) => (
               <div
-                key={sugerencia.UserId}
+                key={sugerencia.User_Auth_Id}
                 className="d-flex justify-content-between align-items-center mb-2"
               >
                 <p>{sugerencia.UserName}</p>
-                <button className="btn btn-success">Agregar</button>
+                <button className="btn btn-success" onClick={() => handleAddFriend(sugerencia.User_Auth_Id)}>Agregar</button>
               </div>
             ))
           ) : (
