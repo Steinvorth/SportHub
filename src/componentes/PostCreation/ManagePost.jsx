@@ -1,9 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPost, uploadPostImage, getPostCountByUser } from '../supabase/api';
 
 export const ManagePost = ({ id }) => {
   const [picture, setPicture] = useState(null);
   const [description, setDescription] = useState('');
   const [privacy, setPrivacy] = useState('public');
+  const [postUUID, setPostUUID] = useState('');
+
+  const userUUID = JSON.parse(localStorage.getItem('userId'));
+
+  useEffect(() => {
+    const generatePostUUID = async () => {
+      const postCount = await getPostCountByUser(userUUID);
+      const newPostUUID = `${userUUID}_${postCount + 1}`;
+      setPostUUID(newPostUUID);
+    };
+
+    generatePostUUID();
+  }, [userUUID]);
 
   const handlePictureChange = (e) => {
     setPicture(e.target.files[0]);
@@ -17,10 +31,19 @@ export const ManagePost = ({ id }) => {
     setPrivacy(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log({ picture, description, privacy });
+
+    let postPath = null;
+    if (picture) {
+      postPath = await uploadPostImage(userUUID, picture);
+    }
+
+    const isPrivate = privacy === 'friends';
+    const post = await createPost(userUUID, description, isPrivate, postPath);
+    if (post) {
+      console.log('Post created successfully:', post);
+    }
   };
 
   return (
@@ -45,7 +68,7 @@ export const ManagePost = ({ id }) => {
               <label htmlFor="privacy" className="form-label">Privacidad</label>
               <select className="form-select" id="privacy" value={privacy} onChange={handlePrivacyChange}>
                 <option value="public">Publico</option>
-                <option value="friends">Amigos</option>
+                <option value="friends">Privado</option>
               </select>
             </div>
             <a type="submit" className="btn btn-secondary me-2" href='/'>Volver</a>

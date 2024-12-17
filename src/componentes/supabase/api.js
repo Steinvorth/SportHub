@@ -167,7 +167,7 @@ export const getFriendsCount = async (userId) => {
   return data.length;
 };
 
-// **Upload User Profile Image**: Uploads a profile image for the user
+// **subir profile picture.
 export const uploadUserProfileImage = async (userId, file) => {
   const reader = new FileReader();
   reader.readAsDataURL(file);
@@ -194,4 +194,95 @@ export const uploadUserProfileImage = async (userId, file) => {
       reject(error);
     };
   });
+};
+
+// ** Subir Imagen **
+export const uploadPostImage = async (userUUID, file) => {
+  // Fetch existing files in the user's folder
+  const { data: listData, error: listError } = await supabase.storage
+    .from('Posts')
+    .list(userUUID);
+
+  if (listError && listError.message !== 'The resource was not found') {
+    console.error('Error listing folder:', listError.message);
+    return null;
+  }
+
+  // Determine the highest existing index
+  let maxIndex = 0;
+  if (listData) {
+    listData.forEach(file => {
+      const match = file.name.match(new RegExp(`${userUUID}_(\\d+)\\.`));
+      if (match) {
+        const index = parseInt(match[1], 10);
+        if (index > maxIndex) {
+          maxIndex = index;
+        }
+      }
+    });
+  }
+
+  // Create a new filename with the next index
+  const newIndex = maxIndex + 1;
+  const fileExtension = file.name.split('.').pop();
+  const filePath = `${userUUID}/${userUUID}_${newIndex}.${fileExtension}`;
+
+  // Upload the file
+  const { data, error } = await supabase.storage
+    .from('Posts')
+    .upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: false
+    });
+
+  if (error) {
+    console.error('Error uploading post image:', error.message);
+    return null;
+  }
+
+  const { publicURL, error: urlError } = supabase.storage
+    .from('Posts')
+    .getPublicUrl(filePath);
+
+  if (urlError) {
+    console.error('Error getting public URL for post image:', urlError.message);
+    return null;
+  }
+
+  return publicURL;
+};
+
+// **Crear post **
+export const createPost = async (userUUID, description, privacy, postPath) => {
+  try {
+    const { data, error } = await supabase
+      .from('Posts')
+      .insert([
+        { UserUUID: userUUID, Descripcion: description, Privacidad: privacy, PostPath: postPath }
+      ]);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error creating post:', error.message);
+    return null;
+  }
+};
+
+// ** Get Post **
+export const getPostCountByUser = async (userUUID) => {
+  const { data, error } = await supabase
+    .from('Posts')
+    .select('*', { count: 'exact' })
+    .eq('UserUUID', userUUID);
+
+  if (error) {
+    console.error('Error fetching post count:', error.message);
+    return 0;
+  }
+
+  return data.length;
 };
