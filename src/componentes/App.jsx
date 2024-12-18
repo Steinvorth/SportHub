@@ -5,6 +5,7 @@ import { Login } from './Profile/Login';
 import { Profile } from './Profile/Profile';
 import { Friends } from './Profile/Friends';
 import { ManagePost } from './PostCreation/ManagePost';
+import { AdminDashboard } from './Admin/AdminDashboard';
 
 
 
@@ -25,6 +26,7 @@ export const App = () => {
           <Route path="/profile" element={<Profile />} />
           <Route path="/friends" element={<Friends />} />
           <Route path="/post" element={<ManagePost />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </Router>
     );

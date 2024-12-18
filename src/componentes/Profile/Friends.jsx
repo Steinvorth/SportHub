@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getSugerencias, addFriend, checkFriendship, getFriends, getUserUUID } from "../supabase/api";
+import { getSugerencias, addFriend, checkFriendship, getFriends } from "../supabase/api";
 
 export const Friends = () => {
   const [userUUID, setUserUUID] = useState(null); // Estado para guardar el UserUUID del usuario autenticado
@@ -11,7 +11,7 @@ export const Friends = () => {
   // Función para obtener el usuario actual desde Supabase
   const fetchUserUUID = async () => {
     try {
-      const uuid = await getUserUUID();
+      const uuid = localStorage.getItem('userId');
       if (uuid) {
         setUserUUID(uuid); // Guardamos el UserUUID en el estado
       } else {

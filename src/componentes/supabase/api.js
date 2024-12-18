@@ -396,4 +396,42 @@ export const SetRole = async (userUUID) => {
   }
 };
 
-//Asignar un rol a un usuario con la tabla RolesUsuario
+//get el rol del usuario basado en el UUID de localstorage
+export const getRole = async (userUUID) => {
+  try {
+    const { data, error } = await supabase
+      .from('RolesUsuario')
+      .select('IdRole')
+      .eq('UserUUID', userUUID)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching user role:', error.message);
+    return null;
+  }
+};
+
+//get el nombre del rol basado en IdRole
+export const getRoleName = async (roleId) => {
+  try {
+    const { data, error } = await supabase
+      .from('Roles')
+      .select('Rol')
+      .eq('id', roleId)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching role name:', error.message);
+    return null;
+  }
+};
