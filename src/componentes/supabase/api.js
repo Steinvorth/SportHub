@@ -457,16 +457,51 @@ export const getRoleName = async (roleId) => {
 // Obtener comentarios por post
 export const getCommentsByPost = async (postId) => {
   try {
-    const { data, error } = await supabase
+    // First, get the comments through ComentariosPost table
+    const { data: commentPostData, error: commentPostError } = await supabase
       .from('ComentariosPost')
-      .select('id, Contenido, UserUUID')
+      .select(`
+        ComentarioId,
+        Comentarios (
+          id,
+          Contenido,
+          UserUUID,
+          created_at
+        )
+      `)
       .eq('PostId', postId);
 
-    if (error) {
-      throw error;
+    if (commentPostError) {
+      throw commentPostError;
     }
 
-    return data;
+    if (commentPostData.length === 0) {
+      return [];
+    }
+
+    // Get usernames for each comment
+    const commentsWithUsernames = await Promise.all(
+      commentPostData.map(async (commentPost) => {
+        const { data: userData, error: userError } = await supabase
+          .from('Usuarios')
+          .select('UserName')
+          .eq('User_Auth_Id', commentPost.Comentarios.UserUUID)
+          .single();
+
+        if (userError) {
+          throw userError;
+        }
+
+        return {
+          id: commentPost.Comentarios.id,
+          Contenido: commentPost.Comentarios.Contenido,
+          UserName: userData.UserName,
+          created_at: commentPost.Comentarios.created_at
+        };
+      })
+    );
+
+    return commentsWithUsernames;
   } catch (error) {
     console.error('Error fetching comments by post:', error.message);
     return [];
@@ -534,31 +569,34 @@ export const deletePost = async (postId) => {
 // Crear comentario
 export const createComment = async (postId, userUUID, contenido) => {
   try {
-    const { data, error } = await supabase
+    // First create the comment in Comentarios table
+    const { data: commentData, error: commentError } = await supabase
       .from('Comentarios')
       .insert([
         { UserUUID: userUUID, Contenido: contenido }
       ])
+      .select()
       .single();
 
-    if (error) {
-      throw error;
+    if (commentError) {
+      throw commentError;
     }
 
-    const commentId = data.id;
-
-    // Insertar en ComentariosPost
+    // Then create the relationship in ComentariosPost table
     const { data: commentPostData, error: commentPostError } = await supabase
       .from('ComentariosPost')
       .insert([
-        { PostId: postId, UserUUID: userUUID, id: commentId }
+        { 
+          PostId: postId,
+          ComentarioId: commentData.id
+        }
       ]);
 
     if (commentPostError) {
       throw commentPostError;
     }
 
-    return commentPostData;
+    return commentData;
   } catch (error) {
     console.error('Error creating comment:', error.message);
     return null;

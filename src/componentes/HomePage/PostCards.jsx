@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getPostsPublicos, getUsuarioUsername } from '../supabase/api';
+import { CommentModal } from './CommentModal';
 
 /*
  * Este es un componente para hacer los Bootstrap Cards para los post.
@@ -7,6 +8,8 @@ import { getPostsPublicos, getUsuarioUsername } from '../supabase/api';
 
 export const PostCards = () => {
   const [postObj, setPostObj] = useState([]);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const fetchUser = async (userAuthId) => {
     if (!userAuthId) {
@@ -49,6 +52,16 @@ export const PostCards = () => {
     }
   };
 
+  const handleCommentClick = (post) => {
+    setSelectedPost(post);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedPost(null);
+  };
+
   return (
     <>
       {
@@ -60,12 +73,19 @@ export const PostCards = () => {
             {renderMedia(post.PostPath)}
             <div className="card-body">
               <i className="bi bi-trophy"></i> {/* Trofeo para simular el Like */}
-              <i className="bi bi-chat"></i> {/* Commments */}
+              <i className="bi bi-chat" onClick={() => handleCommentClick(post)}></i> {/* Commments */}
               <p className="card-text">{post.Descripcion}</p>
             </div>
           </div>
         ))
       }
+      {selectedPost && (
+        <CommentModal
+          show={showModal}
+          handleClose={handleCloseModal}
+          post={selectedPost}
+        />
+      )}
     </>
   );
 };
