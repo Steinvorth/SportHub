@@ -31,6 +31,10 @@ export const HomePage = () => {
       SetAuthToken(null);
       SetUserIdToken(null);
       setUserRole(null);
+
+      //refresh
+      window.location.href = '/';
+
     }
 
   return (
