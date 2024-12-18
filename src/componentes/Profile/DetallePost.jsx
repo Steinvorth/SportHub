@@ -81,7 +81,8 @@ export const DetallePost = ({ postId, show, handleClose }) => {
                       <strong>@{comment.UserName}</strong>
                       <div>{comment.Contenido}</div>
                     </div>
-                    {comment.UserUUID === userUUID && (
+                    {/* Changed condition: Check if post owner is the logged-in user */}
+                    {post && post.UserUUID === userUUID && (
                       <button className="btn btn-danger btn-sm mt-2" onClick={() => handleDeleteComment(comment.id)}>
                         <i className="bi bi-trash3"></i>
                       </button>
