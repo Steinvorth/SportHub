@@ -17,20 +17,20 @@ export const Profile = () => {
 
   // Obtener datos del usuario al cargar el componente
   useEffect(() => {
-    const fetchUserData = async () => {
-      const userData = await getUsuarioByUUID(userUUID);
-      setUser(userData);
-      setProfileImage(userData.ProfilePic ? `data:image/png;base64,${userData.ProfilePic}` : null);
-
-      const userPosts = await getPostsByUser(userUUID);
-      setPosts(userPosts);
-
-      const userFriendsCount = await getFriendsCount(userUUID);
-      setFriendsCount(userFriendsCount);
-    };
-
     fetchUserData();
   }, [userUUID]);
+
+  const fetchUserData = async () => {
+    const userData = await getUsuarioByUUID(userUUID);
+    setUser(userData);
+    setProfileImage(userData.ProfilePic ? `data:image/png;base64,${userData.ProfilePic}` : null);
+
+    const userPosts = await getPostsByUser(userUUID);
+    setPosts(userPosts);
+
+    const userFriendsCount = await getFriendsCount(userUUID);
+    setFriendsCount(userFriendsCount);
+  };
 
   // Manejar cambio de imagen de perfil
   const handleImageChange = async (e) => {
@@ -70,9 +70,12 @@ export const Profile = () => {
     setShowModal(true);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseModal = (refresh = false) => {
     setShowModal(false);
     setSelectedPostId(null);
+    if (refresh) {
+      fetchUserData();
+    }
   };
 
   return (

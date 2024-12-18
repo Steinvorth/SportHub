@@ -22,7 +22,7 @@ export const DetallePost = ({ postId, show, handleClose }) => {
 
   const handleDeletePost = async () => {
     await deletePost(postId);
-    handleClose();
+    handleClose(true); // Pass true to indicate that the posts should be refreshed
   };
 
   const handleDeleteComment = async (commentId) => {
@@ -50,7 +50,7 @@ export const DetallePost = ({ postId, show, handleClose }) => {
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">Detalle del Post</h5>
-            <button type="button" className="btn-close" onClick={handleClose} aria-label="Close"></button>
+            <button type="button" className="btn-close" onClick={() => handleClose(false)} aria-label="Close"></button>
           </div>
           <div className="modal-body d-flex">
             <div className="flex-grow-1" style={{ flexBasis: '60%' }}>
