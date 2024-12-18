@@ -118,7 +118,7 @@ export const Profile = () => {
                 <h3>{user.UserName}</h3>
                 <div className="d-flex align-items-center mb-2">
                   <Link to="/EditProfile" className="btn btn-outline-primary me-2">Edit Profile</Link>
-                  <Link to="/settings" className="btn btn-outline-secondary">
+                  <Link to="/Settings" className="btn btn-outline-secondary">
                     <i className="bi bi-gear"></i>
                   </Link>
                 </div>
