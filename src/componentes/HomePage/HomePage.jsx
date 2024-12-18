@@ -9,15 +9,6 @@ import 'bootstrap-icons/font/bootstrap-icons.css'; // Import Bootstrap icons
 
 export const HomePage = () => {
 
-    //use Effect para traer todos los posts de publicos de la base de datos.
-    // useEffect(() => {
-    //   first
-    
-    //   return () => {
-    //     second
-    //   }
-    // }, [third])
-
     //use state para manejar el auth token
     var authUserToken = localStorage.getItem('user');
     const [authToken, SetAuthToken] = useState(authUserToken);   
@@ -29,12 +20,21 @@ export const HomePage = () => {
     //use state para manejar el link de login, si hay auth token, vamos al perfil. Si no, vamos a login/sign up.
     const [loginLink, setLoginLink] = useState(authToken === null ? '/login' : '/profile');
 
+    // Use state to manage the user role
+    const [userRole, setUserRole] = useState(localStorage.getItem('userRole'));
+
     //funcion para hacer el logout, solamente borramos el token y userId de la local storage.
     const logout = () => {
       localStorage.removeItem('user');
       localStorage.removeItem('userId');
+      localStorage.removeItem('userRole');
       SetAuthToken(null);
       SetUserIdToken(null);
+      setUserRole(null);
+
+      //refresh
+      window.location.href = '/';
+
     }
 
   return (
@@ -80,6 +80,14 @@ export const HomePage = () => {
                 </li>                
               )}             
                 
+              {/* Show Admin Dashboard button if user has Admin role */}
+              {userRole === 'Admin' && (
+                <li className="nav-item ms-2">
+                  <Link to="/admin" className="btn btn-outline-primary">
+                    <i className="bi bi-speedometer2"></i> Administrar
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
         </div>

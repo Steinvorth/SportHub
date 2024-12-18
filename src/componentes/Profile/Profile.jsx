@@ -42,7 +42,9 @@ export const Profile = () => {
   const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('userId');
-    window.location.reload();
+
+    //mandar al home page
+    window.location.href = '/';
   };
 
   // Renderizar media (imagen o video) de los posts

@@ -15,7 +15,7 @@ export const addUsuario = async (userAuthId, userName) => {
 
     return data;
   } catch (error) {
-    console.error('Error adding user to Usuarios:', error.message);
+    console.error('Error agregando usuario a Usuarios:', error.message);
     return null;
   }
 };
@@ -23,7 +23,7 @@ export const addUsuario = async (userAuthId, userName) => {
 // Obtener usuario por nombre de usuario
 export const getUsuarioUsername = async (userId) => {
   if (!userId) {
-    console.error('Invalid userId:', userId);
+    console.error('UserId inválido:', userId);
     return null;
   }
   try {
@@ -38,7 +38,7 @@ export const getUsuarioUsername = async (userId) => {
 
     return data;
   } catch (error) {
-    console.error('Error getting user from Usuarios:', error.message);
+    console.error('Error obteniendo usuario de Usuarios:', error.message);
     return null;
   }
 };
@@ -49,7 +49,7 @@ export const getPostsPublicos = async () => {
     const { data, error } = await supabase
       .from('Posts')
       .select('*')
-      .eq('Privacidad', 'FALSE'); //publico es FALSE, privado es TRUE
+      .eq('Privacidad', 'FALSE'); // público es FALSE, privado es TRUE
 
     if (error) {
       throw error;
@@ -57,7 +57,25 @@ export const getPostsPublicos = async () => {
 
     return data;
   } catch (error) {
-    console.error('Error getting public posts:', error.message);
+    console.error('Error obteniendo posts públicos:', error.message);
+    return null;
+  }
+};
+
+// Obtener posts sin importar privacidad por ser administrador
+export const getPosts = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('Posts')
+      .select('*');
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error obteniendo posts:', error.message);
     return null;
   }
 };
@@ -130,7 +148,7 @@ export const getUsuarioByUUID = async (uuid) => {
     .single();
 
   if (error) {
-    console.error('Error fetching user:', error);
+    console.error('Error obteniendo usuario:', error);
     return null;
   }
 
@@ -145,7 +163,7 @@ export const getPostsByUser = async (userUUID) => {
     .eq('UserUUID', userUUID);
 
   if (error) {
-    console.error('Error fetching posts:', error);
+    console.error('Error obteniendo posts:', error);
     return [];
   }
 
@@ -160,7 +178,7 @@ export const getFriendsCount = async (userUUID) => {
     .or(`UserUUID.eq.${userUUID},AmigoUUID.eq.${userUUID}`);
 
   if (error) {
-    console.error('Error fetching friends count:', error);
+    console.error('Error obteniendo conteo de amigos:', error);
     return 0;
   }
 
@@ -182,7 +200,7 @@ export const uploadUserProfileImage = async (userId, file) => {
         .eq('User_Auth_Id', userId);
 
       if (error) {
-        console.error('Error uploading profile image:', error.message);
+        console.error('Error subiendo imagen de perfil:', error.message);
         reject(error);
       } else {
         resolve(base64String);
@@ -190,7 +208,7 @@ export const uploadUserProfileImage = async (userId, file) => {
     };
 
     reader.onerror = (error) => {
-      console.error('Error reading file:', error);
+      console.error('Error leyendo archivo:', error);
       reject(error);
     };
   });
@@ -204,7 +222,7 @@ export const uploadPostImage = async (userUUID, file) => {
     .list(userUUID);
 
   if (listError && listError.message !== 'The resource was not found') {
-    console.error('Error listing folder:', listError.message);
+    console.error('Error listando carpeta:', listError.message);
     return null;
   }
 
@@ -236,7 +254,7 @@ export const uploadPostImage = async (userUUID, file) => {
     });
 
   if (error) {
-    console.error('Error uploading post image:', error.message);
+    console.error('Error subiendo imagen de post:', error.message);
     return null;
   }
 
@@ -261,7 +279,7 @@ export const createPost = async (userUUID, description, privacy, postPath) => {
 
     return data;
   } catch (error) {
-    console.error('Error creating post:', error.message);
+    console.error('Error creando post:', error.message);
     return null;
   }
 };
@@ -274,7 +292,7 @@ export const getPostCountByUser = async (userUUID) => {
     .eq('UserUUID', userUUID);
 
   if (error) {
-    console.error('Error fetching post count:', error.message);
+    console.error('Error obteniendo conteo de posts:', error.message);
     return 0;
   }
 
@@ -296,7 +314,7 @@ export const addFriend = async (userUUID, amigoUUID) => {
 
     return data;
   } catch (error) {
-    console.error('Error adding friend:', error.message);
+    console.error('Error agregando amigo:', error.message);
     return null;
   }
 };
@@ -311,13 +329,13 @@ export const checkFriendship = async (userUUID, amigoUUID) => {
       .or(`UserUUID.eq.${amigoUUID},AmigoUUID.eq.${amigoUUID}`)
       .single();
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
+    if (error && error.code !== 'PGRST116') { // PGRST116 significa que no se encontraron filas
       throw error;
     }
 
     return data ? true : false;
   } catch (error) {
-    console.error('Error checking friendship:', error.message);
+    console.error('Error verificando amistad:', error.message);
     return false;
   }
 };
@@ -339,21 +357,59 @@ export const getFriends = async (userUUID) => {
       UserName: friend.Usuarios.UserName
     }));
   } catch (error) {
-    console.error('Error fetching friends:', error.message);
+    console.error('Error obteniendo amigos:', error.message);
     return [];
   }
 };
 
-// Obtener UserUUID
-export const getUserUUID = async () => {
+// Obtener roles
+export const getRoles = async () => {
   try {
-    const { data: session } = await supabase.auth.getSession();
-    if (session?.session) {
-      return session.session.user.id;
+    const { data, error } = await supabase
+      .from('Roles')
+      .select('*');
+
+    if (error) {
+      throw error;
     }
-    return null;
+
+    return data;
   } catch (error) {
-    console.error("Error obteniendo el UserUUID actual:", error.message);
+    console.error('Error obteniendo roles:', error.message);
+    return [];
+  }
+};
+
+// Insertar UserUUID en RolesUsuario con rol por defecto "Usuario"
+export const SetRole = async (userUUID) => {
+  try {
+    // Obtener el ID del rol "Usuario"
+    const { data: roles, error: rolesError } = await supabase
+      .from('Roles')
+      .select('id')
+      .eq('Rol', 'Usuario')
+      .single();
+
+    if (rolesError) {
+      throw rolesError;
+    }
+
+    const roleId = roles.id;
+
+    // Insertar en RolesUsuario
+    const { data, error } = await supabase
+      .from('RolesUsuario')
+      .insert([
+        { IdRole: roleId, UserUUID: userUUID }
+      ]);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error asignando rol por defecto al usuario:', error.message);
     return null;
   }
 };
@@ -362,8 +418,8 @@ export const getUserUUID = async () => {
 export const updateUserProfile = async (userId, username, bio) => {
   const { data, error } = await supabase
     .from('Usuarios')
-    .update({ UserName: username, Bio: bio })  
-    .eq('User_Auth_Id', userId)  
+    .update({ UserName: username, Bio: bio })
+    .eq('User_Auth_Id', userId)
     .select();
 
   if (error) {
@@ -372,3 +428,345 @@ export const updateUserProfile = async (userId, username, bio) => {
   }
   return { data };
 };
+// Obtener el rol del usuario basado en el UUID de localstorage
+export const getRole = async (userUUID) => {
+  try {
+    const { data, error } = await supabase
+      .from('RolesUsuario')
+      .select('IdRole')
+      .eq('UserUUID', userUUID)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error obteniendo rol del usuario:', error.message);
+    return null;
+  }
+};
+
+// Obtener el nombre del rol basado en IdRole
+export const getRoleName = async (roleId) => {
+  try {
+    const { data, error } = await supabase
+      .from('Roles')
+      .select('Rol')
+      .eq('id', roleId)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error obteniendo nombre del rol:', error.message);
+    return null;
+  }
+};
+
+// Obtener comentarios por post
+export const getCommentsByPost = async (postId) => {
+  try {
+    // Primero, obtener los comentarios a través de la tabla ComentariosPost
+    const { data: commentPostData, error: commentPostError } = await supabase
+      .from('ComentariosPost')
+      .select(`
+        ComentarioId,
+        Comentarios (
+          id,
+          Contenido,
+          UserUUID,
+          created_at
+        )
+      `)
+      .eq('PostId', postId);
+
+    if (commentPostError) {
+      throw commentPostError;
+    }
+
+    if (commentPostData.length === 0) {
+      return [];
+    }
+
+    // Obtener nombres de usuario para cada comentario
+    const commentsWithUsernames = await Promise.all(
+      commentPostData.map(async (commentPost) => {
+        const { data: userData, error: userError } = await supabase
+          .from('Usuarios')
+          .select('UserName')
+          .eq('User_Auth_Id', commentPost.Comentarios.UserUUID)
+          .single();
+
+        if (userError) {
+          throw userError;
+        }
+
+        return {
+          id: commentPost.Comentarios.id,
+          Contenido: commentPost.Comentarios.Contenido,
+          UserName: userData.UserName,
+          created_at: commentPost.Comentarios.created_at
+        };
+      })
+    );
+
+    return commentsWithUsernames;
+  } catch (error) {
+    console.error('Error obteniendo comentarios por post:', error.message);
+    return [];
+  }
+};
+
+// Obtener post por ID
+export const getPostById = async (postId) => {
+  try {
+    const { data, error } = await supabase
+      .from('Posts')
+      .select('*')
+      .eq('id', postId)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error obteniendo post por ID:', error.message);
+    return null;
+  }
+};
+
+// Eliminar comentario
+export const deleteComment = async (commentId) => {
+  try {
+    const { data, error } = await supabase
+      .from('Comentarios')
+      .delete()
+      .eq('id', commentId);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error eliminando comentario:', error.message);
+    return null;
+  }
+};
+
+// Eliminar post
+export const deletePost = async (postId) => {
+  try {
+    const { data, error } = await supabase
+      .from('Posts')
+      .delete()
+      .eq('id', postId);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error eliminando post:', error.message);
+    return null;
+  }
+};
+
+// Crear comentario
+export const createComment = async (postId, userUUID, contenido) => {
+  try {
+    // Primero crear el comentario en la tabla Comentarios
+    const { data: commentData, error: commentError } = await supabase
+      .from('Comentarios')
+      .insert([
+        { UserUUID: userUUID, Contenido: contenido }
+      ])
+      .select()
+      .single();
+
+    if (commentError) {
+      throw commentError;
+    }
+
+    // Luego crear la relación en la tabla ComentariosPost
+    const { data: commentPostData, error: commentPostError } = await supabase
+      .from('ComentariosPost')
+      .insert([
+        {
+          PostId: postId,
+          ComentarioId: commentData.id
+        }
+      ]);
+
+    if (commentPostError) {
+      throw commentPostError;
+    }
+
+    return commentData;
+  } catch (error) {
+    console.error('Error creando comentario:', error.message);
+    return null;
+  }
+};
+
+// Obtener cantidad de comentarios por post
+export const getCommentCount = async (postId) => {
+  try {
+    const { data, error } = await supabase
+      .from('ComentariosPost')
+      .select('*', { count: 'exact' })
+      .eq('PostId', postId);
+
+    if (error) {
+      throw error;
+    }
+
+    return data.length;
+  } catch (error) {
+    console.error('Error obteniendo cantidad de comentarios:', error.message);
+    return 0;
+  }
+};
+
+// Verificar si un usuario ya dio like a un post
+export const checkUserLike = async (postId, userUUID) => {
+  try {
+    const { data, error } = await supabase
+      .from('LikesPost')
+      .select(`
+        id,
+        Likes!inner (
+          UserUUID
+        )
+      `)
+      .eq('PostId', postId)
+      .eq('Likes.UserUUID', userUUID);
+
+    if (error) {
+      throw error;
+    }
+
+    return data.length > 0;
+  } catch (error) {
+    console.error('Error verificando like del usuario:', error.message);
+    return false;
+  }
+};
+
+// Obtener cantidad de likes por post
+export const getLikeCount = async (postId) => {
+  try {
+    const { data, error } = await supabase
+      .from('LikesPost')
+      .select('*', { count: 'exact' })
+      .eq('PostId', postId);
+
+    if (error) {
+      throw error;
+    }
+
+    return data.length;
+  } catch (error) {
+    console.error('Error obteniendo cantidad de likes:', error.message);
+    return 0;
+  }
+};
+
+// Crear like
+export const createLike = async (postId, userUUID) => {
+  try {
+    // Primero crear el like en la tabla Likes
+    const { data: likeData, error: likeError } = await supabase
+      .from('Likes')
+      .insert([
+        { UserUUID: userUUID }
+      ])
+      .select()
+      .single();
+
+    if (likeError) {
+      throw likeError;
+    }
+
+    // Luego crear la relación en la tabla LikesPost
+    const { data: likePostData, error: likePostError } = await supabase
+      .from('LikesPost')
+      .insert([
+        {
+          PostId: postId,
+          LikeId: likeData.id
+        }
+      ]);
+
+    if (likePostError) {
+      throw likePostError;
+    }
+
+    return likeData;
+  } catch (error) {
+    console.error('Error creando like:', error.message);
+    return null;
+  }
+};
+
+// Eliminar like
+export const deleteLike = async (postId, userUUID) => {
+  try {
+    // Primero obtener el ID del like
+    const { data: likeData, error: likeError } = await supabase
+      .from('Likes')
+      .select('id')
+      .eq('UserUUID', userUUID)
+      .single();
+
+    if (likeError) {
+      throw likeError;
+    }
+
+    // Eliminar de LikesPost
+    const { error: likePostError } = await supabase
+      .from('LikesPost')
+      .delete()
+      .eq('LikeId', likeData.id);
+
+    if (likePostError) {
+      throw likePostError;
+    }
+
+    // Eliminar de Likes
+    const { error: deleteError } = await supabase
+      .from('Likes')
+      .delete()
+      .eq('id', likeData.id);
+
+    if (deleteError) {
+      throw deleteError;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error eliminando like:', error.message);
+    return false;
+  }
+};
+
+//ELIMINAR USUARIOS
+export const deleteUser = async (userUUID) => {
+    const { error: deleteError } = await supabase
+      .from('Usuarios') 
+      .delete('*')
+      .eq('User_Auth_Id', userUUID);
+
+    if (deleteError) {
+      throw new Error('Error al eliminar la cuenta: ' + deleteError.message);
+    }
+    return { success: true, message: 'Cuenta eliminada con éxito' };
+}
