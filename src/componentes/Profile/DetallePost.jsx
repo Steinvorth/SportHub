@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { getPostById, getCommentsByPost, deletePost, deleteComment, getUsuarioUsername } from '../supabase/api';
+import { getPostById, getCommentsByPost, deletePost, deleteComment } from '../supabase/api';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 export const DetallePost = ({ postId, show, handleClose }) => {
   const [post, setPost] = useState(null);
@@ -75,12 +76,13 @@ export const DetallePost = ({ postId, show, handleClose }) => {
               <h5>Comentarios</h5>
               <ul className="list-group">
                 {comments.map(comment => (
-                  <li key={comment.id} className="list-group-item d-flex justify-content-between align-items-center">
+                  <li key={comment.id} className="list-group-item d-flex justify-content-between align-items-start">
                     <div>
-                      <strong>@{comment.UserName}</strong>: {comment.Contenido}
+                      <strong>@{comment.UserName}</strong>
+                      <div>{comment.Contenido}</div>
                     </div>
                     {comment.UserUUID === userUUID && (
-                      <button className="btn btn-danger btn-sm" onClick={() => handleDeleteComment(comment.id)}>
+                      <button className="btn btn-danger btn-sm mt-2" onClick={() => handleDeleteComment(comment.id)}>
                         <i className="bi bi-trash3"></i>
                       </button>
                     )}
