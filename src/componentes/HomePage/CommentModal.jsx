@@ -5,6 +5,7 @@ export const CommentModal = ({ show, handleClose, post }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
 
+  // obtener los comentarios cuando el post cambia
   useEffect(() => {
     const fetchComments = async () => {
       if (post) {
@@ -16,10 +17,12 @@ export const CommentModal = ({ show, handleClose, post }) => {
     fetchComments();
   }, [post]);
 
+  // Maneja el cambio en el campo de comentario
   const handleCommentChange = (e) => {
     setNewComment(e.target.value);
   };
 
+  // Maneja el envío del comentario
   const handleCommentSubmit = async () => {
     const userUUID = JSON.parse(localStorage.getItem('userId'));
     if (newComment.trim() && userUUID) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getPostsPublicos, getUsuarioUsername, getCommentCount, getLikeCount, checkUserLike, createLike} from '../supabase/api';
+import { getPostsPublicos, getUsuarioUsername, getCommentCount, getLikeCount, checkUserLike, createLike } from '../supabase/api';
 import { CommentModal } from './CommentModal';
 
 /*
@@ -13,6 +13,7 @@ export const PostCards = () => {
   const [likedPosts, setLikedPosts] = useState({});
   const [likeCounts, setLikeCounts] = useState({});
 
+  // Obtiene el nombre de usuario basado en el UUID del usuario
   const fetchUser = async (userAuthId) => {
     if (!userAuthId) {
       console.error('Invalid userAuthId:', userAuthId);
@@ -22,19 +23,20 @@ export const PostCards = () => {
     return user && user.length > 0 ? user[0].UserName : 'null';
   }
 
+  // Efecto para obtener los posts públicos y sus datos adicionales
   useEffect(() => {
     const fetchPosts = async () => {
       const posts = await getPostsPublicos();
       const userUUID = JSON.parse(localStorage.getItem('userId'));
 
-      //por cada post, buscamos el username del usuario, cantidad de comentarios y likes
+      // Por cada post, buscamos el username del usuario, cantidad de comentarios y likes
       const postsWithData = await Promise.all(posts.map(async post => {
         const username = await fetchUser(post.UserUUID);
         const commentCount = await getCommentCount(post.id);
         const likeCount = await getLikeCount(post.id);
         const isLiked = await checkUserLike(post.id, userUUID);
         
-        // Update like states
+        // Actualiza los estados de likes
         setLikedPosts(prev => ({...prev, [post.id]: isLiked}));
         setLikeCounts(prev => ({...prev, [post.id]: likeCount}));
 
@@ -53,6 +55,7 @@ export const PostCards = () => {
     fetchPosts();
   }, []);
 
+  // Formatea la fecha en un formato legible
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES', {
@@ -62,6 +65,7 @@ export const PostCards = () => {
     });
   };
 
+  // Renderiza el post (imagen o video) basado en la extensión del archivo
   const renderMedia = (postPath) => {
     const fileExtension = postPath.split('.').pop().toLowerCase();
     if (fileExtension === 'mp4') {
@@ -76,16 +80,19 @@ export const PostCards = () => {
     }
   };
 
+  // Maneja el clic en el botón de comentarios
   const handleCommentClick = (post) => {
     setSelectedPost(post);
     setShowModal(true);
   };
 
+  // Maneja el cierre del modal de comentarios
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedPost(null);
   };
 
+  // Maneja el clic en el botón de like
   const handleLikeClick = async (postId) => {
     const userUUID = JSON.parse(localStorage.getItem('userId'));
     if (!userUUID) return;
