@@ -31,6 +31,11 @@ export const PostCards = ({ postType }) => {
         posts = await getPostsPublicos();
       } else if (postType === 'amigos') {
         const uuid = localStorage.getItem('userId');
+        if(!uuid) {
+          window.location.href = '/login';
+          return;
+        }
+
         const UUID_formatted = uuid.replace(/['"]+/g, ''); // Eliminar comillas simples del UserUUID
         posts = await getPostsDeAmigos(UUID_formatted);
       }
@@ -90,6 +95,11 @@ export const PostCards = ({ postType }) => {
 
   // Maneja el clic en el botón de comentarios
   const handleCommentClick = (post) => {
+    const userUUID = JSON.parse(localStorage.getItem('userId'));
+    if (!userUUID) {
+      window.location.href = '/login';
+      return;
+    }
     setSelectedPost(post);
     setShowModal(true);
   };
@@ -103,7 +113,10 @@ export const PostCards = ({ postType }) => {
   // Maneja el clic en el botón de like
   const handleLikeClick = async (postId) => {
     const userUUID = JSON.parse(localStorage.getItem('userId'));
-    if (!userUUID) return;
+    if (!userUUID) {
+      window.location.href = '/login';
+      return;
+    }
 
     const isLiked = likedPosts[postId];
     

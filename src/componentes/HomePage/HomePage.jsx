@@ -25,6 +25,14 @@ export const HomePage = () => {
   // State to manage the selected post type
   const [postType, setPostType] = useState('explorar');
 
+
+  // revisamos si el usuario tiene cuenta al ir a los amigos, sino lo mandamos al login
+  useEffect(() => {
+    if (postType === 'amigos' && !userIdToken) {
+      window.location.href = '/login';
+    }
+  }, [postType, userIdToken, history]);
+
   //funcion para hacer el logout, solamente borramos el token y userId de la local storage.
   const logout = () => {
     localStorage.removeItem('user');

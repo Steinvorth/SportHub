@@ -669,15 +669,15 @@ export const getCommentCount = async (postId) => {
 
 // Verificar si un usuario ya dio like a un post
 export const checkUserLike = async (postId, userUUID) => {
+  if (!userUUID) {
+    console.log('usuario no tiene cuenta', userUUID);
+    return null;
+  }
+
   try {
     const { data, error } = await supabase
       .from('LikesPost')
-      .select(`
-        id,
-        Likes!inner (
-          UserUUID
-        )
-      `)
+      .select(`id, Likes!inner (UserUUID)`)
       .eq('PostId', postId)
       .eq('Likes.UserUUID', userUUID);
 
