@@ -345,15 +345,55 @@ export const getFriends = async (userUUID) => {
 };
 
 // Obtener UserUUID
-export const getUserUUID = async () => {
+export const getRoles = async () => {
   try {
-    const { data: session } = await supabase.auth.getSession();
-    if (session?.session) {
-      return session.session.user.id;
+    const { data, error } = await supabase
+      .from('Roles')
+      .select('*');
+
+    if (error) {
+      throw error;
     }
-    return null;
+
+    return data;
   } catch (error) {
-    console.error("Error obteniendo el UserUUID actual:", error.message);
+    console.error('Error fetching roles:', error.message);
+    return [];
+  }
+};
+
+// Insertar UserUUID en RolesUsuario con rol por defecto "Usuario"
+export const SetRole = async (userUUID) => {
+  try {
+    // Obtener el ID del rol "Usuario"
+    const { data: roles, error: rolesError } = await supabase
+      .from('Roles')
+      .select('id')
+      .eq('Rol', 'Usuario')
+      .single();
+
+    if (rolesError) {
+      throw rolesError;
+    }
+
+    const roleId = roles.id;
+
+    // Insertar en RolesUsuario
+    const { data, error } = await supabase
+      .from('RolesUsuario')
+      .insert([
+        { IdRole: roleId, UserUUID: userUUID }
+      ]);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error assigning default role to user:', error.message);
     return null;
   }
 };
+
+//Asignar un rol a un usuario con la tabla RolesUsuario

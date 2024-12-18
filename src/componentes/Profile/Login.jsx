@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import supabase from '../supabase/supabase';
-import { addUsuario } from '../supabase/api';
+import { addUsuario, SetRole } from '../supabase/api';
 
 export const Login = ({ onLoginSuccess }) => {
   const [isSignUp, setIsSignUp] = useState(false); //controlamos si se selecciona sign up o login
@@ -31,6 +31,9 @@ export const Login = ({ onLoginSuccess }) => {
 
         //agregamos el usuario a la tabla Usuarios
         await addUsuario(data.user.id, email);
+
+        // Asignar rol por defecto "Usuario"
+        await SetRole(data.user.id);
 
         setMessage('Account created successfully');
         onLoginSuccess(); // Mandamos devuelta al home
