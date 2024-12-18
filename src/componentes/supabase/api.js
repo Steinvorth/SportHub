@@ -100,25 +100,6 @@ export const getUserIdByAuthId = async (authId) => {
   }
 };
 
-// Obtener usuarios excluyendo uno
-export const getSugerencias = async (userUUIDActual) => {
-  try {
-    const { data, error } = await supabase
-      .from("Usuarios")
-      .select("User_Auth_Id, UserName")
-      .neq("User_Auth_Id", userUUIDActual); // Excluye el usuario actual
-
-    if (error) {
-      throw error;
-    }
-
-    return data; // Devuelve la lista de usuarios
-  } catch (error) {
-    console.error("Error obteniendo usuarios excluyendo uno:", error.message);
-    return [];
-  }
-};
-
 // Obtener usuario por ID
 export const getUsuario = async (userId) => {
   try {
@@ -183,6 +164,47 @@ export const getFriendsCount = async (userUUID) => {
   }
 
   return data.length;
+};
+
+// Obtener amigos
+export const getFriends = async (userUUID) => {
+  try {
+    const { data, error } = await supabase
+      .from('Amigos')
+      .select('AmigoUUID, Usuarios!AmigoUUID(UserName)')
+      .eq('UserUUID', userUUID);
+
+    if (error) {
+      throw error;
+    }
+
+    return data.map(friend => ({
+      User_Auth_Id: friend.AmigoUUID,
+      UserName: friend.Usuarios.UserName
+    }));
+  } catch (error) {
+    console.error('Error obteniendo amigos:', error.message);
+    return [];
+  }
+};
+
+// Obtener usuarios excluyendo uno
+export const getSugerencias = async (userUUIDActual) => {
+  try {
+    const { data, error } = await supabase
+      .from("Usuarios")
+      .select("User_Auth_Id, UserName")
+      .neq("User_Auth_Id", userUUIDActual); // Excluye el usuario actual
+
+    if (error) {
+      throw error;
+    }
+
+    return data; // Devuelve la lista de usuarios
+  } catch (error) {
+    console.error("Error obteniendo usuarios excluyendo uno:", error.message);
+    return [];
+  }
 };
 
 // Subir imagen de perfil
@@ -337,28 +359,6 @@ export const checkFriendship = async (userUUID, amigoUUID) => {
   } catch (error) {
     console.error('Error verificando amistad:', error.message);
     return false;
-  }
-};
-
-// Obtener amigos
-export const getFriends = async (userUUID) => {
-  try {
-    const { data, error } = await supabase
-      .from('Amigos')
-      .select('AmigoUUID, Usuarios!AmigoUUID(UserName)')
-      .eq('UserUUID', userUUID);
-
-    if (error) {
-      throw error;
-    }
-
-    return data.map(friend => ({
-      User_Auth_Id: friend.AmigoUUID,
-      UserName: friend.Usuarios.UserName
-    }));
-  } catch (error) {
-    console.error('Error obteniendo amigos:', error.message);
-    return [];
   }
 };
 
