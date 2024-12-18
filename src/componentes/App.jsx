@@ -6,6 +6,7 @@ import { Profile } from './Profile/Profile';
 import { Friends } from './Profile/Friends';
 import { ManagePost } from './PostCreation/ManagePost';
 import { AdminDashboard } from './Admin/AdminDashboard';
+import { AdministradorPostReview } from './Admin/AdministradorPostReview';
 
 
 
@@ -27,6 +28,7 @@ export const App = () => {
           <Route path="/friends" element={<Friends />} />
           <Route path="/post" element={<ManagePost />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/review/:postId" element={<AdministradorPostReview />} />
         </Routes>
       </Router>
     );

@@ -453,3 +453,115 @@ export const getRoleName = async (roleId) => {
     return null;
   }
 };
+
+// Obtener comentarios por post
+export const getCommentsByPost = async (postId) => {
+  try {
+    const { data, error } = await supabase
+      .from('ComentariosPost')
+      .select('id, Contenido, UserUUID')
+      .eq('PostId', postId);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching comments by post:', error.message);
+    return [];
+  }
+};
+
+// Obtener post por ID
+export const getPostById = async (postId) => {
+  try {
+    const { data, error } = await supabase
+      .from('Posts')
+      .select('*')
+      .eq('id', postId)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching post by ID:', error.message);
+    return null;
+  }
+};
+
+// Eliminar comentario
+export const deleteComment = async (commentId) => {
+  try {
+    const { data, error } = await supabase
+      .from('Comentarios')
+      .delete()
+      .eq('id', commentId);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error deleting comment:', error.message);
+    return null;
+  }
+};
+
+// Eliminar post
+export const deletePost = async (postId) => {
+  try {
+    const { data, error } = await supabase
+      .from('Posts')
+      .delete()
+      .eq('id', postId);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error deleting post:', error.message);
+    return null;
+  }
+};
+
+// Crear comentario
+export const createComment = async (postId, userUUID, contenido) => {
+  try {
+    const { data, error } = await supabase
+      .from('Comentarios')
+      .insert([
+        { UserUUID: userUUID, Contenido: contenido }
+      ])
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    const commentId = data.id;
+
+    // Insertar en ComentariosPost
+    const { data: commentPostData, error: commentPostError } = await supabase
+      .from('ComentariosPost')
+      .insert([
+        { PostId: postId, UserUUID: userUUID, id: commentId }
+      ]);
+
+    if (commentPostError) {
+      throw commentPostError;
+    }
+
+    return commentPostData;
+  } catch (error) {
+    console.error('Error creating comment:', error.message);
+    return null;
+  }
+};
+

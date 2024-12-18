@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getPosts, getPostsPublicos, getRole, getRoleName } from '../supabase/api';
+import { getPosts, getRole, getRoleName } from '../supabase/api';
 
 export const AdminDashboard = () => {
   const [posts, setPosts] = useState([]);
@@ -73,9 +73,12 @@ export const AdminDashboard = () => {
             <h3>Posts</h3>
             <div className="list-group">
               {posts.map(post => (
-                <div key={post.id} className="list-group-item">
-                  <h5>{post.Descripcion}</h5>
-                  <p>{post.Privacidad ? 'Privado' : 'Público'}</p>
+                <div key={post.id} className="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <h5>{post.Descripcion}</h5>
+                    <p>{post.Privacidad ? 'Privado' : 'Público'}</p>
+                  </div>
+                  <Link to={`/admin/review/${post.id}`} className="btn btn-primary">Revisar</Link>
                 </div>
               ))}
             </div>
