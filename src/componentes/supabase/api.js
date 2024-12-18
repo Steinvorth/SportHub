@@ -62,6 +62,24 @@ export const getPostsPublicos = async () => {
   }
 };
 
+//Get Posts sin importar privacidad por ser administrador
+export const getPosts = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('Posts')
+      .select('*')
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error getting posts:', error.message);
+    return null;
+  }
+};
+
 // Obtener UserId por User_Auth_Id
 export const getUserIdByAuthId = async (authId) => {
   try {
