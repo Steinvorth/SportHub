@@ -621,3 +621,125 @@ export const getCommentCount = async (postId) => {
     return 0;
   }
 };
+
+// Verificar si un usuario ya dio like a un post
+export const checkUserLike = async (postId, userUUID) => {
+  try {
+    const { data, error } = await supabase
+      .from('LikesPost')
+      .select(`
+        id,
+        Likes!inner (
+          UserUUID
+        )
+      `)
+      .eq('PostId', postId)
+      .eq('Likes.UserUUID', userUUID);
+
+    if (error) {
+      throw error;
+    }
+
+    return data.length > 0;
+  } catch (error) {
+    console.error('Error checking user like:', error.message);
+    return false;
+  }
+};
+
+// Obtener cantidad de likes por post
+export const getLikeCount = async (postId) => {
+  try {
+    const { data, error } = await supabase
+      .from('LikesPost')
+      .select('*', { count: 'exact' })
+      .eq('PostId', postId);
+
+    if (error) {
+      throw error;
+    }
+
+    return data.length;
+  } catch (error) {
+    console.error('Error getting like count:', error.message);
+    return 0;
+  }
+};
+
+// Crear like
+export const createLike = async (postId, userUUID) => {
+  try {
+    // First create the like in Likes table
+    const { data: likeData, error: likeError } = await supabase
+      .from('Likes')
+      .insert([
+        { UserUUID: userUUID }
+      ])
+      .select()
+      .single();
+
+    if (likeError) {
+      throw likeError;
+    }
+
+    // Then create the relationship in LikesPost table
+    const { data: likePostData, error: likePostError } = await supabase
+      .from('LikesPost')
+      .insert([
+        { 
+          PostId: postId,
+          LikeId: likeData.id
+        }
+      ]);
+
+    if (likePostError) {
+      throw likePostError;
+    }
+
+    return likeData;
+  } catch (error) {
+    console.error('Error creating like:', error.message);
+    return null;
+  }
+};
+
+// Eliminar like
+export const deleteLike = async (postId, userUUID) => {
+  try {
+    // First get the like ID
+    const { data: likeData, error: likeError } = await supabase
+      .from('Likes')
+      .select('id')
+      .eq('UserUUID', userUUID)
+      .single();
+
+    if (likeError) {
+      throw likeError;
+    }
+
+    // Delete from LikesPost
+    const { error: likePostError } = await supabase
+      .from('LikesPost')
+      .delete()
+      .eq('LikeId', likeData.id);
+
+    if (likePostError) {
+      throw likePostError;
+    }
+
+    // Delete from Likes
+    const { error: deleteError } = await supabase
+      .from('Likes')
+      .delete()
+      .eq('id', likeData.id);
+
+    if (deleteError) {
+      throw deleteError;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error deleting like:', error.message);
+    return false;
+  }
+};
