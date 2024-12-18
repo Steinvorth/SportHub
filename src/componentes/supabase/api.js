@@ -62,6 +62,37 @@ export const getPostsPublicos = async () => {
   }
 };
 
+// Obtener posts privados de amigos
+export const getPostsDeAmigos = async (userUUID) => {
+
+  try {
+    // Obtener amigos del usuario
+    const friends = await getFriends(userUUID);
+
+    if (friends.length === 0) {
+      return [];
+    }
+
+    const friendUUIDs = friends.map(friend => friend.User_Auth_Id);
+
+    // Obtener posts privados de amigos
+    const { data: postsData, error: postsError } = await supabase
+      .from('Posts')
+      .select('*')
+      .in('UserUUID', friendUUIDs)
+      .eq('Privacidad', true);
+
+    if (postsError) {
+      throw postsError;
+    }
+
+    return postsData;
+  } catch (error) {
+    console.error('Error obteniendo posts privados de amigos:', error.message);
+    return [];
+  }
+};
+
 // Obtener posts sin importar privacidad por ser administrador
 export const getPosts = async () => {
   try {
@@ -770,3 +801,5 @@ export const deleteUser = async (userUUID) => {
     }
     return { success: true, message: 'Cuenta eliminada con éxito' };
 }
+
+

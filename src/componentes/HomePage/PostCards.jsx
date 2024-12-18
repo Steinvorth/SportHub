@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { getPostsPublicos, getUsuarioUsername, getCommentCount, getLikeCount, checkUserLike, createLike } from '../supabase/api';
+import { getPostsPublicos, getPostsDeAmigos, getUsuarioUsername, getCommentCount, getLikeCount, checkUserLike, createLike, deleteLike } from '../supabase/api';
 import { CommentModal } from './CommentModal';
 
 /*
  * Este es un componente para hacer los Bootstrap Cards para los post.
 */
 
-export const PostCards = () => {
+export const PostCards = ({ postType }) => {
   const [postObj, setPostObj] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -23,10 +23,18 @@ export const PostCards = () => {
     return user && user.length > 0 ? user[0].UserName : 'null';
   }
 
-  // Efecto para obtener los posts públicos y sus datos adicionales
+  // Efecto para obtener los posts y sus datos adicionales
   useEffect(() => {
     const fetchPosts = async () => {
-      const posts = await getPostsPublicos();
+      let posts = [];
+      if (postType === 'explorar') {
+        posts = await getPostsPublicos();
+      } else if (postType === 'amigos') {
+        const uuid = localStorage.getItem('userId');
+        const UUID_formatted = uuid.replace(/['"]+/g, ''); // Eliminar comillas simples del UserUUID
+        posts = await getPostsDeAmigos(UUID_formatted);
+      }
+
       const userUUID = JSON.parse(localStorage.getItem('userId'));
 
       // Por cada post, buscamos el username del usuario, cantidad de comentarios y likes
@@ -53,7 +61,7 @@ export const PostCards = () => {
     };
 
     fetchPosts();
-  }, []);
+  }, [postType]);
 
   // Formatea la fecha en un formato legible
   const formatDate = (dateString) => {
