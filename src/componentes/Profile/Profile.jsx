@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getUsuarioByUUID, getPostsByUser, getFriendsCount, uploadUserProfileImage } from '../supabase/api';
 import { Link } from 'react-router-dom';
+import { DetallePost } from './DetallePost';
 import './Profile.css';
 
 export const Profile = () => {
@@ -8,6 +9,8 @@ export const Profile = () => {
   const [posts, setPosts] = useState([]);
   const [friendsCount, setFriendsCount] = useState(0);
   const [profileImage, setProfileImage] = useState(null);
+  const [selectedPostId, setSelectedPostId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const userUUID = JSON.parse(localStorage.getItem('userId'));
   const authToken = localStorage.getItem('user');
@@ -60,6 +63,16 @@ export const Profile = () => {
     } else {
       return <img src={postPath || "https://via.placeholder.com/150"} className="card-img-top" alt="Post" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />;
     }
+  };
+
+  const handlePostClick = (postId) => {
+    setSelectedPostId(postId);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedPostId(null);
   };
 
   return (
@@ -140,7 +153,7 @@ export const Profile = () => {
               <div className="row">
                 {posts.length > 0 ? (
                   posts.map(post => (
-                    <div className="col-md-4 mb-3" key={post.id}>
+                    <div className="col-md-4 mb-3" key={post.id} onClick={() => handlePostClick(post.id)}>
                       <div className="card" style={{ width: '100%', paddingBottom: '75%', position: 'relative' }}>
                         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
                           {renderMedia(post.PostPath)}
@@ -156,6 +169,14 @@ export const Profile = () => {
           </div>
         </div>
       </div>
+
+      {selectedPostId && (
+        <DetallePost
+          postId={selectedPostId}
+          show={showModal}
+          handleClose={handleCloseModal}
+        />
+      )}
     </>
   );
 };

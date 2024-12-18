@@ -573,6 +573,46 @@ export const getPostById = async (postId) => {
   }
 };
 
+// Eliminar post y su archivo relacionado
+export const deletePost = async (postId) => {
+  try {
+    // Obtener el post para obtener el PostPath
+    const { data: post, error: postError } = await supabase
+      .from('Posts')
+      .select('PostPath')
+      .eq('id', postId)
+      .single();
+
+    if (postError) {
+      throw postError;
+    }
+
+    // Eliminar el archivo del bucket
+    const { error: storageError } = await supabase.storage
+      .from('Posts')
+      .remove([post.PostPath]);
+
+    if (storageError) {
+      throw storageError;
+    }
+
+    // Eliminar el post de la base de datos
+    const { error: deleteError } = await supabase
+      .from('Posts')
+      .delete()
+      .eq('id', postId);
+
+    if (deleteError) {
+      throw deleteError;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error eliminando post:', error.message);
+    return false;
+  }
+};
+
 // Eliminar comentario
 export const deleteComment = async (commentId) => {
   try {
@@ -588,25 +628,6 @@ export const deleteComment = async (commentId) => {
     return data;
   } catch (error) {
     console.error('Error eliminando comentario:', error.message);
-    return null;
-  }
-};
-
-// Eliminar post
-export const deletePost = async (postId) => {
-  try {
-    const { data, error } = await supabase
-      .from('Posts')
-      .delete()
-      .eq('id', postId);
-
-    if (error) {
-      throw error;
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Error eliminando post:', error.message);
     return null;
   }
 };
