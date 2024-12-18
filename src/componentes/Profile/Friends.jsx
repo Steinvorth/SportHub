@@ -42,6 +42,8 @@ export const Friends = () => {
     try {
       if (!userUUID) return;
       const data = await getSugerencias(userUUID);
+      console.log(data);  
+
       if (data && data.length > 0) {
         // Excluir amigos de las sugerencias
         const filteredSugerencias = data.filter(sugerencia => !friends.some(friend => friend.User_Auth_Id === sugerencia.User_Auth_Id));
@@ -81,6 +83,7 @@ export const Friends = () => {
   useEffect(() => {
     if (userUUID) {
       fetchFriends();
+      fetchSugerencias();
     }
   }, [userUUID]);
 
