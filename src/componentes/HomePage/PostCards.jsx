@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getPostsPublicos, getUsuarioUsername } from '../supabase/api';
+import { getPostsPublicos, getUsuarioUsername, getCommentCount } from '../supabase/api';
 import { CommentModal } from './CommentModal';
 
 /*
@@ -24,19 +24,31 @@ export const PostCards = () => {
     const fetchPosts = async () => {
       const posts = await getPostsPublicos();
 
-      console.log(posts);
-
-      //por cada post, buscamos el username del usuario para mostrarlo.
-      const postsWithUsernames = await Promise.all(posts.map(async post => {
+      //por cada post, buscamos el username del usuario y cantidad de comentarios
+      const postsWithData = await Promise.all(posts.map(async post => {
         const username = await fetchUser(post.UserUUID);
-        return { ...post, user: username };
+        const commentCount = await getCommentCount(post.id);
+        return { 
+          ...post, 
+          user: username,
+          commentCount: commentCount 
+        };
       }));
 
-      setPostObj(postsWithUsernames);
+      setPostObj(postsWithData);
     };
 
     fetchPosts();
   }, []);
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
   const renderMedia = (postPath) => {
     const fileExtension = postPath.split('.').pop().toLowerCase();
@@ -72,8 +84,16 @@ export const PostCards = () => {
             </div>
             {renderMedia(post.PostPath)}
             <div className="card-body">
-              <i className="bi bi-trophy"></i> {/* Trofeo para simular el Like */}
-              <i className="bi bi-chat" onClick={() => handleCommentClick(post)}></i> {/* Commments */}
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                  <i className="bi bi-trophy me-3"></i>
+                  <i className="bi bi-chat me-1" onClick={() => handleCommentClick(post)}></i>
+                  <span className="me-2">{post.commentCount}</span>
+                </div>
+                <small className="text-muted">
+                  {formatDate(post.created_at)}
+                </small>
+              </div>
               <p className="card-text">{post.Descripcion}</p>
             </div>
           </div>

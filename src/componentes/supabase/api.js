@@ -603,3 +603,21 @@ export const createComment = async (postId, userUUID, contenido) => {
   }
 };
 
+// Obtener cantidad de comentarios por post
+export const getCommentCount = async (postId) => {
+  try {
+    const { data, error } = await supabase
+      .from('ComentariosPost')
+      .select('*', { count: 'exact' })
+      .eq('PostId', postId);
+
+    if (error) {
+      throw error;
+    }
+
+    return data.length;
+  } catch (error) {
+    console.error('Error getting comment count:', error.message);
+    return 0;
+  }
+};
