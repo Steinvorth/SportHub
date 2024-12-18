@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getSugerencias, addFriend, checkFriendship, getFriends } from "../supabase/api";
 
 export const Friends = () => {
-  const [userUUID, setUserUUID] = useState(null); // Estado para guardar el UserUUID del usuario autenticado
+  const [userUUID, setUserUUID] = useState(''); // Estado para guardar el UserUUID del usuario autenticado
   const [sugerencias, setSugerencias] = useState([]);
   const [friends, setFriends] = useState([]);
   const navigate = useNavigate();
@@ -12,8 +12,10 @@ export const Friends = () => {
   const fetchUserUUID = async () => {
     try {
       const uuid = localStorage.getItem('userId');
+      const UUID_formatted = uuid.replace(/['"]+/g, ''); // Eliminar comillas simples del UserUUID
+      console.log(UUID_formatted);
       if (uuid) {
-        setUserUUID(uuid); // Guardamos el UserUUID en el estado
+        setUserUUID(UUID_formatted); // Guardamos el UserUUID en el estado
       } else {
         navigate("/login"); // Redirige a la página de login si no hay sesión
       }
