@@ -357,3 +357,18 @@ export const getUserUUID = async () => {
     return null;
   }
 };
+
+// Función para actualizar usuarios en SUPABASE
+export const updateUserProfile = async (userId, username, bio) => {
+  const { data, error } = await supabase
+    .from('Usuarios')
+    .update({ UserName: username, Bio: bio })  
+    .eq('User_Auth_Id', userId)  
+    .select();
+
+  if (error) {
+    console.error('Error updating profile:', error);
+    return { error };
+  }
+  return { data };
+};

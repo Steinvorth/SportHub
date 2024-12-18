@@ -1,12 +1,14 @@
+
 import React, { useEffect, useState } from 'react';
-import { getUsuarioByUUID, getPostsByUser, getFriendsCount, uploadUserProfileImage } from '../supabase/api';
+import { getUsuarioByUUID, getPostsByUser, uploadUserProfileImage, updateUserProfile } from '../supabase/api';
 import { Link } from 'react-router-dom';
 import './Profile.css';
 
-export const Profile = () => {
-  const [user, setUser] = useState({});
+export const EditProfile = () => {
+  const [user, setUser] = useState({}); 
+  const [username, setUsername] = useState('');
+  const [bio, setBio] = useState('');
   const [posts, setPosts] = useState([]);
-  const [friendsCount, setFriendsCount] = useState(0);
   const [profileImage, setProfileImage] = useState(null);
 
   const userUUID = JSON.parse(localStorage.getItem('userId'));
@@ -17,13 +19,13 @@ export const Profile = () => {
     const fetchUserData = async () => {
       const userData = await getUsuarioByUUID(userUUID);
       setUser(userData);
+      setUsername(userData.UserName);
+      setBio(userData.Bio);
       setProfileImage(userData.ProfilePic ? `data:image/png;base64,${userData.ProfilePic}` : null);
 
       const userPosts = await getPostsByUser(userUUID);
       setPosts(userPosts);
 
-      const userFriendsCount = await getFriendsCount(userUUID);
-      setFriendsCount(userFriendsCount);
     };
 
     fetchUserData();
@@ -35,6 +37,22 @@ export const Profile = () => {
     if (file) {
       const base64String = await uploadUserProfileImage(userUUID, file);
       setProfileImage(`data:image/png;base64,${base64String}`);
+    }
+  };
+
+  // Manejar cambio en los campos de texto
+  const handleUsernameChange = (e) => setUsername(e.target.value);
+  const handleBioChange = (e) => setBio(e.target.value);
+
+  // Función para actualizar el perfil
+  const handleSave = async () => {
+    
+    const { error } = await updateUserProfile(userUUID, username, bio, setUsername);
+    if (error) {
+      alert('Error al actualizar el perfil');
+    } else {
+      alert('Perfil actualizado exitosamente');
+      window.location.reload(); 
     }
   };
 
@@ -65,22 +83,15 @@ export const Profile = () => {
       {/* Navbar */}
       <nav className="navbar navbar-expand-lg navbar-light bg-light d-flex flex-column">
         <div className="container">
+          <Link to="../profile">
+            <i className="bi bi-arrow-bar-left me-3 text-dark fs-4"></i>
+          </Link>
           <a className="navbar-brand" href="/">Sport Hub</a>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
-
-              {authToken && (
-                <li>
-                  <Link to="/post" className="btn btn-outline-primary ms-2">
-                    <i className="bi bi-card-image"></i>
-                  </Link>
-                </li>
-              )}
-
-              {/* Si tenemos un auth token, entonces mostramos el logout. Si no, entonces está escondido. */}
               {authToken && (
                 <li className="nav-item ms-2">
                   <button className="btn btn-outline-primary" onClick={logout}>
@@ -90,7 +101,6 @@ export const Profile = () => {
                   </button>
                 </li>
               )}
-
             </ul>
           </div>
         </div>
@@ -113,26 +123,32 @@ export const Profile = () => {
                 </label>
               </div>
               <div className="ms-4">
-                <h3>{user.UserName}</h3>
-                <div className="d-flex align-items-center mb-2">
-                  <Link to="/EditProfile" className="btn btn-outline-primary me-2">Edit Profile</Link>
-                  <Link to="/settings" className="btn btn-outline-secondary">
-                    <i className="bi bi-gear"></i>
-                  </Link>
+                <div className="mb-3">
+                  <label htmlFor="usernameInput" className="form-label">UserName </label>
+                  <input
+                    type="text"
+                    id="usernameInput"
+                    className="form-control"
+                    value={username}
+                    onChange={handleUsernameChange}
+                  />
                 </div>
-                <div className="d-flex mb-2">
-                  <div className="me-4">
-                    <h4>Posts</h4>
-                    <p>{posts.length}</p>
-                  </div>
-                  <div>
-                    <h4>Friends</h4>
-                    <p>{friendsCount}</p>
-                  </div>
+
+                <div className="mb-3">
+                  <label htmlFor="bioTextarea" className="form-label" >Biography</label>
+                  <textarea
+                    id="bioTextarea"
+                    className="form-control"
+                    rows="3"
+                    value={bio}
+                    onChange={handleBioChange}
+                  ></textarea>
                 </div>
-                <p>{user.Bio}</p>
+
+                <button className="btn btn-primary" onClick={handleSave}>Save Changes</button>
               </div>
             </div>
+
             <div>
               <h4>Posts</h4>
               <div className="row">
