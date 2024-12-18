@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { getPostById, getCommentsByPost, deletePost, deleteComment } from '../supabase/api';
+import { getPostById, getCommentsByPost, deletePost, deleteComment, getUsuarioUsername  } from '../supabase/api';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 export const DetallePost = ({ postId, show, handleClose }) => {
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
+  const [username, setUsername] = useState('');
   const userUUID = JSON.parse(localStorage.getItem('userId'));
 
   useEffect(() => {
     const fetchPostDetails = async () => {
       const postData = await getPostById(postId);
       setPost(postData);
+
+      // Get the username of the post owner
+      const usernameData = await getUsuarioUsername(postData.UserUUID);
+      setUsername(usernameData[0].UserName);
 
       const commentsData = await getCommentsByPost(postId);
       setComments(commentsData);
@@ -58,7 +63,7 @@ export const DetallePost = ({ postId, show, handleClose }) => {
               {post && (
                 <div className="card w-100 mb-3">
                   <div className="card-header d-flex justify-content-between align-items-center">
-                    @{post.UserUUID}
+                    @{username}
                     {post.UserUUID === userUUID && (
                       <button className="btn btn-danger btn-sm" onClick={handleDeletePost}>
                         <i className="bi bi-trash3"></i>
@@ -81,8 +86,7 @@ export const DetallePost = ({ postId, show, handleClose }) => {
                       <strong>@{comment.UserName}</strong>
                       <div>{comment.Contenido}</div>
                     </div>
-                    {/* Changed condition: Check if post owner is the logged-in user */}
-                    {post && post.UserUUID === userUUID && (
+                    {post.UserUUID === userUUID && (
                       <button className="btn btn-danger btn-sm mt-2" onClick={() => handleDeleteComment(comment.id)}>
                         <i className="bi bi-trash3"></i>
                       </button>

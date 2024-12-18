@@ -576,10 +576,10 @@ export const getPostById = async (postId) => {
 // Eliminar post y su archivo relacionado
 export const deletePost = async (postId) => {
   try {
-    // Obtener el post para obtener el PostPath
+    // Get the post to obtain UserUUID and PostPath
     const { data: post, error: postError } = await supabase
       .from('Posts')
-      .select('PostPath')
+      .select('PostPath, UserUUID')
       .eq('id', postId)
       .single();
 
@@ -587,16 +587,24 @@ export const deletePost = async (postId) => {
       throw postError;
     }
 
-    // Eliminar el archivo del bucket
+    // Extract the full storage path from the URL
+    // Example URL: https://uxiytxuyozhaolqjauzv.supabase.co/storage/v1/object/public/Posts/UserUUID/UserUUID_1.jpg
+    const urlParts = post.PostPath.split('/Posts/');
+    if (urlParts.length < 2) {
+      throw new Error('Invalid PostPath format');
+    }
+    const storagePath = urlParts[1]; // Gets "UserUUID/UserUUID_1.jpg"
+
+    // Delete the file from storage
     const { error: storageError } = await supabase.storage
       .from('Posts')
-      .remove([post.PostPath]);
+      .remove([storagePath]);
 
     if (storageError) {
       throw storageError;
     }
 
-    // Eliminar el post de la base de datos
+    // Delete the post from the database
     const { error: deleteError } = await supabase
       .from('Posts')
       .delete()
