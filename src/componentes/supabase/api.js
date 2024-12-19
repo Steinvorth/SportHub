@@ -202,16 +202,21 @@ export const getFriends = async (userUUID) => {
   try {
     const { data, error } = await supabase
       .from('Amigos')
-      .select('AmigoUUID, Usuarios!AmigoUUID(UserName)')
-      .eq('UserUUID', userUUID);
+      .select(`
+        AmigoUUID,
+        UserUUID,
+        Amigo:Usuarios!AmigoUUID(UserName),
+        Usuario:Usuarios!UserUUID(UserName)
+      `)
+      .or(`UserUUID.eq.${userUUID},AmigoUUID.eq.${userUUID}`);
 
     if (error) {
       throw error;
     }
 
     return data.map(friend => ({
-      User_Auth_Id: friend.AmigoUUID,
-      UserName: friend.Usuarios.UserName
+      User_Auth_Id: friend.UserUUID === userUUID ? friend.AmigoUUID : friend.UserUUID,
+      UserName: friend.UserUUID === userUUID ? friend.Amigo.UserName : friend.Usuario.UserName
     }));
   } catch (error) {
     console.error('Error obteniendo amigos:', error.message);
@@ -573,6 +578,54 @@ export const getPostById = async (postId) => {
   }
 };
 
+// Eliminar post y su archivo relacionado
+export const deletePost = async (postId) => {
+  try {
+    // Get the post to obtain UserUUID and PostPath
+    const { data: post, error: postError } = await supabase
+      .from('Posts')
+      .select('PostPath, UserUUID')
+      .eq('id', postId)
+      .single();
+
+    if (postError) {
+      throw postError;
+    }
+
+    // Extract the full storage path from the URL
+    // Example URL: https://uxiytxuyozhaolqjauzv.supabase.co/storage/v1/object/public/Posts/UserUUID/UserUUID_1.jpg
+    const urlParts = post.PostPath.split('/Posts/');
+    if (urlParts.length < 2) {
+      throw new Error('Invalid PostPath format');
+    }
+    const storagePath = urlParts[1]; // Gets "UserUUID/UserUUID_1.jpg"
+
+    // Delete the file from storage
+    const { error: storageError } = await supabase.storage
+      .from('Posts')
+      .remove([storagePath]);
+
+    if (storageError) {
+      throw storageError;
+    }
+
+    // Delete the post from the database
+    const { error: deleteError } = await supabase
+      .from('Posts')
+      .delete()
+      .eq('id', postId);
+
+    if (deleteError) {
+      throw deleteError;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error eliminando post:', error.message);
+    return false;
+  }
+};
+
 // Eliminar comentario
 export const deleteComment = async (commentId) => {
   try {
@@ -588,25 +641,6 @@ export const deleteComment = async (commentId) => {
     return data;
   } catch (error) {
     console.error('Error eliminando comentario:', error.message);
-    return null;
-  }
-};
-
-// Eliminar post
-export const deletePost = async (postId) => {
-  try {
-    const { data, error } = await supabase
-      .from('Posts')
-      .delete()
-      .eq('id', postId);
-
-    if (error) {
-      throw error;
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Error eliminando post:', error.message);
     return null;
   }
 };
@@ -801,5 +835,3 @@ export const deleteUser = async (userUUID) => {
     }
     return { success: true, message: 'Cuenta eliminada con éxito' };
 }
-
-

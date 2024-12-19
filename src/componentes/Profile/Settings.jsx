@@ -10,12 +10,13 @@ export const Settings = () => {
 
     useEffect(() => {
         const fetchUserData = async () => {
-          const userData = await getUsuarioByUUID(userUUID);
-          setUser(userData);
+        const userData = await getUsuarioByUUID(userUUID);
+        setUser(userData);
         };
         fetchUserData();
     }, [userUUID]);
 
+    //MÉTODO PARA ELIMINAR EL USUARIO DE LA BASE DE DATOS
     const handleDeleteAccount = async () => {
         const result = await Swal.fire({
             title: 'Eliminar Cuenta',
@@ -96,6 +97,7 @@ export const Settings = () => {
                     {activeSection === 'delete' && (
                         <div id="delete-account-settings" className="mt-3">
                             <p>Para eliminar tu cuenta, haz clic en el botón de abajo. Se te pedirá confirmación.</p>
+                            <i className="bi bi-exclamation-lg text-danger fs-3 mt-5"></i>
                             <button
                                 className="btn btn-danger"
                                 onClick={handleDeleteAccount}
@@ -106,7 +108,15 @@ export const Settings = () => {
                     )}
                     {activeSection === 'change-password' && (
                         <div id="change-password-settings" className="mt-3">
-                            <p>Aquí podrás cambiar tu contraseña. (Detalles por implementar)</p>
+                            <p>Si desea hacer un cambio de contraseña, pulse la siguiente opción</p> <hr />
+                            <Link to='../ResetPassword'>
+                            <button
+                                className="btn btn-warning"
+                                
+                            >
+                                Cambiar Contraseña
+                            </button>
+                            </Link>
                         </div>
                     )}
                     {activeSection === 'privacy' && (
