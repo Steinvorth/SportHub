@@ -3,7 +3,7 @@ import supabase from '../supabase/supabase';
 import { addUsuario, SetRole, getRole, getRoleName } from '../supabase/api';
 
 export const Login = ({ onLoginSuccess }) => {
-  const [isSignUp, setIsSignUp] = useState(false); //controlamos si se selecciona sign up o login
+  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -16,26 +16,15 @@ export const Login = ({ onLoginSuccess }) => {
 
     try {
       if (isSignUp) {
-        // Sign up
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
+        const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
 
-        // Guardamos el access token de Supabase
         localStorage.setItem('user', JSON.stringify(data.session.access_token));
-
-        // Guardamos el uuid del usuario
         localStorage.setItem('userId', JSON.stringify(data.user.id));
 
-        // Agregamos el usuario a la tabla Usuarios
         await addUsuario(data.user.id, email);
-
-        // Asignar rol por defecto "Usuario"
         await SetRole(data.user.id);
 
-        // Obtener y guardar el rol del usuario
         const roleData = await getRole(data.user.id);
         if (roleData) {
           const roleNameData = await getRoleName(roleData.IdRole);
@@ -43,27 +32,17 @@ export const Login = ({ onLoginSuccess }) => {
         }
 
         setMessage('Account created successfully');
-        onLoginSuccess(); // Mandamos devuelta al home
+        onLoginSuccess();
       } else {
-        // Log in
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) {
           setError(error.message);
           throw error;
         }
 
-        console.log(data);
-
-        // Guardamos el access token de Supabase
         localStorage.setItem('user', JSON.stringify(data.session.access_token));
-
-        // Guardamos el uuid del usuario
         localStorage.setItem('userId', JSON.stringify(data.user.id));
 
-        // Obtener y guardar el rol del usuario
         const roleData = await getRole(data.user.id);
         if (roleData) {
           const roleNameData = await getRoleName(roleData.IdRole);
@@ -71,47 +50,285 @@ export const Login = ({ onLoginSuccess }) => {
         }
 
         setMessage('Logged in successfully!');
-        onLoginSuccess(); // Mandamos devuelta al home
+        onLoginSuccess();
       }
     } catch (error) {
       setError(error.message);
     }
   };
 
+  const handleGoogleSignIn = () => {
+    console.log("Sign In with Google clickeado (sin lógica implementada)");
+  };
+
   return (
-    <div className="d-flex align-items-center" style={{ height: '100vh', backgroundColor: '#181A1B', gap: '10px' }}>
-      <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', marginLeft: '400px' }}>
-        <img src="Images/LoginIMG.png" alt="Imagen Login" style={{ maxWidth: '525px', maxHeight: '525px' }} />
+    <div style={{ display: 'flex', height: '100vh', fontFamily: 'sans-serif', overflow: 'hidden' }}>
+      {/* Lado Izquierdo (Formulario + Logo) */}
+      <div style={{ flex: 1, backgroundColor: '#fff', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '0 20px' }}>
+        
+        <div style={{
+          backgroundColor: '#fff',
+          borderRadius: '12px',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+          padding: '50px',
+          width: '100%',
+          maxWidth: '450px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center'
+        }}>
+          <img src="/Logo.png" alt="SportHub Logo" style={{ width: '200px', marginBottom: '40px' }} />
+
+          <h2 style={{ textAlign: 'center', marginBottom: '25px', fontSize: '2rem', fontWeight: '700', color: '#333' }}>
+            {isSignUp ? 'Welcome Aboard' : 'Welcome Back'}
+          </h2>
+
+          {error && <div style={{ color: '#000', backgroundColor: '#f8d7da', padding: '10px', marginBottom: '15px', borderRadius: '4px', width: '100%', fontSize: '0.9rem' }}>{error}</div>}
+          {message && <div style={{ color: '#000', backgroundColor: '#d1e7dd', padding: '10px', marginBottom: '15px', borderRadius: '4px', width: '100%', fontSize: '0.9rem' }}>{message}</div>}
+
+          <form onSubmit={handleAuth} style={{ width: '100%' }}>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              style={{
+                width: '100%',
+                padding: '16px',
+                marginBottom: '20px',
+                border: '1px solid #ccc',
+                borderRadius: '6px',
+                fontSize: '1rem'
+              }}
+            />
+
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              style={{
+                width: '100%',
+                padding: '16px',
+                marginBottom: '20px',
+                border: '1px solid #ccc',
+                borderRadius: '6px',
+                fontSize: '1rem'
+              }}
+            />
+
+            <button
+              type="submit"
+              style={{
+                width: '100%',
+                padding: '16px',
+                marginBottom: '15px',
+                backgroundColor: '#000',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                fontSize: '1.1rem',
+                transition: 'background-color 0.3s'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#333'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#000'}
+            >
+              {isSignUp ? 'Sign Up' : 'Log In'}
+            </button>
+          </form>
+
+          {/* Botón de Google en ambos modos (antes estaba condicionado a !isSignUp, ahora se muestra siempre) */}
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            style={{
+              width: '100%',
+              padding: '16px',
+              backgroundColor: '#fff',
+              color: '#000',
+              border: '1px solid #ccc',
+              borderRadius: '6px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: '10px',
+              fontSize: '1rem'
+            }}
+          >
+            <img
+              src="https://img.icons8.com/color/16/000000/google-logo.png"
+              alt="Google logo"
+              style={{ marginRight: '10px' }}
+            />
+            Sign In with Google
+          </button>
+
+          <div style={{ textAlign: 'center', marginTop: '25px', fontSize: '0.9rem', color: '#555' }}>
+            <span>{isSignUp ? 'Already have an account?' : "Don't Have An Account?"}</span><br />
+            <span
+              onClick={() => setIsSignUp(!isSignUp)}
+              style={{ color: '#007bff', fontWeight: 'bold', cursor: 'pointer', margin: '5px 0', display: 'inline-block' }}
+            >
+              {isSignUp ? 'Log In' : 'Sign Up'}
+            </span>
+          </div>
+        </div>
       </div>
-      <div className="container mt-5" style={{ flex: 1, maxWidth: '400px', backgroundColor: '#202124', borderRadius: '12px', padding: '30px', boxShadow: '0 8px 20px rgba(0, 0, 0, 0.3)', color: '#FFF', marginRight: '350px' }}>
-        <h2 className="text-center" style={{ color: '#4A90E2', fontWeight: '700', marginBottom: '20px', fontSize: '1.8rem' }}>
-          {isSignUp ? 'Create Account' : 'Login'}
-        </h2>
-        {error && <div className="alert alert-danger" style={{ color: '#000000', fontWeight: 'bold' }}>{error}</div>}
-        {message && <div className="alert alert-success" style={{ color: '#5cb85c', fontWeight: 'bold' }}>{message}</div>}
-        <form onSubmit={handleAuth}>
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label" style={{ color: '#B0B3B8', fontWeight: 'bold' }}>Email address</label>
-            <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#3A3B3C', borderRadius: '8px', border: '1px solid #4A4B4C', padding: '10px' }}>
-              <img className="material-icons" src="Images/Mail_materialIcons.png" style={{ color: '#B0B3B8', marginRight: '10px', maxWidth: '30px', maxHeight: '30px' }} />
-              <input type="email" className="form-control" id="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} required style={{ border: 'none', backgroundColor: 'transparent', color: '#FFF', outline: 'none', flex: 1 }} />
-            </div>
-          </div>
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label" style={{ color: '#B0B3B8', fontWeight: 'bold' }}>Password</label>
-            <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#3A3B3C', borderRadius: '8px', border: '1px solid #4A4B4C', padding: '10px' }}>
-              <img className="material-icons" src="Images/PassW_materialIcons.png" style={{ color: '#000000', marginRight: '10px', maxWidth: '30px', maxHeight: '30px' }} />
-              <input type="password" className="form-control" id="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ border: 'none', backgroundColor: 'transparent', color: '#FFF', outline: 'none', flex: 1 }} />
-            </div>
-          </div>
-          <button type="submit" className="btn btn-primary w-100" style={{ backgroundColor: '#4A90E2', borderColor: '#4A90E2', borderRadius: '8px', fontWeight: 'bold', padding: '10px', transition: 'transform 1s ease, background-color 1s ease' }} onMouseEnter={(e) => { e.target.style.backgroundColor = '#357ABD'; e.target.style.transform = 'scale(1.05)'; }} onMouseLeave={(e) => { e.target.style.backgroundColor = '#4A90E2'; e.target.style.transform = 'scale(1)'; }}>
-            {isSignUp ? 'Sign Up' : 'Login'}
-          </button>
-        </form>
-        <div className="text-center mt-3">
-          <button type="button" className="btn btn-link" onClick={() => setIsSignUp(!isSignUp)} style={{ color: '#4A90E2', textDecoration: 'none', fontWeight: 'bold', transition: 'color 0.3s ease' }} onMouseEnter={(e) => (e.target.style.color = '#357ABD')} onMouseLeave={(e) => (e.target.style.color = '#4A90E2')}>
-            {isSignUp ? 'Ya tienes cuenta? Inicia sesion!' : "No tienes Cuenta? Inscribete!"}
-          </button>
+
+      {/* Lado Derecho: Collage con más espacio y mayor brillo */}
+      <div style={{ flex: 1, position: 'relative', backgroundColor: '#1a1a1a', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '60px' }}>
+        
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, minmax(200px, 1fr))',
+          gap: '40px',
+          width: '100%',
+          height: '100%',
+          overflowY: 'auto',
+          padding: '20px'
+        }}>
+          {/* Imágenes en el orden especificado */}
+          <img src="/volleyball.jpg" alt="Volleyball" style={{
+            width: '100%', borderRadius: '10px', 
+            boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+            filter: 'brightness(1.2) contrast(1.05)',
+            transition: 'transform 0.3s, filter 0.3s',
+            objectFit: 'cover',
+            height: 'auto'
+          }}
+          onMouseEnter={(e)=>{e.target.style.transform='scale(1.05)'; e.target.style.filter='brightness(1.3) contrast(1.1)'}}
+          onMouseLeave={(e)=>{e.target.style.transform='scale(1)'; e.target.style.filter='brightness(1.2) contrast(1.05)'}}
+          />
+
+          <img src="/tennis.jpg" alt="Tennis" style={{
+            width: '100%', borderRadius: '10px', 
+            boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+            filter: 'brightness(1.2) contrast(1.05)',
+            transition: 'transform 0.3s, filter 0.3s',
+            objectFit: 'cover',
+            height: 'auto'
+          }}
+          onMouseEnter={(e)=>{e.target.style.transform='scale(1.05)'; e.target.style.filter='brightness(1.3) contrast(1.1)'}}
+          onMouseLeave={(e)=>{e.target.style.transform='scale(1)'; e.target.style.filter='brightness(1.2) contrast(1.05)'}}
+          />
+
+          <img src="/nadal.jpg" alt="Nadal" style={{
+            width: '100%', borderRadius: '10px', 
+            boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+            filter: 'brightness(1.2) contrast(1.05)',
+            transition: 'transform 0.3s, filter 0.3s',
+            objectFit: 'cover',
+            height: 'auto'
+          }}
+          onMouseEnter={(e)=>{e.target.style.transform='scale(1.05)'; e.target.style.filter='brightness(1.3) contrast(1.1)'}}
+          onMouseLeave={(e)=>{e.target.style.transform='scale(1)'; e.target.style.filter='brightness(1.2) contrast(1.05)'}}
+          />
+
+          <img src="/ski.jpg" alt="Ski" style={{ 
+            width: '100%', borderRadius: '10px', 
+            boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+            filter: 'brightness(1.2) contrast(1.05)',
+            transition: 'transform 0.3s, filter 0.3s',
+            objectFit: 'cover'
+          }} 
+          onMouseEnter={(e)=>{e.target.style.transform='scale(1.05)'; e.target.style.filter='brightness(1.3) contrast(1.1)'}}
+          onMouseLeave={(e)=>{e.target.style.transform='scale(1)'; e.target.style.filter='brightness(1.2) contrast(1.05)'}}
+          />
+
+          <img src="/boxing.jpg" alt="Boxing" style={{
+            width: '100%', borderRadius: '10px', 
+            boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+            filter: 'brightness(1.2) contrast(1.05)',
+            transition: 'transform 0.3s, filter 0.3s',
+            objectFit: 'cover'
+          }}
+          onMouseEnter={(e)=>{e.target.style.transform='scale(1.05)'; e.target.style.filter='brightness(1.3) contrast(1.1)'}}
+          onMouseLeave={(e)=>{e.target.style.transform='scale(1)'; e.target.style.filter='brightness(1.2) contrast(1.05)'}}
+          />
+
+          <img src="/pele.jpg" alt="Pele" style={{
+            width: '100%', borderRadius: '10px', 
+            boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+            filter: 'brightness(1.2) contrast(1.05)',
+            transition: 'transform 0.3s, filter 0.3s',
+            objectFit: 'cover'
+          }}
+          onMouseEnter={(e)=>{e.target.style.transform='scale(1.05)'; e.target.style.filter='brightness(1.3) contrast(1.1)'}}
+          onMouseLeave={(e)=>{e.target.style.transform='scale(1)'; e.target.style.filter='brightness(1.2) contrast(1.05)'}}
+          />
+
+          <img src="/bike.jpg" alt="Bike" style={{
+            width: '100%', borderRadius: '10px', 
+            boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+            filter: 'brightness(1.2) contrast(1.05)',
+            transition: 'transform 0.3s, filter 0.3s',
+            objectFit: 'cover'
+          }}
+          onMouseEnter={(e)=>{e.target.style.transform='scale(1.05)'; e.target.style.filter='brightness(1.3) contrast(1.1)'}}
+          onMouseLeave={(e)=>{e.target.style.transform='scale(1)'; e.target.style.filter='brightness(1.2) contrast(1.05)'}}
+          />
+
+          <img src="/bike2.jpg" alt="Bike2" style={{
+            width: '100%', borderRadius: '10px', 
+            boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+            filter: 'brightness(1.2) contrast(1.05)',
+            transition: 'transform 0.3s, filter 0.3s',
+            objectFit: 'cover'
+          }}
+          onMouseEnter={(e)=>{e.target.style.transform='scale(1.05)'; e.target.style.filter='brightness(1.3) contrast(1.1)'}}
+          onMouseLeave={(e)=>{e.target.style.transform='scale(1)'; e.target.style.filter='brightness(1.2) contrast(1.05)'}}
+          />
+
+          <img src="/surf.jpg" alt="Surf" style={{
+            width: '100%', borderRadius: '10px', 
+            boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+            filter: 'brightness(1.2) contrast(1.05)',
+            transition: 'transform 0.3s, filter 0.3s',
+            objectFit: 'cover'
+          }}
+          onMouseEnter={(e)=>{e.target.style.transform='scale(1.05)'; e.target.style.filter='brightness(1.3) contrast(1.1)'}}
+          onMouseLeave={(e)=>{e.target.style.transform='scale(1)'; e.target.style.filter='brightness(1.2) contrast(1.05)'}}
+          />
+          
+          <img src="/kobe.jpg" alt="Kobe" style={{
+            width: '100%', borderRadius: '10px', 
+            boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+            filter: 'brightness(1.2) contrast(1.05)',
+            transition: 'transform 0.3s, filter 0.3s',
+            objectFit: 'cover'
+          }}
+          onMouseEnter={(e)=>{e.target.style.transform='scale(1.05)'; e.target.style.filter='brightness(1.3) contrast(1.1)'}}
+          onMouseLeave={(e)=>{e.target.style.transform='scale(1)'; e.target.style.filter='brightness(1.2) contrast(1.05)'}}
+          />
+
+          <img src="/ski2.jpg" alt="Ski2" style={{
+            width: '100%', borderRadius: '10px', 
+            boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+            filter: 'brightness(1.2) contrast(1.05)',
+            transition: 'transform 0.3s, filter 0.3s',
+            objectFit: 'cover'
+          }}
+          onMouseEnter={(e)=>{e.target.style.transform='scale(1.05)'; e.target.style.filter='brightness(1.3) contrast(1.1)'}}
+          onMouseLeave={(e)=>{e.target.style.transform='scale(1)'; e.target.style.filter='brightness(1.2) contrast(1.05)'}}
+          />
+
+          <img src="/swim.jpg" alt="Swim" style={{
+            width: '100%', borderRadius: '10px', 
+            boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
+            filter: 'brightness(1.2) contrast(1.05)',
+            transition: 'transform 0.3s, filter 0.3s',
+            objectFit: 'cover'
+          }}
+          onMouseEnter={(e)=>{e.target.style.transform='scale(1.05)'; e.target.style.filter='brightness(1.3) contrast(1.1)'}}
+          onMouseLeave={(e)=>{e.target.style.transform='scale(1)'; e.target.style.filter='brightness(1.2) contrast(1.05)'}}
+          />
+          
         </div>
       </div>
     </div>
