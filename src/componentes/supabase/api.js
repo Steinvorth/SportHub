@@ -202,16 +202,21 @@ export const getFriends = async (userUUID) => {
   try {
     const { data, error } = await supabase
       .from('Amigos')
-      .select('AmigoUUID, Usuarios!AmigoUUID(UserName)')
-      .eq('UserUUID', userUUID);
+      .select(`
+        AmigoUUID,
+        UserUUID,
+        Amigo:Usuarios!AmigoUUID(UserName),
+        Usuario:Usuarios!UserUUID(UserName)
+      `)
+      .or(`UserUUID.eq.${userUUID},AmigoUUID.eq.${userUUID}`);
 
     if (error) {
       throw error;
     }
 
     return data.map(friend => ({
-      User_Auth_Id: friend.AmigoUUID,
-      UserName: friend.Usuarios.UserName
+      User_Auth_Id: friend.UserUUID === userUUID ? friend.AmigoUUID : friend.UserUUID,
+      UserName: friend.UserUUID === userUUID ? friend.Amigo.UserName : friend.Usuario.UserName
     }));
   } catch (error) {
     console.error('Error obteniendo amigos:', error.message);
