@@ -7,6 +7,7 @@ import { Friends } from './Profile/Friends';
 import { ManagePost } from './PostCreation/ManagePost';
 import { EditProfile } from './Profile/EditProfile';
 import { Settings } from './Profile/Settings';
+import { ResetPassword } from './Profile/ResetPassword';
 import { AdminDashboard } from './Admin/AdminDashboard';
 import { AdministradorPostReview } from './Admin/AdministradorPostReview';
 
@@ -32,6 +33,7 @@ export const App = () => {
           <Route path="/EditProfile" element={<EditProfile />} />
           <Route path="/Settings" element={<Settings />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/ResetPassword" element={<ResetPassword />} />
           <Route path="/admin/review/:postId" element={<AdministradorPostReview />} />
         </Routes>
       </Router>

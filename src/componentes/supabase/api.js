@@ -830,5 +830,3 @@ export const deleteUser = async (userUUID) => {
     }
     return { success: true, message: 'Cuenta eliminada con éxito' };
 }
-
-
