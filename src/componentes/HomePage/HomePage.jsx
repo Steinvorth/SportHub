@@ -1,120 +1,159 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { PostCards } from './PostCards';
-import 'bootstrap-icons/font/bootstrap-icons.css'; // Import Bootstrap icons
-
-/*
- * Este es el Home Page de La red Social, como por decir cuando uno abre Instagram.
-*/
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import './Global.css';
+import logo from "./main_logo.png"; // Importa la imagen
 
 export const HomePage = () => {
-  //use state para manejar el auth token
-  var authUserToken = localStorage.getItem('user');
-  const [authToken, SetAuthToken] = useState(authUserToken);   
+  const navigate = useNavigate();
 
-  //User UUID para poder hacer el crud relacionado a la cuenta
-  var userId = localStorage.getItem('userId');
-  const [userIdToken, SetUserIdToken] = useState(userId);
-
-  //use state para manejar el link de login, si hay auth token, vamos al perfil. Si no, vamos a login/sign up.
-  const [loginLink, setLoginLink] = useState(authToken === null ? '/login' : '/profile');
-
-  // Use state to manage the user role
+  const [authToken, setAuthToken] = useState(localStorage.getItem('user'));
+  const [userIdToken, setUserIdToken] = useState(localStorage.getItem('userId'));
   const [userRole, setUserRole] = useState(localStorage.getItem('userRole'));
-
-  // State to manage the selected post type
   const [postType, setPostType] = useState('explorar');
+  const [showScrollButton, setShowScrollButton] = useState(false);
 
+  const loginLink = authToken ? '/profile' : '/login';
 
-  // revisamos si el usuario tiene cuenta al ir a los amigos, sino lo mandamos al login
   useEffect(() => {
     if (postType === 'amigos' && !userIdToken) {
-      window.location.href = '/login';
+      navigate('/login');
     }
-  }, [postType, userIdToken, history]);
+  }, [postType, userIdToken, navigate]);
 
-  //funcion para hacer el logout, solamente borramos el token y userId de la local storage.
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollButton(window.scrollY > 300); // Muestra el botón después de 300px de desplazamiento
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('userId');
     localStorage.removeItem('userRole');
-    SetAuthToken(null);
-    SetUserIdToken(null);
+    setAuthToken(null);
+    setUserIdToken(null);
     setUserRole(null);
+    navigate('/');
+  };
 
-    //refresh
-    window.location.href = '/';
-  }
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
-    <>
-      {/* Navbar */}
-      <nav className="navbar navbar-expand-lg navbar-light bg-light d-flex flex-column">
+    <div className="d-flex">
+      {/* Sidebar - Lado izquierdo */}
+      <div className="sidebar bg-primary text-white d-flex flex-column p-3" style={{ width: '220px', height: '100vh' }}>
+        {/* Logo que redirige a la página principal */}
+        <img
+          src={logo}
+          alt="Logo"
+          className="logo mx-4 mb-3"
+          style={{ cursor: 'pointer' }}
+          onClick={() => navigate('/')} // Redirección al hacer clic en el logo
+        />
+
+        <h3 className="text-center">Sport Hub</h3>
+        <ul className="nav flex-column">
+          <li className="nav-item">
+            <Link to="/" className="nav-link text-white">
+              <i className="bi bi-house-door"></i> Inicio
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link to="/explorar" className="nav-link text-white" onClick={() => setPostType('explorar')}>
+              <i className="bi bi-search"></i> Explorar
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link to="/create" className="nav-link text-white">
+              <i className="bi bi-pencil-square"></i> Crear
+            </Link>
+          </li>
+          {authToken && (
+            <li className="nav-item">
+              <Link to="/logout" className="nav-link text-white" onClick={logout}>
+                <i className="bi bi-box-arrow-right"></i> Cerrar sesión
+              </Link>
+            </li>
+          )}
+        </ul>
+      </div>
+
+      {/* Main Content */}
+      <div className="main-content">
         <div className="container">
-          <a className="navbar-brand" href="/">Sport Hub</a>
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav ms-auto">
-              {authToken && (
-                <li>
-                  <Link to="/post" className="btn btn-outline-primary ms-2">
-                    <i className="bi bi-card-image"></i>
-                  </Link>
-                </li>
-              )}
-              <li className="nav-item ms-2">
-                <Link to={loginLink} className="btn btn-outline-primary">
-                  <i className="bi bi-person-circle"></i> { authToken === null ? 'Login / Sign Up' : '' }
-                </Link>
-              </li>
-              {authToken && (
-                <li>
-                  <Link to="/friends" className="btn btn-outline-primary ms-2">
-                    <i className="bi bi-people-fill"></i>
-                  </Link>
-                </li>
-              )}
-              {authToken && (
-                <li className="nav-item ms-2">
-                  <button className="btn btn-outline-primary" onClick={logout}>
-                    <i className="bi bi-box-arrow-right"></i>
-                  </button>                  
-                </li>                
-              )}
-              {userRole === 'Admin' && (
-                <li className="nav-item ms-2">
-                  <Link to="/admin" className="btn btn-outline-primary">
-                    <i className="bi bi-speedometer2"></i> Administrar
-                  </Link>
-                </li>
-              )}
-            </ul>
+          <div className="row justify-content-center">
+            <div className="col-12 col-md-8">
+              <PostCards postType={postType} />
+              <button
+                className="btn btn-primary my-4"
+                style={{ width: '100%' }}
+                onClick={scrollToTop}
+              >
+                Volver al inicio del feed
+              </button>
+            </div>
           </div>
         </div>
-      </nav>
-
-      {/* Barra Para toggle Content entre Following, Explorar y Amigos */}
-      <div className="container mt-3 d-flex justify-content-center">
-        <div className="btn-group col-12 col-md-6" role="group" aria-label="Basic radio toggle button group">
-          <input type="radio" className="btn-check" name="btnradio" id="btnradio1" autoComplete="off" defaultChecked onChange={() => setPostType('explorar')} />
-          <label className="btn btn-primary flex-fill text-center" htmlFor="btnradio1">Explorar</label>
-
-          <input type="radio" className="btn-check" name="btnradio" id="btnradio2" autoComplete="off" onChange={() => setPostType('amigos')} />
-          <label className="btn btn-primary flex-fill text-center" htmlFor="btnradio2">Amigos</label>
-
-          <input type="radio" className="btn-check" name="btnradio" id="btnradio3" autoComplete="off" />
-          <label className="btn btn-primary flex-fill text-center" htmlFor="btnradio3">Eventos</label>
-        </div>
       </div>
 
-      {/* Main Content - Home Feed */}   
-      <div className="container d-flex justify-content-center mt-3 ">
-        <div className='col-12 col-md-6'>
-          <PostCards postType={postType} />
-        </div>
+      {/* Sidebar Derecho */}
+      <div className="right sidebar bg-primary text-white d-flex flex-column p-3">
+        <h3 className="text-center">Opciones</h3>
+        <ul className="nav flex-column">
+          {authToken && (
+            <>
+              <li className="nav-item">
+                <Link to="/profile" className="nav-link text-white">
+                  <i className="bi bi-person-circle"></i> Perfil
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/posts" className="nav-link text-white">
+                  <i className="bi bi-file-earmark-post"></i> Posts
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/saved" className="nav-link text-white">
+                  <i className="bi bi-bookmark"></i> Guardados
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/liked" className="nav-link text-white">
+                  <i className="bi bi-heart"></i> Me gusta
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/settings" className="nav-link text-white">
+                  <i className="bi bi-gear"></i> Configuración
+                </Link>
+              </li>
+            </>
+          )}
+          {userRole === 'Admin' && (
+            <li className="nav-item">
+              <Link to="/admin" className="nav-link text-white">
+                <i className="bi bi-speedometer2"></i> Admin
+              </Link>
+            </li>
+          )}
+        </ul>
       </div>
-    </>
+
+      {/* Botón flotante para volver al inicio */}
+      {showScrollButton && (
+        <div className="scroll-to-top-fixed">
+          <button onClick={scrollToTop} className="btn btn-primary">
+            ↑
+          </button>
+        </div>
+      )}
+    </div>
   );
 };
