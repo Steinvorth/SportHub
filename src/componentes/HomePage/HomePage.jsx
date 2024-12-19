@@ -12,12 +12,22 @@ export const HomePage = () => {
   const [userIdToken, setUserIdToken] = useState(localStorage.getItem('userId'));
   const [userRole, setUserRole] = useState(localStorage.getItem('userRole'));
   const [postType, setPostType] = useState('explorar');
+  const [showScrollButton, setShowScrollButton] = useState(false);
 
   useEffect(() => {
     if (postType === 'amigos' && !userIdToken) {
       navigate('/login');
     }
   }, [postType, userIdToken, navigate]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollButton(window.scrollY > 300); // Muestra el botón después de 300px de desplazamiento
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const logout = () => {
     localStorage.removeItem('user');
@@ -27,6 +37,10 @@ export const HomePage = () => {
     setUserIdToken(null);
     setUserRole(null);
     navigate('/');
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -127,6 +141,15 @@ export const HomePage = () => {
           )}
         </ul>
       </div>
+
+      {/* Botón flotante para volver al inicio */}
+      {showScrollButton && (
+        <div className="scroll-to-top-fixed">
+          <button onClick={scrollToTop} className="btn btn-primary">
+            ↑
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -127,40 +127,67 @@
   .sidebar-icon {
     margin-right: 8px;
   }
-  .scroll-to-top-fixed {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000; /* Asegura que esté por encima del contenido */
-  }
-  
-  .scroll-to-top-fixed {
+  /* Botón flotante para volver al inicio */
+.scroll-to-top-fixed {
     position: fixed;
     bottom: 20px;
     right: 20px;
     z-index: 1000;
   }
   
-  .scroll-to-top-fixed .btn {
-    background-color: #005f73;
+  .scroll-to-top-fixed button {
+    background-color: #0056b3;
     color: white;
     border: none;
     padding: 10px 15px;
     border-radius: 50%;
-    font-size: 18px;
+    font-size: 1.5rem;
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.3s ease;
   }
   
-  .scroll-to-top-fixed .btn:hover {
-    background-color: #94d2bd;
+  .scroll-to-top-fixed button:hover {
+    background-color: #003d80;
     transform: scale(1.1);
   }
-  .scroll-to-top-fixed {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
+  
+  /* Ajustes responsivos */
+  @media (max-width: 768px) {
+    .sidebar,
+    .right.sidebar {
+      width: 180px;
+    }
+  
+    .main-content {
+      margin-left: 180px;
+      width: calc(100% - 360px);
+    }
+  
+    .sidebar .logo {
+      max-width: 120px;
+    }
+  
+    .sidebar h3,
+    .right.sidebar h3 {
+      font-size: 16px;
+    }
+  
+    .sidebar .nav-item .nav-link,
+    .right.sidebar .nav-item .nav-link {
+      font-size: 14px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .sidebar,
+    .right.sidebar {
+      display: none;
+    }
+  
+    .main-content {
+      margin-left: 0;
+      width: 100%;
+    }
   }
   
