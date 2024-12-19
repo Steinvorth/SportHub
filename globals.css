@@ -1,0 +1,537 @@
+/* ------------------------------------------------------------------------------------------- */
+
+
+
+/* AUTHPAGE AND AUTHFORM */
+/* Container for the entire authentication page */
+.auth-page {
+    display: flex; /* Use flexbox to create a flexible layout */
+    height: 100vh; /* Full viewport height */
+    overflow: hidden; /* Hide overflow to ensure no scrollbars appear */
+  }
+  
+  /* Style for the left side of the page with the image */
+  .auth-main-image {
+    flex: 1; /* Take up one part of the flex container */
+    background-image: url('/main_collage.jpg'); /* Background image */
+    background-size: cover; /* Cover the entire container with the image */
+    background-position: center; /* Center the image within the container */
+  }
+  
+  /* Style for the right side of the page where the form is located */
+  .auth-form-container {
+    flex: 1; /* Take up the remaining part of the flex container */
+    display: flex; /* Use flexbox for centering content */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally */
+    justify-content: center; /* Center items vertically */
+    background-color: #fff; /* White background color */
+    padding: 20px; /* Padding around the content */
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1); /* Shadow on the left side */
+  }
+  
+  /* Style for the form container */
+  .auth-form {
+    width: 100%; /* Full width of the container */
+    max-width: 400px; /* Maximum width of the form */
+    display: flex; /* Use flexbox for vertical stacking */
+    flex-direction: column; /* Stack form elements vertically */
+  }
+  
+  /* Style for the form heading */
+  .auth-form h2 {
+    text-align: center; /* Center the text */
+    margin-bottom: 20px; /* Space below the heading */
+  }
+  
+  .auth-form h6 {
+    text-align: center; /* Center the text */
+    margin-bottom: 20px; /* Space below the heading */
+  }
+  
+  .auth-form p {
+    text-align: center; /* Center the text */
+    margin-bottom: 20px; /* Space below the heading */
+  }
+  
+  .auth-form p:hover {
+    color: #007bff;
+  }
+  
+  /* Style for input fields in the form */
+  .auth-form input {
+    padding: 10px; /* Space inside the input field */
+    margin: 10px 0; /* Space between input fields */
+    border: 1px solid #ddd; /* Light gray border */
+    border-radius: 4px; /* Rounded corners */
+  }
+  
+  /* Style for the submit button */
+  .auth-button {
+    padding: 6px; /* Space inside the button */
+    background-color: #000000; /* Blue background color */
+    color: #fff; /* White text color */
+    border: none; /* Remove default border */
+    border-radius: 6px; /* Rounded corners */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    margin-bottom: 20px; /* Space below the heading */
+  }
+  
+  .google-button {
+    padding: 6px; /* Space inside the button */
+    border: none; /* Remove default border */
+    border-radius: 6px; /* Rounded corners */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    margin-bottom: 20px; /* Space below the heading */
+  }
+  
+  /* Style for the button on hover */
+  .auth-button button:hover {
+    background-color: #2d2f31; /* Darker blue when hovered */
+  }
+  
+  /* ------------------------------------------------------------------------------------------- */
+  /* FEED PAGE */
+  .feed-page {
+    display: flex; /* Use flexbox to align items horizontally */
+    height: 100vh; /* Full viewport height */
+  }
+  
+  /* ------------------------------------------------------------------------------------------- */
+  /* SIDEBAR */
+  .sidebar-left ul {
+    list-style: none;
+    padding: 0;
+    margin-left: 30px;
+  }
+  
+  .sidebar-left li {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .sidebar-icon {
+    width: 20px; /* Adjust size as needed */
+    height: 20px; /* Adjust size as needed */
+    margin-right: 10px; /* Space between icon and text */
+  }
+  
+  /* ------------------------------------------------------------------------------------------- */
+  /* SIDEBAR RIGHT */
+  .sidebar-right {
+    flex: 0.5; /* Take up one part of the flex container */
+    padding: 20px; /* Padding inside the sidebar */
+  }
+  
+  .sidebar-right h6 {
+    display: flex; /* Use flexbox to align items */
+    align-items: center; /* Center items vertically */
+    padding: 10px; /* Padding inside each list item */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    color: gray; /* Default color for non-active items */
+  }
+  
+  .sidebar-right h6.active {
+      font-weight: bold; /* Bold text for the active item */
+      color: black; /* Change color if needed */
+  }
+  
+  /* ------------------------------------------------------------------------------------------- */
+  /* LOGO */
+  .logo {
+    width: 150px; /* Fixed width for the logo */
+    margin-top: 15px;
+    cursor: pointer; /* Change cursor to pointer on hover */
+  }
+  
+  /* ------------------------------------------------------------------------------------------- */
+  /* POST */
+  .post {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px;
+    width: 300px; /* Set a fixed width for consistency */
+  }
+  
+  .post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .post-username {
+    font-weight: bold;
+    font-size: large;
+    cursor: pointer;
+  }
+  
+  .follow {
+    color: #007bff; /* White text color */
+    cursor: pointer;
+  }
+  
+  .post-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: cover;
+    margin: 0 auto;
+  }
+  
+  .post-actions {
+    display: flex;
+    justify-content: flex-start;
+    margin: 10px 0;
+  }
+  
+  .post-actions i {
+    cursor: pointer;
+  }
+  
+  .post-comment {
+    margin: 10px 0;
+  }
+  
+  .post-add-comment {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .post-add-comment input {
+    flex: 1;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .post-add-comment button {
+    padding: 5px 10px;
+    border: none;
+    background-color: #000000; /* Blue background color */
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .post-add-comment button:hover {
+    background-color: #2d2f31;
+  }
+  
+  .post-header {
+    display: flex;
+    
+  }
+  
+  .profile-picture {
+    width: 40px; /* Adjust size as needed */
+    height: 40px; /* Adjust size as needed */
+    border-radius: 50%;
+    cursor: pointer;
+  }  
+  
+  
+  /* ------------------------------------------------------------------------------------------- */
+  /* POSTGRID */
+  .post-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  /* ------------------------------------------------------------------------------------------- */
+  /* POSTS CONTAINER */
+  .post-grid {
+    display: flex;
+    flex-wrap: wrap; /* Wrap posts to the next line */
+    gap: 20px; /* Space between posts */
+  }
+  
+  
+  /* ------------------------------------------------------------------------------------------- */
+  /* MAIN CONTENT */
+  .main-content {
+    flex: 4; /* Take up the remaining space of the flex container */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 10px; /* Padding inside the content area */
+    background-color: #ffffff; /* White background color */
+    margin-top: 50px;
+  }
+  
+  .main-singlepost {
+    flex: 4; /* Take up the remaining space of the flex container */
+    padding: 10px; /* Padding inside the content area */
+    background-color: #ffffff; /* White background color */
+  }
+  
+  /* ------------------------------------------------------------------------------------------- */
+  /* PROFILE */
+  .profile-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+    overflow: hidden; /* Hide overflow to ensure no scrollbars appear */
+  }
+  
+  .profile-picture-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    justify-content: center; /* Center content horizontally */
+  }
+  
+  .profile-picture-section img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    margin-right: 20px;
+    flex-direction: column;
+  }
+  
+  .edit-profile-picture-button {
+    padding: 3px 10px;
+    border: none;
+    background-color: #d6d5d5; /* Blue background color */
+    color: black;
+    border-radius: 6px;
+    cursor: pointer;
+    flex-direction: column;
+  }
+  
+  .profile-picture-section h2 {
+    margin: 10px 0;
+    flex-direction: column;
+  }
+  
+  .profile-picture-section h6 {
+    margin: 10px 0;
+    flex-direction: column;
+  }
+  
+  .profile-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+  }
+  
+  .input-group {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .input-column {
+    display: flex;
+    flex-direction: column;
+    width: 48%;
+  }
+  
+  .input-column label {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .input-column input {
+    width: 100%;
+    padding: 6px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .input-select {
+    width: 100%;
+    height: 13%;
+    padding: 6px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .save-button {
+    padding: 5px 10px;
+    border: none;
+    background-color: #000000; /* Blue background color */
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 200px;
+  }
+  
+  .save-button:hover {
+    background-color: #2d2f31;
+  }
+  
+  /* ------------------------------------------------------------------------------------------- */
+  /* ICON */
+  .admin-icon  i {
+    width: 20px; /* Adjust size as needed */
+    height: 20px; /* Adjust size as needed */
+    margin-right: 10px; /* Space between icon and text */
+    cursor: pointer;
+  }
+  
+  .prof-picture {
+    width: flex; /* Adjust size as needed */
+    height: 70px; /* Adjust size as needed */
+  } 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  /* Ensure the comments section fills available space */
+  .comments-section {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  }
+  
+  /* Allow comments list to scroll */
+  .comments-list {
+  flex: 1; /* Makes the list scrollable */
+  overflow-y: auto; /* Allow scrolling for the comments */
+  border-bottom: 1px solid #ddd;
+  }
+  
+  /* Style for the comment input area */
+  .comment-input {
+  display: flex;
+  padding: 10px;
+  background-color: #fff; /* Ensure input area is visible */
+  position: sticky;
+  bottom: 0;
+  width: 100%; /* Full width of the right column */
+  margin-bottom: 15px;
+  }
+  
+  /* Style for the comment input field */
+  .comment-input input {
+  flex: 1; /* Flex grow factor to take up available space */
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-right: 10px;
+  }
+  
+  /* Style for the post button */
+  .comment-input button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
