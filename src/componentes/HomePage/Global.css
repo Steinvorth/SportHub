@@ -157,4 +157,10 @@
     background-color: #94d2bd;
     transform: scale(1.1);
   }
+  .scroll-to-top-fixed {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
   
