@@ -75,12 +75,11 @@ export const getPostsDeAmigos = async (userUUID) => {
 
     const friendUUIDs = friends.map(friend => friend.User_Auth_Id);
 
-    // Obtener posts privados de amigos
+    // Obtener posts de amigos
     const { data: postsData, error: postsError } = await supabase
       .from('Posts')
       .select('*')
       .in('UserUUID', friendUUIDs)
-      .eq('Privacidad', true);
 
     if (postsError) {
       throw postsError;
@@ -88,7 +87,7 @@ export const getPostsDeAmigos = async (userUUID) => {
 
     return postsData;
   } catch (error) {
-    console.error('Error obteniendo posts privados de amigos:', error.message);
+    console.error('Error obteniendo posts de amigos:', error.message);
     return [];
   }
 };
@@ -332,13 +331,15 @@ export const createPost = async (userUUID, description, privacy, postPath) => {
       ]);
 
     if (error) {
-      throw error;
+      console.error('Error creando post:', error.message);
+      return { data: null, success: false };
     }
 
-    return data;
+    console.log('Post creado con éxito:', data);
+    return { data, success: true };
   } catch (error) {
     console.error('Error creando post:', error.message);
-    return null;
+    return { data: null, success: false };
   }
 };
 

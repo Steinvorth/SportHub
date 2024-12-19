@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { createPost, uploadPostImage, getPostCountByUser } from '../supabase/api';
+import { useNavigate } from 'react-router-dom';
 
 export const ManagePost = ({ id }) => {
   const [picture, setPicture] = useState(null);
   const [description, setDescription] = useState('');
   const [privacy, setPrivacy] = useState('public');
   const [postUUID, setPostUUID] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const userUUID = JSON.parse(localStorage.getItem('userId'));
+  const navigate = useNavigate();
 
   // Generar UUID para el post al cargar el componente
   useEffect(() => {
@@ -38,6 +41,7 @@ export const ManagePost = ({ id }) => {
   // Manejar envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     let postPath = null;
     if (picture) {
@@ -46,9 +50,13 @@ export const ManagePost = ({ id }) => {
 
     const isPrivate = privacy === 'friends';
     const post = await createPost(userUUID, description, isPrivate, postPath);
-    if (post) {
-      console.log('Post created successfully:', post);
+    if (post.success) {
+      console.log('Post creado con éxito:', post);
+      navigate('/'); // Redirect to home page
+    } else {
+      console.error('Error al crear el post');
     }
+    setLoading(false);
   };
 
   return (
@@ -77,7 +85,15 @@ export const ManagePost = ({ id }) => {
               </select>
             </div>
             <a type="submit" className="btn btn-secondary me-2" href='/'>Volver</a>
-            <button type="submit" className="btn btn-primary">Publicar</button>
+            <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: '100px' }}>
+              {loading ? (
+                <div className="spinner-grow spinner-grow-sm" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              ) : (
+                'Publicar'
+              )}
+            </button>
           </form>
         </div>
       </div>
