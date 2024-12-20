@@ -11,6 +11,7 @@ import {
 } from '../supabase/api';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
+// Componente para mostrar los detalles de un post en un modal
 export const SearchPost = ({ postId, show, handleClose }) => {
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
@@ -20,6 +21,7 @@ export const SearchPost = ({ postId, show, handleClose }) => {
   const [likeCount, setLikeCount] = useState(0);
   const userUUID = JSON.parse(localStorage.getItem('userId'));
 
+  // obtener los detalles del post, comentarios y estado de likes
   useEffect(() => {
     const fetchPostDetails = async () => {
       const postData = await getPostById(postId);
@@ -43,6 +45,7 @@ export const SearchPost = ({ postId, show, handleClose }) => {
     }
   }, [postId, userUUID]);
 
+  // Maneja el envío de un nuevo comentario
   const handleCommentSubmit = async () => {
     if (newComment.trim() && userUUID) {
       await createComment(postId, userUUID, newComment);
@@ -52,6 +55,7 @@ export const SearchPost = ({ postId, show, handleClose }) => {
     }
   };
 
+  // Maneja el clic en el botón de "me gusta"
   const handleLikeClick = async () => {
     if (!userUUID) {
       window.location.href = '/login';
@@ -68,13 +72,14 @@ export const SearchPost = ({ postId, show, handleClose }) => {
     setIsLiked(!isLiked);
   };
 
+  // Renderiza las imágenes o videos del post
   const renderMedia = (postPath) => {
     const fileExtension = postPath.split('.').pop().toLowerCase();
     if (fileExtension === 'mp4') {
       return (
         <video className="img-fluid w-100" controls>
           <source src={postPath} type="video/mp4" />
-          Your browser does not support the video tag.
+          Tu navegador no soporta el elemento de video.
         </video>
       );
     }
@@ -82,6 +87,7 @@ export const SearchPost = ({ postId, show, handleClose }) => {
   };
 
   return (
+    // Modal para mostrar los detalles del post
     <div className={`modal fade ${show ? 'show' : ''}`} 
       style={{ 
         display: show ? 'block' : 'none',
@@ -102,7 +108,7 @@ export const SearchPost = ({ postId, show, handleClose }) => {
             <button type="button" className="btn-close" onClick={handleClose} aria-label="Close"></button>
           </div>
           <div className="modal-body d-flex">
-            {/* Left side - Post content */}
+            {/* Lado izquierdo - Contenido del post */}
             <div className="flex-grow-1" style={{ flexBasis: '60%' }}>
               {post && (
                 <div className="card w-100 mb-3 border-0" style={{ backgroundColor: '#fff' }}>
@@ -127,7 +133,7 @@ export const SearchPost = ({ postId, show, handleClose }) => {
               )}
             </div>
 
-            {/* Right side - Comments */}
+            {/* Lado derecho - Comentarios */}
             <div className="ms-3 d-flex flex-column" style={{ flexBasis: '40%' }}>
               <h5 style={{ color: '#212529' }}>Comentarios</h5>
               <div style={{ 
@@ -177,7 +183,7 @@ export const SearchPost = ({ postId, show, handleClose }) => {
             </div>
           </div>
         </div>
-      </div>
+      </div>  
     </div>
   );
 };

@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { searchPosts, searchUsers } from '../supabase/api';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { SearchPost } from './SearchPost';  // Update import
-import { SearchProfile } from './SearchProfile';  // Add this import
+import { SearchPost } from './SearchPost';  
+import { SearchProfile } from './SearchProfile';  
 
+// Componente de búsqueda para posts y usuarios
 export const Search = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [posts, setPosts] = useState([]);
@@ -12,9 +13,10 @@ export const Search = () => {
   const [loading, setLoading] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState(null);  // Add new state for profile modal
-  const [showProfileModal, setShowProfileModal] = useState(false);  // Add new state for profile modal
+  const [selectedUserId, setSelectedUserId] = useState(null);  
+  const [showProfileModal, setShowProfileModal] = useState(false);  
 
+  // realizar la búsqueda cuando cambia el término
   useEffect(() => {
     const performSearch = async () => {
       if (searchTerm.trim().length < 1) {
@@ -38,6 +40,7 @@ export const Search = () => {
     return () => clearTimeout(debounceTimer);
   }, [searchTerm]);
 
+  // Renderiza las imágenes o videos de los posts
   const renderMedia = (postPath) => {
     if (!postPath) return null;
     const fileExtension = postPath.split('.').pop().toLowerCase();
@@ -51,6 +54,7 @@ export const Search = () => {
     return <img src={postPath} alt="Post" className="img-fluid rounded" style={{ maxHeight: '200px' }} />;
   };
 
+  // Componente para mostrar cuando no hay resultados
   const EmptyState = ({ message }) => (
     <div className="text-center p-5" style={{ color: '#6c757d' }}>
       <i className="bi bi-search mb-3" style={{ fontSize: '2rem' }}></i>
@@ -58,22 +62,26 @@ export const Search = () => {
     </div>
   );
 
+  // Maneja el clic en un post para abrir el modal
   const handlePostClick = (postId) => {
     setSelectedPostId(postId);
     setShowModal(true);
   };
 
+  // Cierra el modal de post
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedPostId(null);
   };
 
-  const handleProfileClick = (userId) => {  // Add handlers for profile modal
+  // Maneja el clic en un perfil de usuario para abrir el modal
+  const handleProfileClick = (userId) => {  
     setSelectedUserId(userId);
     setShowProfileModal(true);
   };
 
-  const handleCloseProfileModal = () => {  // Add handlers for profile modal
+  // Cierra el modal de perfil de usuario
+  const handleCloseProfileModal = () => {  
     setShowProfileModal(false);
     setSelectedUserId(null);
   };
@@ -86,7 +94,7 @@ export const Search = () => {
       maxWidth: '100vw',
     }}>
       <div style={{ padding: '20px', minWidth: '95vw', maxWidth: '100vw' }}>
-        {/* Search Bar */}
+        {/* Barra de búsqueda */}
         <div className="card mb-4" style={{ 
           backgroundColor: '#fff',
           boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
@@ -121,7 +129,7 @@ export const Search = () => {
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="Search posts and users..."
+                    placeholder="Buscar posts y usuarios..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     style={{
@@ -147,7 +155,7 @@ export const Search = () => {
           </div>
         ) : (
           <>
-            {/* Users Section - Horizontal Scroll */}
+            {/* Sección de usuarios - Scroll horizontal */}
             <div className="card mb-4" style={{ 
               backgroundColor: '#fff',
               boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
@@ -156,12 +164,12 @@ export const Search = () => {
               width: '100%'
             }}>
               <div className="card-body">
-                <h4 className="mb-4" style={{ color: '#212529', fontWeight: '600' }}>Users</h4>
+                <h4 className="mb-4" style={{ color: '#212529', fontWeight: '600' }}>Usuarios</h4>
                 <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                   <div style={{ 
                     display: 'flex',
                     gap: '1rem',
-                    paddingBottom: '1rem'  // Space for scrollbar
+                    paddingBottom: '1rem'
                   }}>
                     {users.length > 0 ? users.map(user => (
                       <div key={user.User_Auth_Id} style={{ minWidth: '250px' }}>
@@ -212,21 +220,21 @@ export const Search = () => {
                         </div>
                       </div>
                     )) : (
-                      <EmptyState message={searchTerm ? "No users found" : "Search for users"} />
+                      <EmptyState message={searchTerm ? "No se encontraron usuarios" : "Busca usuarios"} />
                     )}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Posts Section - Vertical Scroll */}
+            {/* Sección de posts - Scroll vertical */}
             <div className="card" style={{ 
               backgroundColor: '#fff',
               boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
               border: 'none',
               borderRadius: '12px',
               width: '100%',
-              height: '450px'  // Fixed height
+              height: '450px'
             }}>
               <div className="card-body" style={{ flex: 'none' }}>
                 <h4 style={{ color: '#212529', fontWeight: '600' }}>Posts</h4>
@@ -234,7 +242,7 @@ export const Search = () => {
               <div style={{ 
                 overflowY: 'auto',
                 padding: '0 1.25rem 1.25rem',
-                height: 'calc(100% - 70px)'  // Subtract header height
+                height: 'calc(100% - 70px)'
               }}>
                 <div className="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3">
                   {posts.length > 0 ? posts.map(post => (
@@ -247,12 +255,12 @@ export const Search = () => {
                         cursor: 'pointer',
                         boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
                         height: '300px',
-                        overflow: 'hidden'  // Added to prevent content overflow
+                        overflow: 'hidden'
                       }}>
                         <div style={{ 
                           width: '100%',
                           height: '200px',
-                          position: 'relative'  // Added for proper image containment
+                          position: 'relative'
                         }}>
                           {post.PostPath && (
                             post.PostPath.split('.').pop().toLowerCase() === 'mp4' ? (
@@ -261,7 +269,7 @@ export const Search = () => {
                                   width: '100%',
                                   height: '100%',
                                   objectFit: 'cover',
-                                  display: 'block'  // Remove any default spacing
+                                  display: 'block'
                                 }}
                               >
                                 <source src={post.PostPath} type="video/mp4" />
@@ -274,14 +282,14 @@ export const Search = () => {
                                   width: '100%',
                                   height: '100%',
                                   objectFit: 'cover',
-                                  display: 'block'  // Remove any default spacing
+                                  display: 'block'
                                 }}
                               />
                             )
                           )}
                         </div>
                         <div className="card-body p-2" style={{
-                          width: '100%'  // Ensure body matches card width
+                          width: '100%'
                         }}>
                           <h6 className="card-subtitle mb-1" style={{ 
                             color: '#495057',
@@ -303,7 +311,7 @@ export const Search = () => {
                     </div>
                   )) : (
                     <div className="col-12">
-                      <EmptyState message={searchTerm ? "No posts found" : "Search for posts"} />
+                      <EmptyState message={searchTerm ? "No se encontraron posts" : "Busca posts"} />
                     </div>
                   )}
                 </div>
@@ -319,7 +327,7 @@ export const Search = () => {
           handleClose={handleCloseModal}
         />
       )}
-      {selectedUserId && (  // Add SearchProfile modal
+      {selectedUserId && (  
         <SearchProfile
           targetUserUUID={selectedUserId}
           show={showProfileModal}

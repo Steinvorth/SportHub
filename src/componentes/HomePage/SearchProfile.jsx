@@ -2,15 +2,18 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProfileComponent } from '../Profile/ProfileComponent';
 
+// Componente para mostrar el perfil de usuario en un modal
 export const SearchProfile = ({ targetUserUUID, show, handleClose }) => {
   const navigate = useNavigate();
 
+  // Maneja el clic en el post y navega al perfil completo
   const handlePostClick = (postId) => {
-    handleClose(); // Close the modal first
-    navigate(`/profile/${targetUserUUID}`); // Navigate to full profile view
+    handleClose(); // Cierra el modal primero
+    navigate(`/profile/${targetUserUUID}`); // Navega a la vista completa del perfil
   };
 
   return (
+    // Modal para mostrar el perfil
     <div className={`modal fade ${show ? 'show' : ''}`} 
       style={{ 
         display: show ? 'block' : 'none',
