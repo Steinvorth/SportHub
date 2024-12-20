@@ -10,14 +10,14 @@ export const Profile = () => {
   const [posts, setPosts] = useState([]);
   const [friendsCount, setFriendsCount] = useState(0);
   const [profileImage, setProfileImage] = useState(null);
-  const [selectedPostId, setSelectedPostId] = useState(null);
-  const [showModal, setShowModal] = useState(false);
   const [isGoogleUser, setIsGoogleUser] = useState(false);
   const [googleAvatar, setGoogleAvatar] = useState(null);
   const [showCreatePost, setShowCreatePost] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState(null);
+  const authToken = localStorage.getItem('user');
 
   const userUUID = JSON.parse(localStorage.getItem('userId'));
-  const authToken = localStorage.getItem('user');
 
   useEffect(() => {
     // Check if user is logged in with Google
