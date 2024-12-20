@@ -101,13 +101,13 @@ export const HomePage = () => {
         <ul className="nav flex-column">
           <li className="nav-item">
             <Link to="/" className="nav-link text-white">
-              <i className="bi bi-house-door"></i> Inicio
+              <i className="bi bi-house-door"></i> Explorar
             </Link>
           </li>
           
           <li className="nav-item">
             <Link to="/explorar" className="nav-link text-white" onClick={() => setPostType('explorar')}>
-              <i className="bi bi-search"></i> Explorar
+              <i class="bi bi-people-fill"></i> Amigos
             </Link>
           </li>
 
