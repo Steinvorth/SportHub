@@ -81,30 +81,46 @@ export const Search = () => {
           width: '100%'
         }}>
           <div className="card-body">
-            <div className="input-group">
-              <span className="input-group-text" style={{ 
-                backgroundColor: '#fff',
-                border: '1px solid #e9ecef',
-                borderRight: 'none',
-                color: '#495057'
-              }}>
-                <i className="bi bi-search"></i>
-              </span>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Search posts and users..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+            <div className="d-flex align-items-center">
+              <Link 
+                to="/" 
+                className="btn btn-outline-light me-3"
                 style={{
-                  backgroundColor: '#fff',
-                  color: '#212529',
-                  fontSize: '1.1rem',
-                  padding: '15px',
+                  borderRadius: '8px',
                   border: '1px solid #e9ecef',
-                  borderLeft: 'none'
+                  padding: '12px 15px'
                 }}
-              />
+              >
+                <i className="bi bi-chevron-left" style={{ fontSize: '1.2rem', color: '#495057', textAlign:'center'}}></i>
+              </Link>
+              
+              <div className="col-md-9">
+                <div className="input-group">
+                  <span className="input-group-text" style={{ 
+                    backgroundColor: '#fff',
+                    border: '1px solid #e9ecef',
+                    borderRight: 'none',
+                    color: '#495057'
+                  }}>
+                    <i className="bi bi-search"></i>
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Search posts and users..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{
+                      backgroundColor: '#fff',
+                      color: '#212529',
+                      fontSize: '1.1rem',
+                      padding: '15px',
+                      border: '1px solid #e9ecef',
+                      borderLeft: 'none'
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
