@@ -7,10 +7,13 @@ import logo from "./main_logo.png";
 import supabase from '../supabase/supabase';
 import { getRole, getRoleName, addUsuario, SetRole, getUsuarioByUUID } from '../supabase/api';
 import { CreatePost } from '../PostCreation/CreatePost';
+import { useNotifications } from '../Notificaciones/NotificationsProvider';
+import { subscribeToFriendRequests } from '../supabase/apiRealtime';
 
 // Componente principal de la página de inicio
 export const HomePage = () => {
   const navigate = useNavigate();
+  const { showNotification } = useNotifications();
 
   const [authToken, setAuthToken] = useState(localStorage.getItem('user'));
   const [userIdToken, setUserIdToken] = useState(localStorage.getItem('userId'));
@@ -72,6 +75,35 @@ export const HomePage = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Add subscription to friend requests
+  useEffect(() => {
+    if (userIdToken) {
+      const unsubscribe = subscribeToFriendRequests((message) => {
+        showNotification(message);
+      });
+      
+      return () => {
+        unsubscribe();
+      };
+    }
+  }, [userIdToken, showNotification]);
+
+  // Add this near the top with other useEffects
+  useEffect(() => {
+    if (userIdToken) {
+      console.log('Setting up friend request subscription for user:', userIdToken);
+      const unsubscribe = subscribeToFriendRequests((message) => {
+        console.log('Notification received:', message);
+        showNotification(message);
+      });
+      
+      return () => {
+        console.log('Cleaning up friend request subscription');
+        unsubscribe();
+      };
+    }
+  }, [userIdToken, showNotification]);
 
   // Función para cerrar sesión
   const logout = () => {
