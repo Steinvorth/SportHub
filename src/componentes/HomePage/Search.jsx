@@ -216,12 +216,43 @@ export const Search = () => {
                         transition: 'transform 0.2s',
                         cursor: 'pointer',
                         boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-                        height: '300px'  // Fixed height for 4:3 ratio
+                        height: '300px',
+                        overflow: 'hidden'  // Added to prevent content overflow
                       }}>
-                        <div style={{ height: '200px', overflow: 'hidden' }}>
-                          {renderMedia(post.PostPath)}
+                        <div style={{ 
+                          width: '100%',
+                          height: '200px',
+                          position: 'relative'  // Added for proper image containment
+                        }}>
+                          {post.PostPath && (
+                            post.PostPath.split('.').pop().toLowerCase() === 'mp4' ? (
+                              <video 
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  objectFit: 'cover',
+                                  display: 'block'  // Remove any default spacing
+                                }}
+                              >
+                                <source src={post.PostPath} type="video/mp4" />
+                              </video>
+                            ) : (
+                              <img 
+                                src={post.PostPath} 
+                                alt="Post" 
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  objectFit: 'cover',
+                                  display: 'block'  // Remove any default spacing
+                                }}
+                              />
+                            )
+                          )}
                         </div>
-                        <div className="card-body p-2">
+                        <div className="card-body p-2" style={{
+                          width: '100%'  // Ensure body matches card width
+                        }}>
                           <h6 className="card-subtitle mb-1" style={{ 
                             color: '#495057',
                             fontSize: '0.9rem'
