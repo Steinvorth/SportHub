@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getUsuarioByUUID, getPostsByUser, getFriendsCount, uploadUserProfileImage } from '../supabase/api';
+import { getUsuarioByUUID, getPostsByUser, getFriendsCount, uploadUserProfileImage, getFriends } from '../supabase/api';
 import './Profile.css';
 
-export const ProfileComponent = ({ onPostClick }) => {
+export const ProfileComponent = ({ onPostClick, targetUserUUID }) => {
   const [user, setUser] = useState({});
   const [posts, setPosts] = useState([]);
   const [friendsCount, setFriendsCount] = useState(0);
   const [profileImage, setProfileImage] = useState(null);
   const [isGoogleUser, setIsGoogleUser] = useState(false);
   const [googleAvatar, setGoogleAvatar] = useState(null);
+  const [canViewPosts, setCanViewPosts] = useState(false);
 
-  const userUUID = JSON.parse(localStorage.getItem('userId'));
+  const currentUserUUID = JSON.parse(localStorage.getItem('userId'));
 
   useEffect(() => {
     // Check if user is logged in with Google
@@ -31,28 +32,51 @@ export const ProfileComponent = ({ onPostClick }) => {
   }, []);
 
   useEffect(() => {
-    fetchUserData();
-  }, [userUUID]);
+    const checkPermissionsAndFetchData = async () => {
+      const userData = await getUsuarioByUUID(targetUserUUID);
+      setUser(userData);
+      
+      if (!isGoogleUser) {
+        setProfileImage(userData.ProfilePic ? `data:image/png;base64,${userData.ProfilePic}` : null);
+      }
 
-  const fetchUserData = async () => {
-    const userData = await getUsuarioByUUID(userUUID);
-    setUser(userData);
-    
-    if (!isGoogleUser) {
-      setProfileImage(userData.ProfilePic ? `data:image/png;base64,${userData.ProfilePic}` : null);
-    }
+      const userFriendsCount = await getFriendsCount(targetUserUUID);
+      setFriendsCount(userFriendsCount);
 
-    const userPosts = await getPostsByUser(userUUID);
-    setPosts(userPosts);
+      // Check permissions
+      if (currentUserUUID === targetUserUUID) {
+        setCanViewPosts(true);
+        const userPosts = await getPostsByUser(targetUserUUID);
+        setPosts(userPosts);
+        return;
+      }
 
-    const userFriendsCount = await getFriendsCount(userUUID);
-    setFriendsCount(userFriendsCount);
-  };
+      // If profile is public
+      if (!userData.PerfilPrivado) {
+        setCanViewPosts(true);
+        const userPosts = await getPostsByUser(targetUserUUID);
+        setPosts(userPosts);
+        return;
+      }
+
+      // If profile is private, check friendship
+      const friends = await getFriends(currentUserUUID);
+      const isFriend = friends.some(friend => friend.User_Auth_Id === targetUserUUID);
+      setCanViewPosts(isFriend);
+      
+      if (isFriend) {
+        const userPosts = await getPostsByUser(targetUserUUID);
+        setPosts(userPosts);
+      }
+    };
+
+    checkPermissionsAndFetchData();
+  }, [targetUserUUID, currentUserUUID, isGoogleUser]);
 
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const base64String = await uploadUserProfileImage(userUUID, file);
+      const base64String = await uploadUserProfileImage(currentUserUUID, file);
       setProfileImage(`data:image/png;base64,${base64String}`);
     }
   };
@@ -74,7 +98,7 @@ export const ProfileComponent = ({ onPostClick }) => {
   return (
     <div className="container">
       <div className="bg-transparent py-4">
-        {/* Profile Info Section */}
+        {/* Profile Info Section - Always visible */}
         <div className="d-flex align-items-center mb-4 position-relative">
           <div className="profile-pic-container">
             <img
@@ -83,7 +107,7 @@ export const ProfileComponent = ({ onPostClick }) => {
               alt="User Avatar"
               style={{ width: '150px', height: '150px', objectFit: 'cover' }}
             />
-            {!isGoogleUser && (
+            {currentUserUUID === targetUserUUID && !isGoogleUser && (
               <>
                 <input type="file" id="profileImageUpload" className="d-none" onChange={handleImageChange} />
                 <label htmlFor="profileImageUpload" className="camera-icon">
@@ -94,12 +118,14 @@ export const ProfileComponent = ({ onPostClick }) => {
           </div>
           <div className="ms-4">
             <h3 className="text-dark">{user.UserName}</h3>
-            <div className="d-flex align-items-center mb-2">
-              <Link to="/EditProfile" className="btn btn-outline-primary me-2">Edit Profile</Link>
-              <Link to="/Settings" className="btn btn-outline-secondary">
-                <i className="bi bi-gear"></i>
-              </Link>
-            </div>
+            {currentUserUUID === targetUserUUID && (
+              <div className="d-flex align-items-center mb-2">
+                <Link to="/EditProfile" className="btn btn-outline-primary me-2">Edit Profile</Link>
+                <Link to="/Settings" className="btn btn-outline-secondary">
+                  <i className="bi bi-gear"></i>
+                </Link>
+              </div>
+            )}
             <div className="d-flex mb-2">
               <div className="me-4">
                 <h4 className="text-dark">Posts</h4>
@@ -114,27 +140,34 @@ export const ProfileComponent = ({ onPostClick }) => {
           </div>
         </div>
 
-        {/* Posts Grid Section */}
-        <div>
-          <h4 className="text-dark mb-4">Posts</h4>
-          <div className="row g-4">
-            {posts.length > 0 ? (
-              posts.map(post => (
-                <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={post.id} onClick={() => onPostClick(post.id)}>
-                  <div className="card bg-transparent border-0" style={{ cursor: 'pointer' }}>
-                    <div style={{ paddingBottom: '100%', position: 'relative' }}>
-                      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', borderRadius: '8px', overflow: 'hidden' }}>
-                        {renderMedia(post.PostPath)}
+        {/* Posts Grid Section - Only visible if allowed */}
+        {canViewPosts ? (
+          <div>
+            <h4 className="text-dark mb-4">Posts</h4>
+            <div className="row g-4">
+              {posts.length > 0 ? (
+                posts.map(post => (
+                  <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={post.id} onClick={() => onPostClick(post.id)}>
+                    <div className="card bg-transparent border-0" style={{ cursor: 'pointer' }}>
+                      <div style={{ paddingBottom: '100%', position: 'relative' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', borderRadius: '8px', overflow: 'hidden' }}>
+                          {renderMedia(post.PostPath)}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-dark">No hay Posts disponibles.</p>
-            )}
+                ))
+              ) : (
+                <p className="text-dark">No hay Posts disponibles.</p>
+              )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="text-center mt-5">
+            <h5 className="text-dark">Este perfil es privado</h5>
+            <p className="text-secondary">Solo amigos pueden ver las publicaciones</p>
+          </div>
+        )}
       </div>
     </div>
   );
