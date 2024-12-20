@@ -4,7 +4,6 @@ import { HomePage } from './HomePage/HomePage';
 import { Login } from './Profile/Login';
 import { Profile } from './Profile/Profile';
 import { Friends } from './Profile/Friends';
-import { ManagePost } from './PostCreation/ManagePost';
 import { EditProfile } from './Profile/EditProfile';
 import { Settings } from './Profile/Settings';
 import { ResetPassword } from './Profile/ResetPassword';
@@ -29,7 +28,6 @@ export const App = () => {
           <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/friends" element={<Friends />} />
-          <Route path="/post" element={<ManagePost />} />
           <Route path="/EditProfile" element={<EditProfile />} />
           <Route path="/Settings" element={<Settings />} />
           <Route path="/Search" element={<Search />} />

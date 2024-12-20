@@ -6,6 +6,7 @@ import './Global.css';
 import logo from "./main_logo.png";
 import supabase from '../supabase/supabase';
 import { getRole, getRoleName, addUsuario, SetRole, getUsuarioByUUID } from '../supabase/api';
+import { CreatePost } from '../PostCreation/CreatePost';
 
 export const HomePage = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ export const HomePage = () => {
   const [userRole, setUserRole] = useState(localStorage.getItem('userRole'));
   const [postType, setPostType] = useState('explorar');
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const [showCreatePost, setShowCreatePost] = useState(false);
 
   // Authentication check effect
   useEffect(() => {
@@ -121,9 +123,9 @@ export const HomePage = () => {
           </li>
 
           <li className="nav-item">
-            <Link to="/create" className="nav-link text-white">
+            <a className="nav-link text-white" style={{cursor: 'pointer'}} onClick={() => setShowCreatePost(true)}>
               <i className="bi bi-pencil-square"></i> Crear
-            </Link>
+            </a>
           </li>
           {authToken && (
             <li className="nav-item">
@@ -203,6 +205,15 @@ export const HomePage = () => {
           </button>
         </div>
       )}
-    </div>
+      <CreatePost show={showCreatePost} handleClose={() => setShowCreatePost(false)} />
+
+      {/* Modal background overlay */}
+      {showCreatePost && (
+        <div 
+          className="modal-backdrop fade show" 
+          onClick={() => setShowCreatePost(false)}
+        ></div>
+      )}
+    </div>    
   );
 };
