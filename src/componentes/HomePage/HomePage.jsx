@@ -104,11 +104,19 @@ export const HomePage = () => {
               <i className="bi bi-house-door"></i> Inicio
             </Link>
           </li>
+          
           <li className="nav-item">
             <Link to="/explorar" className="nav-link text-white" onClick={() => setPostType('explorar')}>
               <i className="bi bi-search"></i> Explorar
             </Link>
           </li>
+
+          <li className="nav-item">
+            <Link to="/Search" className="nav-link text-white" onClick={() => setPostType('explorar')}>
+              <i className="bi bi-search"></i> Buscar
+            </Link>
+          </li>
+
           <li className="nav-item">
             <Link to="/create" className="nav-link text-white">
               <i className="bi bi-pencil-square"></i> Crear

@@ -836,3 +836,37 @@ export const deleteUser = async (userUUID) => {
     }
     return { success: true, message: 'Cuenta eliminada con éxito' };
 }
+
+//buscar posts o usuarios
+export const searchPosts = async (searchTerm) => {
+  try {
+    const { data, error } = await supabase
+      .from('Posts')
+      .select('*, Usuarios!Posts_UserUUID_fkey(UserName)')
+      .ilike('Descripcion', `%${searchTerm}%`)
+      .eq('Privacidad', false)
+      .limit(10);
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Error searching posts:', error);
+    return [];
+  }
+};
+
+export const searchUsers = async (searchTerm) => {
+  try {
+    const { data, error } = await supabase
+      .from('Usuarios')
+      .select('User_Auth_Id, UserName, ProfilePic')
+      .ilike('UserName', `%${searchTerm}%`)
+      .limit(10);
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Error searching users:', error);
+    return [];
+  }
+};

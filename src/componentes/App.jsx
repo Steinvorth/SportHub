@@ -10,7 +10,7 @@ import { Settings } from './Profile/Settings';
 import { ResetPassword } from './Profile/ResetPassword';
 import { AdminDashboard } from './Admin/AdminDashboard';
 import { AdministradorPostReview } from './Admin/AdministradorPostReview';
-
+import { Search } from './HomePage/Search';
 
 
 /*
@@ -32,6 +32,7 @@ export const App = () => {
           <Route path="/post" element={<ManagePost />} />
           <Route path="/EditProfile" element={<EditProfile />} />
           <Route path="/Settings" element={<Settings />} />
+          <Route path="/Search" element={<Search />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/ResetPassword" element={<ResetPassword />} />
           <Route path="/admin/review/:postId" element={<AdministradorPostReview />} />
