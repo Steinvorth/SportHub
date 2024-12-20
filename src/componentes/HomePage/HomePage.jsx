@@ -16,6 +16,7 @@ export const HomePage = () => {
   const [postType, setPostType] = useState('explorar');
   const [showScrollButton, setShowScrollButton] = useState(false);
 
+  // Authentication check effect
   useEffect(() => {
     const checkAuthentication = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -25,21 +26,17 @@ export const HomePage = () => {
           const userUUID = session.user.id;
           const accessToken = session.access_token;
           
-          // Store user authentication data
           localStorage.setItem('user', JSON.stringify(accessToken));
           localStorage.setItem('userId', JSON.stringify(userUUID));
           setAuthToken(accessToken);
           setUserIdToken(userUUID);
 
-          // Check if user exists in our database
           const userExists = await getUsuarioByUUID(userUUID);
           if (!userExists) {
-            // If it's a new user, add them to our database
             await addUsuario(userUUID, session.user.email);
             await SetRole(userUUID);
           }
 
-          // Get and store user role
           const roleData = await getRole(userUUID);
           if (roleData) {
             const roleNameData = await getRoleName(roleData.IdRole);
@@ -53,17 +50,19 @@ export const HomePage = () => {
     };
 
     checkAuthentication();
-  }, []); // Empty dependency array since we only want this to run once on mount
+  }, []);
 
+  // Check authentication for friends posts
   useEffect(() => {
     if (postType === 'amigos' && !userIdToken) {
       navigate('/login');
     }
   }, [postType, userIdToken, navigate]);
 
+  // Scroll button effect
   useEffect(() => {
     const handleScroll = () => {
-      setShowScrollButton(window.scrollY > 300); // Muestra el botón después de 300px de desplazamiento
+      setShowScrollButton(window.scrollY > 300);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -87,29 +86,33 @@ export const HomePage = () => {
 
   return (
     <div className="d-flex">
-      {/* Sidebar - Lado izquierdo */}
+      {/* Left Sidebar */}
       <div className="sidebar bg-primary text-white d-flex flex-column p-3" style={{ width: '220px', height: '100vh' }}>
-        {/* Logo que redirige a la página principal */}
         <img
           src={logo}
           alt="Logo"
           className="logo mx-4 mb-3"
           style={{ cursor: 'pointer' }}
-          onClick={() => navigate('/')}
+          onClick={() => {
+            setPostType('explorar');
+            navigate('/');
+          }}
         />
         <h3 className="text-center">Sport Hub</h3>
         <ul className="nav flex-column">
           <li className="nav-item">
-            <Link to="/" className="nav-link text-white">
+            <Link to="/" className="nav-link text-white" onClick={() => setPostType('explorar')}>
               <i className="bi bi-house-door"></i> Explorar
             </Link>
           </li>
           
-          <li className="nav-item">
-            <Link to="/explorar" className="nav-link text-white" onClick={() => setPostType('explorar')}>
-              <i class="bi bi-people-fill"></i> Amigos
-            </Link>
-          </li>
+          {authToken && (
+            <li className="nav-item">
+              <Link to="/" className="nav-link text-white" onClick={() => setPostType('amigos')}>
+                <i className="bi bi-people-fill"></i> Amigos
+              </Link>
+            </li>
+          )}
 
           <li className="nav-item">
             <Link to="/Search" className="nav-link text-white" onClick={() => setPostType('explorar')}>
@@ -143,7 +146,7 @@ export const HomePage = () => {
         </div>
       </div>
 
-      {/* Sidebar Derecho */}
+      {/* Right Sidebar */}
       <div className="right sidebar bg-primary text-white d-flex flex-column p-3" style={{ width: '220px', height: '100vh' }}>
         <h3 className="text-center">Opciones</h3>
         <ul className="nav flex-column">
@@ -192,7 +195,7 @@ export const HomePage = () => {
         </ul>
       </div>
 
-      {/* Botón flotante para volver al inicio */}
+      {/* Scroll to top button */}
       {showScrollButton && (
         <div className="scroll-to-top-fixed">
           <button onClick={scrollToTop} className="btn btn-primary">
