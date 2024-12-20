@@ -1,19 +1,31 @@
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { getUsuarioByUUID, deleteUser } from "../supabase/api";
+import { deleteAuthUser } from '../supabase/apiAdmin';
+
 import { useEffect, useState } from "react";
 
 export const Settings = () => {
+    const [userUUID, setUserUUID] = useState('');
     const [activeSection, setActiveSection] = useState(null);
     const [user, setUser] = useState({});
-    const userUUID = JSON.parse(localStorage.getItem('userId'));
 
     useEffect(() => {
-        const fetchUserData = async () => {
-        const userData = await getUsuarioByUUID(userUUID);
-        setUser(userData);
-        };
-        fetchUserData();
+        const fetchUserUUID = async () => {
+            try {
+              const uuid = localStorage.getItem('userId');
+              const UUID_formatted = uuid.replace(/['"]+/g, ''); // Eliminar comillas simples del UserUUID
+              console.log(UUID_formatted);
+              if (uuid) {
+                setUserUUID(UUID_formatted); // Guardamos el UserUUID en el estado
+              } else {
+                navigate("/login"); // Redirige a la página de login si no hay sesión
+              }
+            } catch (error) {
+              console.error("Error obteniendo el UserUUID actual:", error.message);
+            }
+          };
+        fetchUserUUID();
     }, [userUUID]);
 
     //MÉTODO PARA ELIMINAR EL USUARIO DE LA BASE DE DATOS
@@ -31,12 +43,10 @@ export const Settings = () => {
 
         if (result.isConfirmed) {
             try {
-                const response = await deleteUser(userUUID);
+                const response = await deleteAuthUser(userUUID);
 
                 if (response.success) {
                     Swal.fire('Cuenta eliminada', response.message, 'success');
-                    localStorage.removeItem('user');
-                    localStorage.removeItem('userId');
                     window.location.href = '/';
                 }
             } catch (error) {

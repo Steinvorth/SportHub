@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { getUsuarioByUUID, getPostsByUser, uploadUserProfileImage, updateUserProfile } from '../supabase/api';
 import { Link } from 'react-router-dom';
 import './Profile.css';
+import Swal from 'sweetalert2';
 
 export const EditProfile = () => {
   const [user, setUser] = useState({}); 
@@ -46,15 +47,25 @@ export const EditProfile = () => {
 
   // Función para actualizar el perfil
   const handleSave = async () => {
-    
     const { error } = await updateUserProfile(userUUID, username, bio, setUsername);
+    
     if (error) {
-      alert('Error al actualizar el perfil');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error al actualizar el perfil',
+      });
     } else {
-      alert('Perfil actualizado exitosamente');
-      window.location.reload(); 
+      Swal.fire({
+        icon: 'success',
+        title: 'Éxito',
+        text: 'Perfil actualizado exitosamente',
+      }).then(() => {
+        window.location.reload();
+      });
     }
   };
+  
 
   // Cerrar sesión
   const logout = () => {
@@ -144,8 +155,9 @@ export const EditProfile = () => {
                     onChange={handleBioChange}
                   ></textarea>
                 </div>
-
+                <Link to="../Profile">
                 <button className="btn btn-primary" onClick={handleSave}>Save Changes</button>
+                </Link>
               </div>
             </div>
 
