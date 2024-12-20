@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { getUsuarioByUUID, getPostsByUser, getFriendsCount, uploadUserProfileImage, getFriends } from '../supabase/api';
 import './Profile.css';
 
-export const ProfileComponent = ({ onPostClick, targetUserUUID }) => {
+export const ProfileComponent = ({ onPostClick, targetUserUUID, refreshTrigger }) => {
   const [user, setUser] = useState({});
   const [posts, setPosts] = useState([]);
   const [friendsCount, setFriendsCount] = useState(0);
@@ -71,7 +71,7 @@ export const ProfileComponent = ({ onPostClick, targetUserUUID }) => {
     };
 
     checkPermissionsAndFetchData();
-  }, [targetUserUUID, currentUserUUID, isGoogleUser]);
+  }, [targetUserUUID, currentUserUUID, isGoogleUser, refreshTrigger]); // Add refreshTrigger
 
   const handleImageChange = async (e) => {
     const file = e.target.files[0];

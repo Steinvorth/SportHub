@@ -11,6 +11,7 @@ export const Profile = () => {
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const authToken = localStorage.getItem('user');
   
   // If userId from params exists, use it, otherwise use current user's UUID
@@ -23,6 +24,13 @@ export const Profile = () => {
   const handleCloseModal = (refresh = false) => {
     setShowModal(false);
     setSelectedPostId(null);
+    if (refresh) {
+      handleRefresh();
+    }
+  };
+
+  const handleRefresh = () => {
+    setRefreshTrigger(prev => prev + 1);
   };
 
   const logout = () => {
@@ -69,6 +77,7 @@ export const Profile = () => {
           setShowModal(true);
         }}
         targetUserUUID={userUUID}
+        refreshTrigger={refreshTrigger}
       />
 
       <CreatePost 

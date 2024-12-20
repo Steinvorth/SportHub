@@ -23,6 +23,8 @@ export const DetallePost = ({ postId, show, handleClose }) => {
   const [newComment, setNewComment] = useState('');
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [isDeletingPost, setIsDeletingPost] = useState(false);
+  const [deletingComments, setDeletingComments] = useState({});
 
   useEffect(() => {
     const fetchPostDetails = async () => {
@@ -49,13 +51,17 @@ export const DetallePost = ({ postId, show, handleClose }) => {
   }, [postId, userUUID]);
 
   const handleDeletePost = async () => {
+    setIsDeletingPost(true);
     await deletePost(postId);
-    handleClose(true); // Pass true to indicate that the posts should be refreshed
+    setIsDeletingPost(false);
+    handleClose(true); // This will trigger the refresh
   };
 
   const handleDeleteComment = async (commentId) => {
+    setDeletingComments(prev => ({ ...prev, [commentId]: true }));
     await deleteComment(commentId);
     setComments(comments.filter(comment => comment.id !== commentId));
+    setDeletingComments(prev => ({ ...prev, [commentId]: false }));
   };
 
   // Add new handlers
@@ -129,8 +135,14 @@ export const DetallePost = ({ postId, show, handleClose }) => {
                         <span className="text-dark">{likeCount}</span>
                       </div>
                       {post.UserUUID === userUUID && (
-                        <button className="btn btn-outline-danger btn-sm">
-                          <i className="bi bi-trash3" onClick={handleDeletePost}></i>
+                        <button className="btn btn-outline-danger btn-sm" style={{ width: '32px', height: '32px' }}>
+                          {isDeletingPost ? (
+                            <div className="spinner-border spinner-border-sm" role="status">
+                              <span className="visually-hidden">Loading...</span>
+                            </div>
+                          ) : (
+                            <i className="bi bi-trash3" onClick={handleDeletePost}></i>
+                          )}
                         </button>
                       )}
                     </div>
@@ -163,8 +175,14 @@ export const DetallePost = ({ postId, show, handleClose }) => {
                         <div className="text-dark mt-1">{comment.Contenido}</div>
                       </div>
                       {post.UserUUID === userUUID && (
-                        <button className="btn btn-outline-danger btn-sm">
-                          <i className="bi bi-trash3" onClick={() => handleDeleteComment(comment.id)}></i>
+                        <button className="btn btn-outline-danger btn-sm" style={{ width: '32px', height: '32px' }}>
+                          {deletingComments[comment.id] ? (
+                            <div className="spinner-border spinner-border-sm" role="status">
+                              <span className="visually-hidden">Loading...</span>
+                            </div>
+                          ) : (
+                            <i className="bi bi-trash3" onClick={() => handleDeleteComment(comment.id)}></i>
+                          )}
                         </button>
                       )}
                     </li>
