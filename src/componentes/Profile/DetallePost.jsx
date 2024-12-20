@@ -52,43 +52,58 @@ export const DetallePost = ({ postId, show, handleClose }) => {
 
   return (
     <div className={`modal fade ${show ? 'show' : ''}`} style={{ display: show ? 'block' : 'none' }} tabIndex="-1" role="dialog">
-      <div className="modal-dialog modal-xl" role="document">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">Detalle del Post</h5>
-            <button type="button" className="btn-close" onClick={() => handleClose(false)} aria-label="Close"></button>
+      <div className="modal-dialog modal-xl" style={{ marginTop: '2%' }}>
+        <div className="modal-content bg-white shadow-sm">
+          <div className="modal-header border-0">
+            <h5 className="modal-title text-dark">Detalle del Post</h5>
+            <button 
+              type="button" 
+              className="btn-close bg-black" 
+              onClick={() => handleClose(false)} 
+              aria-label="Close"
+              style={{ opacity: 0.5 }}
+            >
+            </button>
           </div>
           <div className="modal-body d-flex">
             <div className="flex-grow-1" style={{ flexBasis: '60%' }}>
               {post && (
-                <div className="card w-100 mb-3">
-                  <div className="card-header d-flex justify-content-between align-items-center">
-                    @{username}
+                <div className="card shadow-sm bg-white" style={{ border: '1px solid #dee2e6' }}>
+                  <div className="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                    <span className="text-dark">@{username}</span>
                     {post.UserUUID === userUUID && (
-                      <button className="btn btn-danger btn-sm" onClick={handleDeletePost}>
-                        <i className="bi bi-trash3"></i>
+                      <button className="btn btn-outline-danger btn-sm">
+                        <i className="bi bi-trash3" onClick={handleDeletePost}></i>
                       </button>
                     )}
                   </div>
-                  {renderMedia(post.PostPath)}
+                  <div className="position-relative">
+                    {renderMedia(post.PostPath)}
+                  </div>
                   <div className="card-body">
-                    <p className="card-text">{post.Descripcion}</p>
+                    <p className="card-text text-dark">{post.Descripcion}</p>
                   </div>
                 </div>
               )}
             </div>
-            <div className="comments-section ms-3" style={{ flexBasis: '40%', maxHeight: '500px', overflowY: 'auto' }}>
-              <h5>Comentarios</h5>
-              <ul className="list-group">
+            <div className="comments-section ms-3 bg-white p-3 rounded shadow-sm" 
+              style={{ 
+                flexBasis: '40%', 
+                maxHeight: '540px', 
+                overflowY: 'auto',
+                border: '1px solid #dee2e6'
+              }}>
+              <h5 className="text-dark mb-3">Comentarios</h5>
+              <ul className="list-group list-group-flush">
                 {comments.map(comment => (
-                  <li key={comment.id} className="list-group-item d-flex justify-content-between align-items-start">
+                  <li key={comment.id} className="list-group-item bg-white border-0 mb-2 d-flex justify-content-between align-items-start">
                     <div>
-                      <strong>@{comment.UserName}</strong>
-                      <div>{comment.Contenido}</div>
+                      <span className="text-dark">@{comment.UserName}</span>
+                      <div className="text-dark mt-1">{comment.Contenido}</div>
                     </div>
                     {post.UserUUID === userUUID && (
-                      <button className="btn btn-danger btn-sm mt-2" onClick={() => handleDeleteComment(comment.id)}>
-                        <i className="bi bi-trash3"></i>
+                      <button className="btn btn-outline-danger btn-sm">
+                        <i className="bi bi-trash3" onClick={() => handleDeleteComment(comment.id)}></i>
                       </button>
                     )}
                   </li>
