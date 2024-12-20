@@ -89,6 +89,46 @@ export const subscribeToFriendRequests = (showNotification) => {
         }
       }
     )
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'ComentariosPost'
+      },
+      async (payload) => {
+        const currentUserId = JSON.parse(localStorage.getItem('userId'));
+        
+        // Get post owner
+        const { data: postData } = await supabase
+          .from('Posts')
+          .select('UserUUID')
+          .eq('id', payload.new.PostId)
+          .single();
+
+        if (postData && postData.UserUUID === currentUserId) {
+          // Get comment details
+          const { data: commentData } = await supabase
+            .from('Comentarios')
+            .select('UserUUID')
+            .eq('id', payload.new.ComentarioId)
+            .single();
+
+          if (commentData) {
+            // Get commenter's username
+            const { data: userData } = await supabase
+              .from('Usuarios')
+              .select('UserName')
+              .eq('User_Auth_Id', commentData.UserUUID)
+              .single();
+
+            if (userData) {
+              showNotification(`¡${userData.UserName} ha comentado en tu post!`);
+            }
+          }
+        }
+      }
+    )
     .subscribe();
 
   return () => {
