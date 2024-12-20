@@ -90,10 +90,10 @@ export const Search = () => {
     <div style={{ 
       backgroundColor: '#f8f9fa', 
       minHeight: '100vh',
-      minWidth: '95vw',
+      minWidth: '100vw',
       maxWidth: '100vw',
     }}>
-      <div style={{ padding: '20px', minWidth: '95vw', maxWidth: '100vw' }}>
+      <div style={{ padding: '20px', minWidth: '100vw', maxWidth: '100vw' }}>
         {/* Barra de búsqueda */}
         <div className="card mb-4" style={{ 
           backgroundColor: '#fff',
