@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { getUsuarioByUUID, getPostsByUser, getFriendsCount, uploadUserProfileImage } from '../supabase/api';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { DetallePost } from './DetallePost';
 import './Profile.css';
 import { CreatePost } from '../PostCreation/CreatePost';
 import { ProfileComponent } from './ProfileComponent';
 
 export const Profile = () => {
+  const { userId } = useParams();
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
   const authToken = localStorage.getItem('user');
-  const userUUID = JSON.parse(localStorage.getItem('userId'));
+  
+  // If userId from params exists, use it, otherwise use current user's UUID
+  const userUUID = userId || JSON.parse(localStorage.getItem('userId'));
 
   const handlePostCreated = () => {
     setShowCreatePost(false);

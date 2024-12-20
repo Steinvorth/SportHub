@@ -1,10 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ProfileComponent } from '../Profile/ProfileComponent';
 
 export const SearchProfile = ({ targetUserUUID, show, handleClose }) => {
+  const navigate = useNavigate();
+
   const handlePostClick = (postId) => {
-    // You might want to handle this differently in search context
-    console.log('Post clicked:', postId);
+    handleClose(); // Close the modal first
+    navigate(`/profile/${targetUserUUID}`); // Navigate to full profile view
   };
 
   return (

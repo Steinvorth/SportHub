@@ -34,6 +34,7 @@ export const App = () => {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/ResetPassword" element={<ResetPassword />} />
           <Route path="/admin/review/:postId" element={<AdministradorPostReview />} />
+          <Route path="/profile/:userId" element={<Profile />} />
         </Routes>
       </Router>
     );
