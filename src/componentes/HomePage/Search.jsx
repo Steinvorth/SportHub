@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { searchPosts, searchUsers } from '../supabase/api';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { SearchPost } from './SearchPost';  // Update import
 
 export const Search = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [posts, setPosts] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const performSearch = async () => {
@@ -51,6 +54,16 @@ export const Search = () => {
       <p className="mb-0">{message}</p>
     </div>
   );
+
+  const handlePostClick = (postId) => {
+    setSelectedPostId(postId);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedPostId(null);
+  };
 
   return (
     <div style={{ 
@@ -195,34 +208,37 @@ export const Search = () => {
               }}>
                 <div className="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3">
                   {posts.length > 0 ? posts.map(post => (
-                    <div key={post.id} className="col">
-                      <Link to={`/post/${post.id}`} className="text-decoration-none">
-                        <div className="card h-100" style={{
-                          backgroundColor: '#fff',
-                          border: '1px solid #e9ecef',
-                          borderRadius: '8px',
-                          transition: 'transform 0.2s',
-                          cursor: 'pointer',
-                          boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-5px)'}
-                        onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
+                    <div key={post.id} className="col" onClick={() => handlePostClick(post.id)}>
+                      <div className="card h-100" style={{
+                        backgroundColor: '#fff',
+                        border: '1px solid #e9ecef',
+                        borderRadius: '8px',
+                        transition: 'transform 0.2s',
+                        cursor: 'pointer',
+                        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                        height: '300px'  // Fixed height for 4:3 ratio
+                      }}>
+                        <div style={{ height: '200px', overflow: 'hidden' }}>
                           {renderMedia(post.PostPath)}
-                          <div className="card-body">
-                            <h6 className="card-subtitle mb-2" style={{ color: '#495057' }}>
-                              @{post.Usuarios.UserName}
-                            </h6>
-                            <p className="card-text" style={{ 
-                              color: '#212529',
-                              display: '-webkit-box',
-                              WebkitLineClamp: '3',
-                              WebkitBoxOrient: 'vertical',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis'
-                            }}>{post.Descripcion}</p>
-                          </div>
                         </div>
-                      </Link>
+                        <div className="card-body p-2">
+                          <h6 className="card-subtitle mb-1" style={{ 
+                            color: '#495057',
+                            fontSize: '0.9rem'
+                          }}>
+                            @{post.Usuarios.UserName}
+                          </h6>
+                          <p className="card-text" style={{ 
+                            color: '#212529',
+                            fontSize: '0.85rem',
+                            display: '-webkit-box',
+                            WebkitLineClamp: '2',
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            margin: 0
+                          }}>{post.Descripcion}</p>
+                        </div>
+                      </div>
                     </div>
                   )) : (
                     <div className="col-12">
@@ -235,6 +251,13 @@ export const Search = () => {
           </>
         )}
       </div>
+      {selectedPostId && (
+        <SearchPost
+          postId={selectedPostId}
+          show={showModal}
+          handleClose={handleCloseModal}
+        />
+      )}
     </div>
   );
 };
