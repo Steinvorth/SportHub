@@ -3,6 +3,7 @@ import { getUsuarioByUUID, getPostsByUser, getFriendsCount, uploadUserProfileIma
 import { Link } from 'react-router-dom';
 import { DetallePost } from './DetallePost';
 import './Profile.css';
+import { CreatePost } from '../PostCreation/CreatePost';
 
 export const Profile = () => {
   const [user, setUser] = useState({});
@@ -13,6 +14,7 @@ export const Profile = () => {
   const [showModal, setShowModal] = useState(false);
   const [isGoogleUser, setIsGoogleUser] = useState(false);
   const [googleAvatar, setGoogleAvatar] = useState(null);
+  const [showCreatePost, setShowCreatePost] = useState(false);
 
   const userUUID = JSON.parse(localStorage.getItem('userId'));
   const authToken = localStorage.getItem('user');
@@ -34,12 +36,10 @@ export const Profile = () => {
     }
   }, []);
 
-  // Obtener datos del usuario al cargar el componente
   useEffect(() => {
     fetchUserData();
   }, [userUUID]);
 
-  // Modify fetchUserData to respect Google avatar
   const fetchUserData = async () => {
     const userData = await getUsuarioByUUID(userUUID);
     setUser(userData);
@@ -56,7 +56,6 @@ export const Profile = () => {
     setFriendsCount(userFriendsCount);
   };
 
-  // Manejar cambio de imagen de perfil
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -65,16 +64,12 @@ export const Profile = () => {
     }
   };
 
-  // Cerrar sesión
   const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('userId');
-
-    //mandar al home page
     window.location.href = '/';
   };
 
-  // Renderizar media (imagen o video) de los posts
   const renderMedia = (postPath) => {
     const fileExtension = postPath.split('.').pop().toLowerCase();
     if (fileExtension === 'mp4') {
@@ -102,10 +97,15 @@ export const Profile = () => {
     }
   };
 
+  const handlePostCreated = () => {
+    setShowCreatePost(false);
+    fetchUserData();
+  };
+
   return (
-    <>
-      {/* Navbar */}
-      <nav className="navbar navbar-expand-lg navbar-light bg-light d-flex flex-column">
+    <div style={{ minWidth: '100vw' }}>
+      {/* Full width navbar */}
+      <nav className="navbar navbar-expand-lg navbar-light bg-light d-flex flex-column w-100">
         <div className="container">
           <a className="navbar-brand" href="/">Sport Hub</a>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -113,16 +113,16 @@ export const Profile = () => {
           </button>
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
-
               {authToken && (
                 <li>
-                  <Link to="/post" className="btn btn-outline-primary ms-2">
+                  <button 
+                    className="btn btn-outline-primary ms-2"
+                    onClick={() => setShowCreatePost(true)}
+                  >
                     <i className="bi bi-card-image"></i>
-                  </Link>
+                  </button>
                 </li>
               )}
-
-              {/* Si tenemos un auth token, entonces mostramos el logout. Si no, entonces está escondido. */}
               {authToken && (
                 <li className="nav-item ms-2">
                   <button className="btn btn-outline-primary" onClick={logout}>
@@ -132,74 +132,83 @@ export const Profile = () => {
                   </button>
                 </li>
               )}
-
             </ul>
           </div>
         </div>
       </nav>
 
-      <div className="container mt-5">
-        <div className="card">
-          <div className="card-body">
-            <div className="d-flex align-items-center mb-4 position-relative">
-              <div className="profile-pic-container">
-                <img
-                  src={isGoogleUser ? googleAvatar : (profileImage || "https://via.placeholder.com/150")}
-                  className="rounded-circle profile-pic"
-                  alt="User Avatar"
-                  style={{ width: '150px', height: '150px', objectFit: 'cover' }}
-                />
-                {!isGoogleUser && (
-                  <>
-                    <input type="file" id="profileImageUpload" className="d-none" onChange={handleImageChange} />
-                    <label htmlFor="profileImageUpload" className="camera-icon">
-                      <i className="bi bi-camera-fill"></i>
-                    </label>
-                  </>
-                )}
-              </div>
-              <div className="ms-4">
-                <h3>{user.UserName}</h3>
-                <div className="d-flex align-items-center mb-2">
-                  <Link to="/EditProfile" className="btn btn-outline-primary me-2">Edit Profile</Link>
-                  <Link to="/Settings" className="btn btn-outline-secondary">
-                    <i className="bi bi-gear"></i>
-                  </Link>
-                </div>
-                <div className="d-flex mb-2">
-                  <div className="me-4">
-                    <h4>Posts</h4>
-                    <p>{posts.length}</p>
-                  </div>
-                  <div>
-                    <h4>Friends</h4>
-                    <p>{friendsCount}</p>
-                  </div>
-                </div>
-                <p>{user.Bio}</p>
-              </div>
+      {/* Centered container for profile content */}
+      <div className="container">
+        <div className="bg-transparent py-4">
+          {/* Profile Info Section */}
+          <div className="d-flex align-items-center mb-4 position-relative">
+            <div className="profile-pic-container">
+              <img
+                src={isGoogleUser ? googleAvatar : (profileImage || "https://via.placeholder.com/150")}
+                className="rounded-circle profile-pic"
+                alt="User Avatar"
+                style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+              />
+              {!isGoogleUser && (
+                <>
+                  <input type="file" id="profileImageUpload" className="d-none" onChange={handleImageChange} />
+                  <label htmlFor="profileImageUpload" className="camera-icon">
+                    <i className="bi bi-camera-fill"></i>
+                  </label>
+                </>
+              )}
             </div>
-            <div>
-              <h4>Posts</h4>
-              <div className="row">
-                {posts.length > 0 ? (
-                  posts.map(post => (
-                    <div className="col-md-4 mb-3" key={post.id} onClick={() => handlePostClick(post.id)}>
-                      <div className="card" style={{ width: '100%', paddingBottom: '75%', position: 'relative' }}>
-                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+            <div className="ms-4">
+              <h3 className="text-dark">{user.UserName}</h3>
+              <div className="d-flex align-items-center mb-2">
+                <Link to="/EditProfile" className="btn btn-outline-primary me-2">Edit Profile</Link>
+                <Link to="/Settings" className="btn btn-outline-secondary">
+                  <i className="bi bi-gear"></i>
+                </Link>
+              </div>
+              <div className="d-flex mb-2">
+                <div className="me-4">
+                  <h4 className="text-dark">Posts</h4>
+                  <p className="text-dark">{posts.length}</p>
+                </div>
+                <div>
+                  <h4 className="text-dark">Friends</h4>
+                  <p className="text-dark">{friendsCount}</p>
+                </div>
+              </div>
+              <p className="text-dark">{user.Bio}</p>
+            </div>
+          </div>
+
+          {/* Posts Grid Section */}
+          <div>
+            <h4 className="text-dark mb-4">Posts</h4>
+            <div className="row g-4">
+              {posts.length > 0 ? (
+                posts.map(post => (
+                  <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={post.id} onClick={() => handlePostClick(post.id)}>
+                    <div className="card bg-transparent border-0" style={{ cursor: 'pointer' }}>
+                      <div style={{ paddingBottom: '100%', position: 'relative' }}>
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', borderRadius: '8px', overflow: 'hidden' }}>
                           {renderMedia(post.PostPath)}
                         </div>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <p>No hay Posts disponibles.</p>
-                )}
-              </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-dark">No hay Posts disponibles.</p>
+              )}
             </div>
           </div>
         </div>
       </div>
+
+      <CreatePost 
+        show={showCreatePost} 
+        handleClose={() => setShowCreatePost(false)}
+        onPostCreated={handlePostCreated}
+      />
 
       {selectedPostId && (
         <DetallePost
@@ -208,6 +217,6 @@ export const Profile = () => {
           handleClose={handleCloseModal}
         />
       )}
-    </>
+    </div>
   );
 };
