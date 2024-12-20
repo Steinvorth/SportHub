@@ -224,8 +224,9 @@ export const getFriends = async (userUUID) => {
 };
 
 // Obtener usuarios excluyendo uno
-export const getSugerencias = async (userUUIDActual) => {
+export const getSugerencias = async (userUUIDActual, solicitudesPendientes) => {
   try {
+    // Obtener usuarios que no sean el usuario actual
     const { data, error } = await supabase
       .from("Usuarios")
       .select("User_Auth_Id, UserName")
@@ -235,9 +236,14 @@ export const getSugerencias = async (userUUIDActual) => {
       throw error;
     }
 
-    return data; // Devuelve la lista de usuarios
+    // Filtrar usuarios excluyendo a aquellos con solicitudes pendientes
+    const sugerenciasFiltradas = data.filter(usuario => 
+      !solicitudesPendientes.some(solicitud => solicitud.UserUUID === usuario.User_Auth_Id)
+    );
+
+    return sugerenciasFiltradas; // Devuelve la lista filtrada de sugerencias
   } catch (error) {
-    console.error("Error obteniendo usuarios excluyendo uno:", error.message);
+    console.error("Error obteniendo usuarios excluyendo solicitudes pendientes:", error.message);
     return [];
   }
 };
@@ -870,3 +876,166 @@ export const searchUsers = async (searchTerm) => {
     return [];
   }
 };
+
+
+
+
+
+///////CODIGO SOLICITUDES PENDIENTES/////////
+export const enviarSolicitudAmistad = async (userUUID, amigoUUID) => {
+  try {
+    // Verificar si ya existe una solicitud pendiente entre los dos usuarios
+    const { data: solicitudesExistentes, error: errorExistente } = await supabase
+      .from('SolicitudesAmistad')
+      .select('id')
+      .eq('UserUUID', userUUID)
+      .eq('AmigoUUID', amigoUUID)
+      .eq('estado', 'pendiente');
+
+    if (errorExistente) {
+      throw errorExistente;
+    }
+
+    // Si ya existe una solicitud pendiente, no enviar otra
+    if (solicitudesExistentes.length > 0) {
+      alert("Ya has enviado una solicitud de amistad a esta persona.");
+      return null; // No hacer nada si ya existe una solicitud pendiente
+    }
+
+    // Si no existe una solicitud pendiente, proceder con el envío
+    const { data, error } = await supabase
+      .from('SolicitudesAmistad')
+      .insert([{ UserUUID: userUUID, AmigoUUID: amigoUUID, estado: 'pendiente' }]);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error enviando solicitud de amistad:', error.message);
+    return null;
+  }
+};
+
+
+// Obtener solicitudes de amistad pendientes
+export const obtenerSolicitudesPendientes = async (userUUID) => {
+  try {
+    const { data, error } = await supabase
+      .from('SolicitudesAmistad')
+      .select('id, UserUUID, Usuarios!UserUUID(UserName)')
+      .eq('AmigoUUID', userUUID)
+      .eq('estado', 'pendiente');
+
+    if (error) {
+      throw error;
+    }
+
+    return data.map(solicitud => ({
+      id: solicitud.id, // En minúsculas según tu esquema
+      UserUUID: solicitud.UserUUID,
+      UserName: solicitud.Usuarios.UserName,
+    }));
+  } catch (error) {
+    console.error('Error obteniendo solicitudes pendientes:', error.message);
+    return [];
+  }
+};
+
+// Aceptar solicitud de amistad
+export const aceptarSolicitudAmistad = async (solicitudId, amigoUUID, userUUID) => {
+  try {
+    // Actualizar el estado de la solicitud a 'aceptado'
+    const { data, error } = await supabase
+      .from('SolicitudesAmistad')
+      .update({ estado: 'aceptado' })
+      .eq('id', solicitudId); // Cambiado a minúsculas
+
+    if (error) {
+      throw error;
+    }
+
+    // Agregar relación a la tabla 'Amigos'
+    const { amigoData, amigoError } = await supabase
+      .from('Amigos')
+      .insert([{ UserUUID: userUUID, AmigoUUID: amigoUUID }]);
+
+    if (amigoError) {
+      throw new Error(amigoError.message);
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error aceptando solicitud de amistad:', error.message);
+    return false;
+  }
+};
+
+export const rechazarSolicitudAmistad = async (solicitudId) => {
+  try {
+    // Eliminar la solicitud de la tabla 'SolicitudesAmistad'
+    const { data, error } = await supabase
+      .from('SolicitudesAmistad')
+      .delete()
+      .eq('id', solicitudId); // Asegúrate de que el ID coincida
+
+    if (error) {
+      throw error;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error rechazando solicitud de amistad:', error.message);
+    return false;
+  }
+};
+
+
+
+// Eliminar un amigo (sin cambios)
+export const removeFriend = async (userUUID, amigoUUID) => {
+  try {
+    const { data, error } = await supabase
+      .from('Amigos')  
+      .delete()
+      .eq('UserUUID', userUUID)
+      .eq('AmigoUUID', amigoUUID);
+
+    if (error) throw new Error(error.message);
+
+    return data;
+  } catch (error) {
+    console.error("Error eliminando amigo:", error.message);
+    return null;
+  }
+};
+
+// Aceptar solicitud de amistad en el frontend
+// Aceptar solicitud de amistad, cambiar estado a 'aceptado' y agregar amigo
+const handleAceptarSolicitud = async (solicitudId, amigoUUID) => {
+  try {
+    // Cambiar estado de solicitud a 'aceptado'
+    const result = await aceptarSolicitudAmistad(solicitudId);
+
+    if (result) {
+      // Agregar relación a la tabla 'Amigos'
+      const { data, error } = await supabase
+        .from('Amigos')
+        .insert([{ UserUUID: userUUID, AmigoUUID: amigoUUID }]);
+
+      if (error) throw new Error(error.message);
+
+      alert("Solicitud de amistad aceptada y amigo agregado.");
+      
+      fetchFriends(); // Actualizar lista de amigos
+      fetchSolicitudes(); // Refrescar solicitudes pendientes
+    }
+  } catch (error) {
+    console.error("Error aceptando solicitud de amistad:", error.message);
+  }
+};
+
+
+
+             ///////CODIGO SOLICITUDES PENDIENTES/////////
