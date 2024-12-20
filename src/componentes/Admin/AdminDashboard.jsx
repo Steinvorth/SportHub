@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getPosts, getRole, getRoleName } from '../supabase/api';
+import { AdminUsuarios } from './AdminUsuarios';
 
 export const AdminDashboard = () => {
   const [posts, setPosts] = useState([]);
@@ -36,60 +37,50 @@ export const AdminDashboard = () => {
   }
 
   return (
-    <div className="container mt-5">
-      {/* Navbar */}
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <div className="container-fluid">
-          <a className="navbar-brand" href="/">Admin Dashboard</a>
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav">
-              <li className="nav-item">
-                <button className={`nav-link ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>Usuarios</button>
-              </li>
-              <li className="nav-item">
-                <button className={`nav-link ${activeTab === 'posts' ? 'active' : ''}`} onClick={() => setActiveTab('posts')}>Posts</button>
-              </li>
-              <li className="nav-item">
-                <button className={`nav-link ${activeTab === 'comments' ? 'active' : ''}`} onClick={() => setActiveTab('comments')}>Comentarios</button>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-
-      {/* Content */}
-      <div className="mt-4">
-        {activeTab === 'users' && (
-          <div>
-            <h3>Usuarios</h3>
-            {/* Aquí puedes agregar el código para mostrar la lista de usuarios */}
-          </div>
-        )}
-        {activeTab === 'posts' && (
-          <div>
-            <h3>Posts</h3>
-            <div className="list-group">
-              {posts.map(post => (
-                <div key={post.id} className="list-group-item d-flex justify-content-between align-items-center">
-                  <div>
-                    <h5>{post.Descripcion}</h5>
-                    <p>{post.Privacidad ? 'Privado' : 'Público'}</p>
-                  </div>
-                  <Link to={`/admin/review/${post.id}`} className="btn btn-primary">Revisar</Link>
-                </div>
-              ))}
+    <div style={{ minWidth: '100vw', backgroundColor: '#f8f9fa' }}>
+      <div className="container mt-5">
+        {/* Navbar */}
+        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+          <div className="container-fluid">
+            <Link to="/" className="navbar-brand text-dark">Admin Dashboard</Link>
+            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span className="navbar-toggler-icon"></span>
+            </button>
+            <div className="collapse navbar-collapse" id="navbarNav">
+              <ul className="navbar-nav">
+                <li className="nav-item">
+                  <button className={`nav-link text-dark ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>Usuarios</button>
+                </li>
+                <li className="nav-item">
+                  <button className={`nav-link text-dark ${activeTab === 'posts' ? 'active' : ''}`} onClick={() => setActiveTab('posts')}>Posts</button>
+                </li>
+              </ul>
             </div>
           </div>
-        )}
-        {activeTab === 'comments' && (
-          <div>
-            <h3>Comentarios</h3>
-            {/* Aquí puedes agregar el código para mostrar la lista de comentarios */}
-          </div>
-        )}
+        </nav>
+
+        {/* Content */}
+        <div className="mt-4">
+          {activeTab === 'users' && (
+            <AdminUsuarios />
+          )}
+          {activeTab === 'posts' && (
+            <div>
+              <h3 className="text-dark">Posts</h3>
+              <div className="list-group">
+                {posts.map(post => (
+                  <div key={post.id} className="list-group-item bg-white d-flex justify-content-between align-items-center">
+                    <div>
+                      <h5 className="text-dark">{post.Descripcion}</h5>
+                      <p className="text-secondary">{post.Privacidad ? 'Privado' : 'Público'}</p>
+                    </div>
+                    <Link to={`/admin/review/${post.id}`} className="btn btn-primary">Revisar</Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
