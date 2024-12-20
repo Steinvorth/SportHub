@@ -40,27 +40,27 @@ export const AdminUsuarios = () => {
   return (
     <div className="container mt-4">
       <h3 className="mb-4 text-dark">Gestión de Usuarios</h3>
-      <div className="table-responsive">
-        <table className="table table-hover bg-white">
+      <div className="table-responsive bg-light rounded shadow-sm">
+        <table className="table">
           <thead>
-            <tr>
-              <th>Email</th>
-              <th>Estado</th>
-              <th>Último Ingreso</th>
-              <th>Acciones</th>
+            <tr className="bg-light">
+              <th scope="col" className="text-dark bg-light">Email</th>
+              <th scope="col" className="text-dark bg-light">Estado</th>
+              <th scope="col" className="text-dark bg-light">Último Ingreso</th>
+              <th scope="col" className="text-dark bg-light">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {users.map((user) => (
-              <tr key={user.id}>
-                <td>{user.email}</td>
-                <td>
+              <tr key={user.id} className="bg-light">
+                <td className="text-dark bg-white">{user.email}</td>
+                <td className="bg-white">
                   <span className={`badge ${user.banned_until ? 'bg-danger' : 'bg-success'}`}>
                     {user.banned_until ? 'Suspendido' : 'Activo'}
                   </span>
                 </td>
-                <td>{new Date(user.last_sign_in_at).toLocaleDateString()}</td>
-                <td>
+                <td className="text-dark bg-white">{new Date(user.last_sign_in_at).toLocaleDateString()}</td>
+                <td className='bg-white'>
                   <button
                     className={`btn btn-sm ${user.banned_until ? 'btn-success' : 'btn-warning'} me-2`}
                     onClick={() => handleSuspendToggle(user)}
