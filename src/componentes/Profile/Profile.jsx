@@ -11,19 +11,43 @@ export const Profile = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [isGoogleUser, setIsGoogleUser] = useState(false);
+  const [googleAvatar, setGoogleAvatar] = useState(null);
 
   const userUUID = JSON.parse(localStorage.getItem('userId'));
   const authToken = localStorage.getItem('user');
+
+  useEffect(() => {
+    // Check if user is logged in with Google
+    const googleAuthToken = localStorage.getItem('sb-uxiytxuyozhaolqjauzv-auth-token');
+    if (googleAuthToken) {
+      try {
+        const parsedToken = JSON.parse(googleAuthToken);
+        const metadata = parsedToken.user?.user_metadata;
+        if (metadata?.avatar_url) {
+          setIsGoogleUser(true);
+          setGoogleAvatar(metadata.avatar_url);
+        }
+      } catch (error) {
+        console.error('Error parsing Google auth token:', error);
+      }
+    }
+  }, []);
 
   // Obtener datos del usuario al cargar el componente
   useEffect(() => {
     fetchUserData();
   }, [userUUID]);
 
+  // Modify fetchUserData to respect Google avatar
   const fetchUserData = async () => {
     const userData = await getUsuarioByUUID(userUUID);
     setUser(userData);
-    setProfileImage(userData.ProfilePic ? `data:image/png;base64,${userData.ProfilePic}` : null);
+    
+    // Only set profile image from database if not Google user
+    if (!isGoogleUser) {
+      setProfileImage(userData.ProfilePic ? `data:image/png;base64,${userData.ProfilePic}` : null);
+    }
 
     const userPosts = await getPostsByUser(userUUID);
     setPosts(userPosts);
@@ -120,15 +144,19 @@ export const Profile = () => {
             <div className="d-flex align-items-center mb-4 position-relative">
               <div className="profile-pic-container">
                 <img
-                  src={profileImage || "https://via.placeholder.com/150"}
+                  src={isGoogleUser ? googleAvatar : (profileImage || "https://via.placeholder.com/150")}
                   className="rounded-circle profile-pic"
                   alt="User Avatar"
                   style={{ width: '150px', height: '150px', objectFit: 'cover' }}
                 />
-                <input type="file" id="profileImageUpload" className="d-none" onChange={handleImageChange} />
-                <label htmlFor="profileImageUpload" className="camera-icon">
-                  <i className="bi bi-camera-fill"></i>
-                </label>
+                {!isGoogleUser && (
+                  <>
+                    <input type="file" id="profileImageUpload" className="d-none" onChange={handleImageChange} />
+                    <label htmlFor="profileImageUpload" className="camera-icon">
+                      <i className="bi bi-camera-fill"></i>
+                    </label>
+                  </>
+                )}
               </div>
               <div className="ms-4">
                 <h3>{user.UserName}</h3>

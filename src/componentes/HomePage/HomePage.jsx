@@ -3,7 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { PostCards } from './PostCards';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './Global.css';
-import logo from "./main_logo.png"; // Asegúrate de que la ruta sea correcta
+import logo from "./main_logo.png";
+import supabase from '../supabase/supabase';
+import { getRole, getRoleName, addUsuario, SetRole, getUsuarioByUUID } from '../supabase/api';
 
 export const HomePage = () => {
   const navigate = useNavigate();
@@ -13,6 +15,45 @@ export const HomePage = () => {
   const [userRole, setUserRole] = useState(localStorage.getItem('userRole'));
   const [postType, setPostType] = useState('explorar');
   const [showScrollButton, setShowScrollButton] = useState(false);
+
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        try {
+          const userUUID = session.user.id;
+          const accessToken = session.access_token;
+          
+          // Store user authentication data
+          localStorage.setItem('user', JSON.stringify(accessToken));
+          localStorage.setItem('userId', JSON.stringify(userUUID));
+          setAuthToken(accessToken);
+          setUserIdToken(userUUID);
+
+          // Check if user exists in our database
+          const userExists = await getUsuarioByUUID(userUUID);
+          if (!userExists) {
+            // If it's a new user, add them to our database
+            await addUsuario(userUUID, session.user.email);
+            await SetRole(userUUID);
+          }
+
+          // Get and store user role
+          const roleData = await getRole(userUUID);
+          if (roleData) {
+            const roleNameData = await getRoleName(roleData.IdRole);
+            localStorage.setItem('userRole', roleNameData.Rol);
+            setUserRole(roleNameData.Rol);
+          }
+        } catch (error) {
+          console.error('Error processing authentication:', error);
+        }
+      }
+    };
+
+    checkAuthentication();
+  }, []); // Empty dependency array since we only want this to run once on mount
 
   useEffect(() => {
     if (postType === 'amigos' && !userIdToken) {
@@ -33,6 +74,7 @@ export const HomePage = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('userId');
     localStorage.removeItem('userRole');
+    localStorage.removeItem('sb-uxiytxuyozhaolqjauzv-auth-token');
     setAuthToken(null);
     setUserIdToken(null);
     setUserRole(null);
@@ -74,7 +116,7 @@ export const HomePage = () => {
           </li>
           {authToken && (
             <li className="nav-item">
-              <Link to="/logout" className="nav-link text-white" onClick={logout}>
+              <Link to="/" className="nav-link text-white" onClick={logout}>
                 <i className="bi bi-box-arrow-right"></i> Cerrar sesión
               </Link>
             </li>

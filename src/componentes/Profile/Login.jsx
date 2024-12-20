@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import supabase from '../supabase/supabase';
-import { addUsuario, SetRole, getRole, getRoleName } from '../supabase/api';
+import { addUsuario, SetRole, getRole, getRoleName, getUsuarioByUUID } from '../supabase/api';
 
 export const Login = ({ onLoginSuccess }) => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -13,6 +13,8 @@ export const Login = ({ onLoginSuccess }) => {
     event.preventDefault();
     setError('');
     setMessage('');
+
+    //sign in google https://uxiytxuyozhaolqjauzv.supabase.co/auth/v1/authorize?provider=google
 
     try {
       if (isSignUp) {
@@ -40,7 +42,6 @@ export const Login = ({ onLoginSuccess }) => {
           throw error;
         }
 
-        localStorage.setItem('user', JSON.stringify(data.session.access_token));
         localStorage.setItem('userId', JSON.stringify(data.user.id));
 
         const roleData = await getRole(data.user.id);
@@ -57,9 +58,61 @@ export const Login = ({ onLoginSuccess }) => {
     }
   };
 
-  const handleGoogleSignIn = () => {
-    console.log("Sign In with Google clickeado (sin lógica implementada)");
+  const handleGoogleSignIn = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({ 
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin // Redirects back to homepage after auth
+        }
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error during Google sign-in:', error.message);
+      setError('Error during Google sign-in');
+    }
   };
+
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        try {
+          const userUUID = session.user.id;
+          const accessToken = session.access_token;
+          
+          // Store user authentication data
+          localStorage.setItem('user', JSON.stringify(accessToken));
+          localStorage.setItem('userId', JSON.stringify(userUUID));
+
+          // Check if user exists in our database
+          const userExists = await getUsuarioByUUID(userUUID);
+          if (!userExists) {
+            // If it's a new user, add them to our database
+            await addUsuario(userUUID, session.user.email);
+            await SetRole(userUUID);
+          }
+
+          // Get and store user role
+          const roleData = await getRole(userUUID);
+          if (roleData) {
+            const roleNameData = await getRoleName(roleData.IdRole);
+            localStorage.setItem('userRole', roleNameData.Rol);
+          }
+
+          setMessage('Logged in successfully!');
+          onLoginSuccess();
+        } catch (error) {
+          console.error('Error processing authentication:', error);
+          setError('Error processing authentication');
+        }
+      }
+    };
+
+    // Run the authentication check
+    checkAuthentication();
+  }, [onLoginSuccess]); // Add onLoginSuccess to dependency array
 
   return (
     <div style={{ display: 'flex', height: '100vh', fontFamily: 'sans-serif', overflow: 'hidden' }}>
