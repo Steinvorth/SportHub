@@ -8,6 +8,7 @@ import supabase from '../supabase/supabase';
 import { getRole, getRoleName, addUsuario, SetRole, getUsuarioByUUID } from '../supabase/api';
 import { CreatePost } from '../PostCreation/CreatePost';
 
+// Componente principal de la página de inicio
 export const HomePage = () => {
   const navigate = useNavigate();
 
@@ -19,7 +20,7 @@ export const HomePage = () => {
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  // Authentication check effect
+  // verificar la autenticación
   useEffect(() => {
     const checkAuthentication = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -55,14 +56,14 @@ export const HomePage = () => {
     checkAuthentication();
   }, []);
 
-  // Check authentication for friends posts
+  // verificar autenticación al mostrar posts de amigos
   useEffect(() => {
     if (postType === 'amigos' && !userIdToken) {
       navigate('/login');
     }
   }, [postType, userIdToken, navigate]);
 
-  // Scroll button effect
+  // mostrar botón de desplazamiento hacia arriba
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollButton(window.scrollY > 300);
@@ -72,6 +73,7 @@ export const HomePage = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Función para cerrar sesión
   const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('userId');
@@ -83,10 +85,12 @@ export const HomePage = () => {
     navigate('/');
   };
 
+  // Función para desplazarse hacia arriba
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Maneja la creación de un nuevo post
   const handlePostCreated = () => {
     setRefreshTrigger(prev => prev + 1);
     setShowCreatePost(false);
@@ -94,7 +98,7 @@ export const HomePage = () => {
 
   return (
     <div className="d-flex">
-      {/* Left Sidebar */}
+      {/* Barra lateral izquierda */}
       <div className="sidebar bg-primary text-white d-flex flex-column p-3" style={{ width: '220px', height: '100vh' }}>
         <img
           src={logo}
@@ -143,7 +147,7 @@ export const HomePage = () => {
         </ul>
       </div>
 
-      {/* Main Content */}
+      {/* Contenido principal */}
       <div className="main-content">
         <div className="container">
           <div className="row justify-content-center">
@@ -154,7 +158,7 @@ export const HomePage = () => {
         </div>
       </div>
 
-      {/* Right Sidebar */}
+      {/* Barra lateral derecha */}
       <div className="right sidebar bg-primary text-white d-flex flex-column p-3" style={{ width: '220px', height: '100vh' }}>
         <h3 className="text-center">Opciones</h3>
         <ul className="nav flex-column">
@@ -203,7 +207,7 @@ export const HomePage = () => {
         </ul>
       </div>
 
-      {/* Scroll to top button */}
+      {/* Botón de desplazamiento hacia arriba */}
       {showScrollButton && (
         <div className="scroll-to-top-fixed">
           <button onClick={scrollToTop} className="btn btn-primary">
@@ -217,7 +221,7 @@ export const HomePage = () => {
         onPostCreated={handlePostCreated}
       />
 
-      {/* Modal background overlay */}
+      {/* Fondo del modal */}
       {showCreatePost && (
         <div 
           className="modal-backdrop fade show" 

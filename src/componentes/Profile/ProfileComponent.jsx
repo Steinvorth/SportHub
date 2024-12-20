@@ -14,6 +14,7 @@ export const ProfileComponent = ({ onPostClick, targetUserUUID, refreshTrigger }
 
   const currentUserUUID = JSON.parse(localStorage.getItem('userId'));
 
+  // verificar si el usuario ha iniciado sesión con Google
   useEffect(() => {
     // Check if user is logged in with Google
     const googleAuthToken = localStorage.getItem('sb-uxiytxuyozhaolqjauzv-auth-token');
@@ -26,11 +27,12 @@ export const ProfileComponent = ({ onPostClick, targetUserUUID, refreshTrigger }
           setGoogleAvatar(metadata.avatar_url);
         }
       } catch (error) {
-        console.error('Error parsing Google auth token:', error);
+        console.error('Error al analizar el token de autenticación de Google:', error);
       }
     }
   }, []);
 
+  //para verificar permisos y obtener datos del usuario
   useEffect(() => {
     const checkPermissionsAndFetchData = async () => {
       const userData = await getUsuarioByUUID(targetUserUUID);
@@ -43,7 +45,7 @@ export const ProfileComponent = ({ onPostClick, targetUserUUID, refreshTrigger }
       const userFriendsCount = await getFriendsCount(targetUserUUID);
       setFriendsCount(userFriendsCount);
 
-      // Check permissions
+      // Verificar permisos
       if (currentUserUUID === targetUserUUID) {
         setCanViewPosts(true);
         const userPosts = await getPostsByUser(targetUserUUID);
@@ -51,7 +53,7 @@ export const ProfileComponent = ({ onPostClick, targetUserUUID, refreshTrigger }
         return;
       }
 
-      // If profile is public
+      // Si el perfil es público
       if (!userData.PerfilPrivado) {
         setCanViewPosts(true);
         const userPosts = await getPostsByUser(targetUserUUID);
@@ -59,7 +61,7 @@ export const ProfileComponent = ({ onPostClick, targetUserUUID, refreshTrigger }
         return;
       }
 
-      // If profile is private, check friendship
+      // Si el perfil es privado, verificar amistad
       const friends = await getFriends(currentUserUUID);
       const isFriend = friends.some(friend => friend.User_Auth_Id === targetUserUUID);
       setCanViewPosts(isFriend);
@@ -73,6 +75,7 @@ export const ProfileComponent = ({ onPostClick, targetUserUUID, refreshTrigger }
     checkPermissionsAndFetchData();
   }, [targetUserUUID, currentUserUUID, isGoogleUser, refreshTrigger]); // Add refreshTrigger
 
+  // Maneja el cambio de imagen de perfil
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -81,13 +84,14 @@ export const ProfileComponent = ({ onPostClick, targetUserUUID, refreshTrigger }
     }
   };
 
+  // Renderiza el contenido multimedia (imagen o video) del post
   const renderMedia = (postPath) => {
     const fileExtension = postPath.split('.').pop().toLowerCase();
     if (fileExtension === 'mp4') {
       return (
         <video className="card-img-top" controls={false} muted style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
           <source src={postPath} type="video/mp4" />
-          Your browser does not support the video tag.
+          Tu navegador no soporta el elemento de video.
         </video>
       );
     } else {
@@ -95,10 +99,11 @@ export const ProfileComponent = ({ onPostClick, targetUserUUID, refreshTrigger }
     }
   };
 
+  // En el retorno, actualizar los comentarios y textos
   return (
     <div className="container">
       <div className="bg-transparent py-4">
-        {/* Profile Info Section - Always visible */}
+        {/* Sección de Información de Perfil - Siempre visible */}
         <div className="d-flex align-items-center mb-4 position-relative">
           <div className="profile-pic-container">
             <img
@@ -120,7 +125,7 @@ export const ProfileComponent = ({ onPostClick, targetUserUUID, refreshTrigger }
             <h3 className="text-dark">{user.UserName}</h3>
             {currentUserUUID === targetUserUUID && (
               <div className="d-flex align-items-center mb-2">
-                <Link to="/EditProfile" className="btn btn-outline-primary me-2">Edit Profile</Link>
+                <Link to="/EditProfile" className="btn btn-outline-primary me-2">Editar Perfil</Link>
                 <Link to="/Settings" className="btn btn-outline-secondary me-2">
                   <i className="bi bi-gear"></i>
                 </Link>
@@ -144,7 +149,7 @@ export const ProfileComponent = ({ onPostClick, targetUserUUID, refreshTrigger }
           </div>
         </div>
 
-        {/* Posts Grid Section - Only visible if allowed */}
+        {/* Sección de Posts - Solo visible si está permitido */}
         {canViewPosts ? (
           <div>
             <h4 className="text-dark mb-4">Posts</h4>

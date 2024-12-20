@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPost, uploadPostImage, getPostCountByUser } from '../supabase/api';
 
+// Componente para crear un nuevo post
 export const CreatePost = ({ show, handleClose, onPostCreated }) => {
   const [picture, setPicture] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -10,6 +11,7 @@ export const CreatePost = ({ show, handleClose, onPostCreated }) => {
   
   const userUUID = JSON.parse(localStorage.getItem('userId'));
 
+  // Maneja el cambio de imagen seleccionada
   const handlePictureChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -18,6 +20,7 @@ export const CreatePost = ({ show, handleClose, onPostCreated }) => {
     }
   };
 
+  // Maneja el envío del formulario para crear el post
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -34,7 +37,7 @@ export const CreatePost = ({ show, handleClose, onPostCreated }) => {
       setPicture(null);
       setPreviewUrl(null);
       setPrivacy('public');
-      onPostCreated(); // Call the callback instead of handleClose
+      onPostCreated(); // Llama al callback en lugar de handleClose
     } else {
       console.error('Error al crear el post');
       handleClose();
@@ -59,14 +62,14 @@ export const CreatePost = ({ show, handleClose, onPostCreated }) => {
       <div className="modal-dialog modal-lg" style={{ marginTop: '2%' }} onClick={e => e.stopPropagation()}>
         <div className="modal-content bg-white">
           <div className="modal-header border-bottom-0">
-            <h5 className="modal-title" style={{ color: '#212529' }}>Crear Post</h5>
+            <h5 className="modal-title" style={{ color: '#212529' }}>Crear Publicación</h5>
             <button type="button" className="btn-close" onClick={handleClose} aria-label="Close"></button>
           </div>
           
           <div className="modal-body">
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
-                <label htmlFor="description" className="form-label" style={{ color: '#212529' }}>Descripcion</label>
+                <label htmlFor="description" className="form-label" style={{ color: '#212529' }}>Descripción</label>
                 <textarea 
                   className="form-control"
                   id="description" 
@@ -132,7 +135,7 @@ export const CreatePost = ({ show, handleClose, onPostCreated }) => {
                     border: '1px solid #e9ecef'
                   }}
                 >
-                  <option value="public">Publico</option>
+                  <option value="public">Público</option>
                   <option value="friends">Privado</option>
                 </select>
               </div>

@@ -6,6 +6,7 @@ import './Profile.css';
 import { CreatePost } from '../PostCreation/CreatePost';
 import { ProfileComponent } from './ProfileComponent';
 
+// Importaciones necesarias y estado inicial
 export const Profile = () => {
   const { userId } = useParams();
   const [showCreatePost, setShowCreatePost] = useState(false);
@@ -14,13 +15,15 @@ export const Profile = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const authToken = localStorage.getItem('user');
   
-  // If userId from params exists, use it, otherwise use current user's UUID
+  // Si userId de los parámetros existe, úsalo, de lo contrario usa el UUID del usuario actual
   const userUUID = userId || JSON.parse(localStorage.getItem('userId'));
 
+  // Maneja la creación de un nuevo post
   const handlePostCreated = () => {
     setShowCreatePost(false);
   };
 
+  // Maneja el cierre del modal de detalle de post
   const handleCloseModal = (refresh = false) => {
     setShowModal(false);
     setSelectedPostId(null);
@@ -29,10 +32,12 @@ export const Profile = () => {
     }
   };
 
+  // Maneja la actualización de la página
   const handleRefresh = () => {
     setRefreshTrigger(prev => prev + 1);
   };
 
+  // Función para cerrar sesión
   const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('userId');
@@ -41,7 +46,7 @@ export const Profile = () => {
 
   return (
     <div style={{ minWidth: '100vw' }}>
-      {/* Navbar */}
+      {/* Barra de navegación */}
       <nav className="navbar navbar-expand-lg navbar-light bg-light d-flex flex-column w-100">
         <div className="container">
           <a className="navbar-brand" href="/">Sport Hub</a>
@@ -71,6 +76,7 @@ export const Profile = () => {
         </div>
       </nav>
 
+      {/* Componente de Perfil */}
       <ProfileComponent 
         onPostClick={(postId) => {
           setSelectedPostId(postId);
@@ -80,6 +86,7 @@ export const Profile = () => {
         refreshTrigger={refreshTrigger}
       />
 
+      {/* Modales para crear post y ver detalle del post */}
       <CreatePost 
         show={showCreatePost} 
         handleClose={() => setShowCreatePost(false)}

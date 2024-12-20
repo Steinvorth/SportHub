@@ -6,6 +6,7 @@ import { CommentModal } from './CommentModal';
  * Este es un componente para hacer los Bootstrap Cards para los post.
 */
 
+// Componente para mostrar las tarjetas de los posts
 export const PostCards = ({ postType, refreshTrigger }) => {
   const [postObj, setPostObj] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
@@ -78,14 +79,14 @@ export const PostCards = ({ postType, refreshTrigger }) => {
     });
   };
 
-  // Renderiza el post (imagen o video) basado en la extensión del archivo
+  // Renderiza la imagen o video del post
   const renderMedia = (postPath) => {
     const fileExtension = postPath.split('.').pop().toLowerCase();
     if (fileExtension === 'mp4') {
       return (
         <video className="card-img-top" controls>
           <source src={postPath} type="video/mp4" />
-          Your browser does not support the video tag.
+          Tu navegador no soporta el elemento de video.
         </video>
       );
     } else {
