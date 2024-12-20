@@ -17,6 +17,7 @@ export const HomePage = () => {
   const [postType, setPostType] = useState('explorar');
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [showCreatePost, setShowCreatePost] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Authentication check effect
   useEffect(() => {
@@ -86,6 +87,11 @@ export const HomePage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handlePostCreated = () => {
+    setRefreshTrigger(prev => prev + 1);
+    setShowCreatePost(false);
+  };
+
   return (
     <div className="d-flex">
       {/* Left Sidebar */}
@@ -104,14 +110,14 @@ export const HomePage = () => {
         <ul className="nav flex-column">
           <li className="nav-item">
             <Link to="/" className="nav-link text-white" onClick={() => setPostType('explorar')}>
-              <i className="bi bi-house-door"></i> Explorar
+              <i className="bi bi-backpack2"></i> Explorar
             </Link>
           </li>
           
           {authToken && (
             <li className="nav-item">
               <Link to="/" className="nav-link text-white" onClick={() => setPostType('amigos')}>
-                <i className="bi bi-people-fill"></i> Amigos
+                <i className="bi bi-people"></i> Amigos
               </Link>
             </li>
           )}
@@ -142,7 +148,7 @@ export const HomePage = () => {
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-12 col-md-8">
-              <PostCards postType={postType} />
+              <PostCards postType={postType} refreshTrigger={refreshTrigger} />
             </div>
           </div>
         </div>
@@ -205,7 +211,11 @@ export const HomePage = () => {
           </button>
         </div>
       )}
-      <CreatePost show={showCreatePost} handleClose={() => setShowCreatePost(false)} />
+      <CreatePost 
+        show={showCreatePost} 
+        handleClose={() => setShowCreatePost(false)}
+        onPostCreated={handlePostCreated}
+      />
 
       {/* Modal background overlay */}
       {showCreatePost && (

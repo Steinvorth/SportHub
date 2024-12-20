@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPost, uploadPostImage, getPostCountByUser } from '../supabase/api';
 
-export const CreatePost = ({ show, handleClose }) => {
+export const CreatePost = ({ show, handleClose, onPostCreated }) => {
   const [picture, setPicture] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [description, setDescription] = useState('');
@@ -34,9 +34,10 @@ export const CreatePost = ({ show, handleClose }) => {
       setPicture(null);
       setPreviewUrl(null);
       setPrivacy('public');
-      handleClose();
+      onPostCreated(); // Call the callback instead of handleClose
     } else {
       console.error('Error al crear el post');
+      handleClose();
     }
     setLoading(false);
   };

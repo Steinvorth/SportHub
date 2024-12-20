@@ -6,7 +6,7 @@ import { CommentModal } from './CommentModal';
  * Este es un componente para hacer los Bootstrap Cards para los post.
 */
 
-export const PostCards = ({ postType }) => {
+export const PostCards = ({ postType, refreshTrigger }) => {
   const [postObj, setPostObj] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -66,7 +66,7 @@ export const PostCards = ({ postType }) => {
     };
 
     fetchPosts();
-  }, [postType]);
+  }, [postType, refreshTrigger]);
 
   // Formatea la fecha en un formato legible
   const formatDate = (dateString) => {
@@ -135,28 +135,75 @@ export const PostCards = ({ postType }) => {
     <>
       {
         postObj.map((post) => (
-          <div className="card w-100 mb-3" key={post.id}>
-            <div className="card-header">
+          <div 
+            className="card w-100 mb-3 shadow-sm" 
+            key={post.id}
+            style={{
+              borderRadius: '8px',
+              border: '1px solid #e9ecef',
+              backgroundColor: '#fff'
+            }}
+          >
+            <div 
+              className="card-header bg-white" 
+              style={{
+                borderBottom: '1px solid #e9ecef',
+                padding: '1rem',
+                color: '#000000',
+                fontWeight: '500'
+              }}
+            >
               @{post.user}
             </div>
-            {renderMedia(post.PostPath)}
+            
+            <div className="position-relative">
+              {renderMedia(post.PostPath)}
+            </div>
+
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center mb-2">
                 <div>
                   <i 
                     className={`bi bi-trophy${likedPosts[post.id] ? '-fill' : ''} me-1`}
                     onClick={() => handleLikeClick(post.id)}
-                    style={{ cursor: 'pointer' }}
+                    style={{ 
+                      cursor: 'pointer',
+                      color: likedPosts[post.id] ? '#0d6efd' : '#6c757d',
+                      fontSize: '1.1rem'
+                    }}
                   ></i>
-                  <span className="me-3">{likeCounts[post.id] || 0}</span>
-                  <i className="bi bi-chat me-1" onClick={() => handleCommentClick(post)}></i>
-                  <span className="me-2">{post.commentCount}</span>
+                  <span className="me-3" style={{ color: '#6c757d' }}>
+                    {likeCounts[post.id] || 0}
+                  </span>
+                  
+                  <i 
+                    className="bi bi-chat me-1" 
+                    onClick={() => handleCommentClick(post)}
+                    style={{ 
+                      cursor: 'pointer',
+                      color: '#6c757d',
+                      fontSize: '1.1rem'
+                    }}
+                  ></i>
+                  <span style={{ color: '#6c757d' }}>
+                    {post.commentCount}
+                  </span>
                 </div>
+                
                 <small className="text-muted">
                   {formatDate(post.created_at)}
                 </small>
               </div>
-              <p className="card-text">{post.Descripcion}</p>
+              
+              <p 
+                className="card-text" 
+                style={{ 
+                  color: '#212529',
+                  margin: '0.5rem 0'
+                }}
+              >
+                {post.Descripcion}
+              </p>
             </div>
           </div>
         ))
