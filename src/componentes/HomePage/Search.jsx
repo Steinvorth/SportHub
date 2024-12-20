@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { searchPosts, searchUsers } from '../supabase/api';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { SearchPost } from './SearchPost';  // Update import
+import { SearchProfile } from './SearchProfile';  // Add this import
 
 export const Search = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -11,6 +12,8 @@ export const Search = () => {
   const [loading, setLoading] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);  // Add new state for profile modal
+  const [showProfileModal, setShowProfileModal] = useState(false);  // Add new state for profile modal
 
   useEffect(() => {
     const performSearch = async () => {
@@ -63,6 +66,16 @@ export const Search = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedPostId(null);
+  };
+
+  const handleProfileClick = (userId) => {  // Add handlers for profile modal
+    setSelectedUserId(userId);
+    setShowProfileModal(true);
+  };
+
+  const handleCloseProfileModal = () => {  // Add handlers for profile modal
+    setShowProfileModal(false);
+    setSelectedUserId(null);
   };
 
   return (
@@ -151,7 +164,7 @@ export const Search = () => {
                   }}>
                     {users.length > 0 ? users.map(user => (
                       <div key={user.User_Auth_Id} style={{ minWidth: '250px' }}>
-                        <Link to={`/profile/${user.User_Auth_Id}`} className="text-decoration-none">
+                        <div onClick={() => handleProfileClick(user.User_Auth_Id)} className="text-decoration-none">
                           <div className="card h-100" style={{
                             backgroundColor: '#fff',
                             border: '1px solid #e9ecef',
@@ -195,7 +208,7 @@ export const Search = () => {
                               </div>
                             </div>
                           </div>
-                        </Link>
+                        </div>
                       </div>
                     )) : (
                       <EmptyState message={searchTerm ? "No users found" : "Search for users"} />
@@ -303,6 +316,13 @@ export const Search = () => {
           postId={selectedPostId}
           show={showModal}
           handleClose={handleCloseModal}
+        />
+      )}
+      {selectedUserId && (  // Add SearchProfile modal
+        <SearchProfile
+          targetUserUUID={selectedUserId}
+          show={showProfileModal}
+          handleClose={handleCloseProfileModal}
         />
       )}
     </div>

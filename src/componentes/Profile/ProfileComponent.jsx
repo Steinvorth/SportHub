@@ -121,8 +121,12 @@ export const ProfileComponent = ({ onPostClick, targetUserUUID }) => {
             {currentUserUUID === targetUserUUID && (
               <div className="d-flex align-items-center mb-2">
                 <Link to="/EditProfile" className="btn btn-outline-primary me-2">Edit Profile</Link>
-                <Link to="/Settings" className="btn btn-outline-secondary">
+                <Link to="/Settings" className="btn btn-outline-secondary me-2">
                   <i className="bi bi-gear"></i>
+                </Link>
+
+                <Link to="/Friends" className="btn btn-outline-secondary">
+                    <i className="bi bi-people"></i>
                 </Link>
               </div>
             )}
