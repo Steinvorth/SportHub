@@ -32,7 +32,7 @@ export const Settings = () => {
     const handleDeleteAccount = async () => {
         const result = await Swal.fire({
             title: 'Eliminar Cuenta',
-            text: "\u00bfEstás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.",
+            text: "¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -43,13 +43,23 @@ export const Settings = () => {
 
         if (result.isConfirmed) {
             try {
-                const response = await deleteAuthUser(userUUID);
+                // Clear local storage first
+                localStorage.clear();
+                
+                // Delete account
+                await deleteAuthUser(userUUID);
+                
+                // Show success message
+                await Swal.fire({
+                    title: 'Cuenta eliminada',
+                    text: 'Tu cuenta ha sido eliminada exitosamente',
+                    icon: 'success'
+                });
 
-                if (response.success) {
-                    Swal.fire('Cuenta eliminada', response.message, 'success');
-                    window.location.href = '/';
-                }
+                // Redirect to home
+                window.location.href = '/';
             } catch (error) {
+                console.error('Error:', error);
                 Swal.fire('Error', error.message, 'error');
             }
         }
