@@ -54,7 +54,7 @@ export const AdminUsuarios = () => {
             {users.map((user) => (
               <tr key={user.id} className="bg-light">
                 <td className="text-dark bg-white">{user.email}</td>
-                <td className="bg-white">
+                <td className='bg-white'>
                   <span className={`badge ${user.banned_until ? 'bg-danger' : 'bg-success'}`}>
                     {user.banned_until ? 'Suspendido' : 'Activo'}
                   </span>
@@ -62,16 +62,18 @@ export const AdminUsuarios = () => {
                 <td className="text-dark bg-white">{new Date(user.last_sign_in_at).toLocaleDateString()}</td>
                 <td className='bg-white'>
                   <button
-                    className={`btn btn-sm ${user.banned_until ? 'btn-success' : 'btn-warning'} me-2`}
+                    className={`btn btn-sm ${user.banned_until ? 'btn-warning' : 'btn-success'} me-2`}
                     onClick={() => handleSuspendToggle(user)}
+                    title={user.banned_until ? 'Reactivar Usuario' : 'Suspender Usuario'}
                   >
-                    {user.banned_until ? 'Reactivar' : 'Suspender'}
+                    <i className={`bi ${user.banned_until ? 'bi-person-fill-lock' : 'bi-person-fill-check'}`}></i>
                   </button>
                   <button
                     className="btn btn-sm btn-danger"
                     onClick={() => handleDeleteUser(user.id)}
+                    title="Eliminar Usuario"
                   >
-                    Eliminar
+                    <i className="bi bi-person-x-fill"></i>
                   </button>
                 </td>
               </tr>
