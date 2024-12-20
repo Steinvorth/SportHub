@@ -202,20 +202,11 @@ export const HomePage = () => {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/posts" className="nav-link text-white">
-                  <i className="bi bi-file-earmark-post"></i> Posts
+                <Link to="/Friends" className="nav-link text-white">
+                  <i className="bi bi-person-lines-fill"></i> Manejar Amistades
                 </Link>
               </li>
-              <li className="nav-item">
-                <Link to="/saved" className="nav-link text-white">
-                  <i className="bi bi-bookmark"></i> Guardados
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link to="/liked" className="nav-link text-white">
-                  <i className="bi bi-heart"></i> Me gusta
-                </Link>
-              </li>
+
               <li className="nav-item">
                 <Link to="/settings" className="nav-link text-white">
                   <i className="bi bi-gear"></i> Configuración
