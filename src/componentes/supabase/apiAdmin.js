@@ -42,14 +42,27 @@ export const unsuspendUser = async (userId) => {
   }
 };
 
-// Delete user
+// Delete user and all related data
 export const deleteAuthUser = async (userId) => {
   try {
-    const { data, error } = await supabaseAdmin.auth.admin.deleteUser(userId);
-    if (error) throw error;
-    return data;
+    // First delete user data from database
+    const { error: dbError } = await supabaseAdmin
+      .from('Usuarios')
+      .delete()
+      .eq('User_Auth_Id', userId);
+
+    if (dbError) throw dbError;
+
+    // Then delete auth user
+    const { data, error: authError } = await supabaseAdmin.auth.admin.deleteUser(
+      userId
+    );
+
+    if (authError) throw authError;
+
+    return { success: true, message: 'Cuenta eliminada exitosamente' };
   } catch (error) {
     console.error('Error deleting user:', error);
-    return null;
+    throw new Error('Error al eliminar la cuenta. Por favor intente nuevamente.');
   }
 };
