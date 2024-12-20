@@ -879,8 +879,6 @@ export const searchUsers = async (searchTerm) => {
 
 
 
-
-
 ///////CODIGO SOLICITUDES PENDIENTES/////////
 export const enviarSolicitudAmistad = async (userUUID, amigoUUID) => {
   try {
@@ -1039,3 +1037,13 @@ const handleAceptarSolicitud = async (solicitudId, amigoUUID) => {
 
 
              ///////CODIGO SOLICITUDES PENDIENTES/////////
+
+
+//MÉTODO PARA MANEJAR EL SWITCH DE PRIVACIDAD
+export const updatePrivacySetting = async (userUUID, isPrivate) => {
+  return supabase
+      .from('Usuarios') // Reemplaza 'users' con el nombre de tu tabla
+      .update({ PerfilPrivado: isPrivate })
+      .eq('User_Auth_Id', userUUID)
+      .single();
+};
