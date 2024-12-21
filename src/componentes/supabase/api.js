@@ -426,24 +426,12 @@ export const getRoles = async () => {
 // Insertar UserUUID en RolesUsuario con rol por defecto "Usuario"
 export const SetRole = async (userUUID) => {
   try {
-    // Obtener el ID del rol "Usuario"
-    const { data: roles, error: rolesError } = await supabase
-      .from('Roles')
-      .select('id')
-      .eq('Rol', 'Usuario')
-      .single();
-
-    if (rolesError) {
-      throw rolesError;
-    }
-
-    const roleId = roles.id;
 
     // Insertar en RolesUsuario
     const { data, error } = await supabase
       .from('RolesUsuario')
       .insert([
-        { IdRole: roleId, UserUUID: userUUID }
+        { IdRole: 2, UserUUID: userUUID }
       ]);
 
     if (error) {
