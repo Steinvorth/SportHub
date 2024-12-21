@@ -164,11 +164,13 @@ export const HomePage = () => {
             </Link>
           </li>
 
-          <li className="nav-item">
+          {authToken && (
+            <li className="nav-item">
             <a className="nav-link text-white" style={{cursor: 'pointer'}} onClick={() => setShowCreatePost(true)}>
               <i className="bi bi-pencil-square"></i> Crear
             </a>
           </li>
+          )}          
           {authToken && (
             <li className="nav-item">
               <Link to="/" className="nav-link text-white" onClick={logout}>
