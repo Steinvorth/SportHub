@@ -1,193 +1,193 @@
 /* Estilos generales */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: row;
-  min-height: 100vh;
-  background-color: #f0f4f7; /* Fondo claro */
-}
-
-/* Barra lateral Izquierda */
-.sidebar {
-  width: 220px;
-  background-color: #6c757d; /* Gris oscuro para el sidebar izquierdo */
-  color: white;
-  position: fixed;
-  top: 0;
-  height: 100%;
-  padding: 20px;
-}
-
-.sidebar ul {
-  list-style-type: none;
-}
-
-.sidebar ul li {
-  margin: 20px 0;
-}
-
-.sidebar ul li a {
-  color: white;
-  text-decoration: none;
-  font-size: 18px;
-  transition: color 0.3s ease;
-}
-
-.sidebar ul li a:hover {
-  color: #d1d9db; /* Gris muy claro para resaltar */
-}
-
-/* Sidebar izquierdo */
-.left {
-  left: 0;
-}
-
-/* Sidebar derecho */
-.right {
-  right: 0;
-  background-color: #adb5bd; /* Gris más suave para el sidebar derecho */
-}
-
-/* Contenido Principal */
-.main-content {
-  margin-left: 240px;
-  margin-right: 240px;
-  flex-grow: 1;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Navbar */
-.navbar {
-  background-color: #6c757d; /* Gris oscuro para la barra de navegación */
-}
-
-.navbar .navbar-brand {
-  color: white;
-}
-
-.navbar .navbar-nav .nav-item .btn-outline-primary {
-  color: #6c757d;
-  border-color: #6c757d;
-}
-
-.navbar .navbar-nav .nav-item .btn-outline-primary:hover {
-  color: white;
-  background-color: #5a6268; /* Gris más oscuro al pasar el mouse */
-}
-
-/* Estilo para los botones del grupo */
-.btn-group .btn {
-  background-color: #adb5bd; /* Gris brillante para los botones */
-  border: none;
-  color: white;
-  padding: 10px 20px;
-}
-
-.btn-group .btn:hover {
-  background-color: #6c757d; /* Gris oscuro al pasar el mouse */
-}
-
-/* Estilo para los iconos de los botones */
-.bi {
-  margin-right: 8px;
-}
-
-/* Logo en el Sidebar */
-.logo {
-  width: 160px; /* Ajusta el tamaño del logo */
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.logo:hover {
-  transform: scale(1.1); /* Efecto de zoom al pasar el mouse */
-}
-
-/* Sidebar links */
-.sidebar-left li {
-  color: white;
-  font-size: 18px;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-.sidebar-left li:hover {
-  color: #d1d9db; /* Cambio de color al pasar el mouse */
-}
-
-.sidebar-icon {
-  margin-right: 8px;
-}
-
-/* Botón flotante para volver al inicio */
-.scroll-to-top-fixed {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-}
-
-.scroll-to-top-fixed button {
-  background-color: #5a6268; /* Gris oscuro */
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 50%;
-  font-size: 1.5rem;
-  cursor: pointer;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.scroll-to-top-fixed button:hover {
-  background-color: #343a40; /* Gris más oscuro */
-  transform: scale(1.1);
-}
-
-/* Ajustes responsivos */
-@media (max-width: 768px) {
-  .sidebar,
-  .right.sidebar {
-      width: 180px;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
-
+  
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    background-color: #f0f4f7; /* Fondo claro */
+  }
+  
+  /* Barra lateral Izquierda */
+  .sidebar {
+    width: 220px;
+    background-color: #007BFF; /* Azul vibrante para el sidebar izquierdo */
+    color: white;
+    position: fixed;
+    top: 0;
+    height: 100%;
+    padding: 20px;
+  }
+  
+  .sidebar ul {
+    list-style-type: none;
+  }
+  
+  .sidebar ul li {
+    margin: 20px 0;
+  }
+  
+  .sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    transition: color 0.3s ease;
+  }
+  
+  .sidebar ul li a:hover {
+    color: #f0f8ff; /* Azul muy claro para resaltar */
+  }
+  
+  /* Sidebar izquierdo */
+  .left {
+    left: 0;
+  }
+  
+  /* Sidebar derecho */
+  .right {
+    right: 0;
+    background-color: #00A2D1; /* Azul más suave para el sidebar derecho */
+  }
+  
+  /* Contenido Principal */
   .main-content {
+    margin-left: 240px;
+    margin-right: 240px;
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Navbar */
+  .navbar {
+    background-color: #007BFF; /* Azul vibrante para la barra de navegación */
+  }
+  
+  .navbar .navbar-brand {
+    color: white;
+  }
+  
+  .navbar .navbar-nav .nav-item .btn-outline-primary {
+    color: #007BFF;
+    border-color: #007BFF;
+  }
+  
+  .navbar .navbar-nav .nav-item .btn-outline-primary:hover {
+    color: white;
+    background-color: #0056b3; /* Azul más oscuro al pasar el mouse */
+  }
+  
+  /* Estilo para los botones del grupo */
+  .btn-group .btn {
+    background-color: #00A2D1; /* Azul brillante para los botones */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+  }
+  
+  .btn-group .btn:hover {
+    background-color: #007BFF; /* Azul vibrante al pasar el mouse */
+  }
+  
+  /* Estilo para los iconos de los botones */
+  .bi {
+    margin-right: 8px;
+  }
+  
+  /* Logo en el Sidebar */
+  .logo {
+    width: 160px; /* Ajusta el tamaño del logo */
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  .logo:hover {
+    transform: scale(1.1); /* Efecto de zoom al pasar el mouse */
+  }
+  
+  /* Sidebar links */
+  .sidebar-left li {
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .sidebar-left li:hover {
+    color: #f0f8ff; /* Cambio de color al pasar el mouse */
+  }
+  
+  .sidebar-icon {
+    margin-right: 8px;
+  }
+  /* Botón flotante para volver al inicio */
+.scroll-to-top-fixed {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
+  
+  .scroll-to-top-fixed button {
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .scroll-to-top-fixed button:hover {
+    background-color: #003d80;
+    transform: scale(1.1);
+  }
+  
+  /* Ajustes responsivos */
+  @media (max-width: 768px) {
+    .sidebar,
+    .right.sidebar {
+      width: 180px;
+    }
+  
+    .main-content {
       margin-left: 180px;
       width: calc(100% - 360px);
-  }
-
-  .sidebar .logo {
+    }
+  
+    .sidebar .logo {
       max-width: 120px;
-  }
-
-  .sidebar h3,
-  .right.sidebar h3 {
+    }
+  
+    .sidebar h3,
+    .right.sidebar h3 {
       font-size: 16px;
-  }
-
-  .sidebar .nav-item .nav-link,
-  .right.sidebar .nav-item .nav-link {
+    }
+  
+    .sidebar .nav-item .nav-link,
+    .right.sidebar .nav-item .nav-link {
       font-size: 14px;
+    }
   }
-}
-
-@media (max-width: 576px) {
-  .sidebar,
-  .right.sidebar {
+  
+  @media (max-width: 576px) {
+    .sidebar,
+    .right.sidebar {
       display: none;
-  }
-
-  .main-content {
+    }
+  
+    .main-content {
       margin-left: 0;
       width: 100%;
+    }
   }
-}
+  
