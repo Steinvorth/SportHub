@@ -128,7 +128,10 @@ export const SearchProfile = ({ targetUserUUID, show, handleClose }) => {
           <div className="modal-body">
             {isBlocked ? (
               <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
-                <h2 className="text-center text-danger">Este usuario está bloqueado</h2>
+                <i className="bi bi-ban text-danger" style={{ fontSize: "2rem" }}></i>
+                <h2 className="text-danger" style={{ fontSize: "2rem", display: "inline-block", marginLeft: "0.5rem" }}>
+                  Este usuario está bloqueado
+                </h2>
               </div>
             ) : (
               <ProfileComponent
