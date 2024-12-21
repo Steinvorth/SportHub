@@ -76,7 +76,7 @@ export const HomePage = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Add subscription to friend requests
+  // subscripcion a notificaciones de solicitudes de amistad
   useEffect(() => {
     if (userIdToken) {
       const unsubscribe = subscribeToFriendRequests((message) => {
@@ -89,7 +89,7 @@ export const HomePage = () => {
     }
   }, [userIdToken, showNotification]);
 
-  // Add this near the top with other useEffects
+  // Nofiticaciones para el realtime para solicitudes de amistad
   useEffect(() => {
     if (userIdToken) {
       console.log('Setting up friend request subscription for user:', userIdToken);

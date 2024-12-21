@@ -30,7 +30,7 @@ export const AdminDashboard = () => {
   if (!isAdmin) {
     return (
       <div className="container mt-5">
-        <h2>Usuario no permitido en esta ruta. Por favor volver a la pagina de inicio</h2>
+        <h2 className='text-dark'>Usuario no permitido en esta ruta. Por favor volver a la pagina de inicio</h2>
         <Link to="/" className="btn btn-primary mt-3">Volver a la página de inicio</Link>
       </div>
     );
