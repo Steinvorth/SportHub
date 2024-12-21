@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getUsuarioByUUID, getPostsByUser, getFriendsCount, uploadUserProfileImage, getFriends } from '../supabase/api';
 import './Profile.css';
+import { DetallePost } from './DetallePost';
 
 export const ProfileComponent = ({ onPostClick, targetUserUUID, refreshTrigger }) => {
   const [user, setUser] = useState({});
@@ -11,6 +12,8 @@ export const ProfileComponent = ({ onPostClick, targetUserUUID, refreshTrigger }
   const [isGoogleUser, setIsGoogleUser] = useState(false);
   const [googleAvatar, setGoogleAvatar] = useState(null);
   const [canViewPosts, setCanViewPosts] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState(null);
+  const [showPostModal, setShowPostModal] = useState(false);
 
   const currentUserUUID = JSON.parse(localStorage.getItem('userId'));
 
@@ -105,89 +108,134 @@ export const ProfileComponent = ({ onPostClick, targetUserUUID, refreshTrigger }
     }
   };
 
+  const handlePostClick = (postId) => {
+    setSelectedPostId(postId);
+    setShowPostModal(true);
+  };
+
   // En el retorno, actualizar los comentarios y textos
   return (
-    <div className="container">
-      <div className="bg-transparent py-4">
-        {/* Sección de Información de Perfil - Siempre visible */}
-        <div className="d-flex align-items-center mb-4 position-relative">
-          <div className="profile-pic-container">
-            <img
-              src={isGoogleUser && googleAvatar ? googleAvatar : (profileImage || "https://via.placeholder.com/150")}
-              className="rounded-circle profile-pic"
-              alt="User Avatar"
-              style={{ width: '150px', height: '150px', objectFit: 'cover' }}
-              onError={(e) => {
-                console.error('Error loading image:', e);
-                e.target.src = "https://via.placeholder.com/150";
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
+      <div
+        style={{
+          backgroundColor: '#000',
+          color: '#fff',
+          padding: '20px',
+          borderRadius: '10px',
+          marginBottom: '20px',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div
+              style={{
+                width: '150px',
+                height: '150px',
+                borderRadius: '50%',
+                overflow: 'hidden',
+                border: '3px solid #fff',
+                marginRight: '20px',
+                position: 'relative',
               }}
-            />
-            {currentUserUUID === targetUserUUID && !isGoogleUser && (
-              <>
-                <input type="file" id="profileImageUpload" className="d-none" onChange={handleImageChange} />
-                <label htmlFor="profileImageUpload" className="camera-icon">
-                  <i className="bi bi-camera-fill"></i>
-                </label>
-              </>
-            )}
-          </div>
-          <div className="ms-4">
-            <h3 className="text-dark">{user.UserName}</h3>
-            {currentUserUUID === targetUserUUID && (
-              <div className="d-flex align-items-center mb-2">
-                <Link to="/EditProfile" className="btn btn-outline-primary me-2">Editar Perfil</Link>
-                <Link to="/Settings" className="btn btn-outline-secondary me-2">
-                  <i className="bi bi-gear"></i>
-                </Link>
-
-                <Link to="/Friends" className="btn btn-outline-secondary">
-                    <i className="bi bi-people"></i>
-                </Link>
-              </div>
-            )}
-            <div className="d-flex mb-2">
-              <div className="me-4">
-                <h4 className="text-dark">Posts</h4>
-                <p className="text-dark">{posts.length}</p>
-              </div>
-              <div>
-                <h4 className="text-dark">Friends</h4>
-                <p className="text-dark">{friendsCount}</p>
-              </div>
-            </div>
-            <p className="text-dark">{user.Bio}</p>
-          </div>
-        </div>
-
-        {/* Sección de Posts - Solo visible si está permitido */}
-        {canViewPosts ? (
-          <div>
-            <h4 className="text-dark mb-4">Posts</h4>
-            <div className="row g-4">
-              {posts.length > 0 ? (
-                posts.map(post => (
-                  <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={post.id} onClick={() => onPostClick(post.id)}>
-                    <div className="card bg-transparent border-0" style={{ cursor: 'pointer' }}>
-                      <div style={{ paddingBottom: '100%', position: 'relative' }}>
-                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', borderRadius: '8px', overflow: 'hidden' }}>
-                          {renderMedia(post.PostPath)}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-dark">No hay Posts disponibles.</p>
+            >
+              <img
+                src={isGoogleUser ? googleAvatar : profileImage || 'https://via.placeholder.com/150'}
+                alt="Profile"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+              {currentUserUUID === targetUserUUID && !isGoogleUser && (
+                <>
+                  <input
+                    type="file"
+                    id="profileImageUpload"
+                    style={{ display: 'none' }}
+                    onChange={handleImageChange}
+                  />
+                  <label
+                    htmlFor="profileImageUpload"
+                    style={{
+                      position: 'absolute',
+                      bottom: '10px',
+                      right: '10px',
+                      cursor: 'pointer',
+                      backgroundColor: '#fff',
+                      padding: '5px',
+                      borderRadius: '50%',
+                    }}
+                  >
+                    <i className="bi bi-camera-fill" style={{ color: '#000' }}></i>
+                  </label>
+                </>
               )}
             </div>
+            <div>
+              <h2 style={{ margin: 0 }}>{user.UserName}</h2>
+              <div style={{ marginTop: '10px' }}>
+                {currentUserUUID === targetUserUUID && (
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <Link to="/EditProfile" className="btn btn-outline-light">
+                      Editar Perfil
+                    </Link>
+                    <Link to="/Settings" className="btn btn-outline-light">
+                      <i className="bi bi-gear"></i>
+                    </Link>
+                    <Link to="/Friends" className="btn btn-outline-light">
+                      <i className="bi bi-people"></i>
+                    </Link>
+                  </div>
+                )}
+              </div>
+              <p style={{ margin: '5px 0' }}>
+                Posts: {posts.length} | Friends: {friendsCount}
+              </p>
+            </div>
           </div>
-        ) : (
-          <div className="text-center mt-5">
-            <h5 className="text-dark">Este perfil es privado</h5>
-            <p className="text-secondary">Solo amigos pueden ver las publicaciones</p>
-          </div>
-        )}
+        </div>
       </div>
+
+      <div>
+        <h3 style={{ marginBottom: '20px', color: '#000' }}>Posts</h3>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+            gap: '20px',
+          }}
+        >
+          {posts.map((post) => (
+            <div
+              key={post.id}
+              style={{
+                border: '1px solid #ddd',
+                borderRadius: '10px',
+                overflow: 'hidden',
+                backgroundColor: '#fff',
+                boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              }}
+              onClick={() => handlePostClick(post.id)}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.05)';
+                e.currentTarget.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.2)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.1)';
+              }}
+            >
+              {renderMedia(post.PostPath)}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {showPostModal && (
+        <DetallePost
+          postId={selectedPostId}
+          show={showPostModal}
+          handleClose={() => setShowPostModal(false)}
+        />
+      )}
     </div>
   );
 };
