@@ -16,18 +16,24 @@ export const ProfileComponent = ({ onPostClick, targetUserUUID, refreshTrigger }
 
   // verificar si el usuario ha iniciado sesión con Google
   useEffect(() => {
-    // Check if user is logged in with Google
     const googleAuthToken = localStorage.getItem('sb-uxiytxuyozhaolqjauzv-auth-token');
     if (googleAuthToken) {
       try {
         const parsedToken = JSON.parse(googleAuthToken);
-        const metadata = parsedToken.user?.user_metadata;
-        if (metadata?.avatar_url) {
+        const avatarUrl = parsedToken.user?.user_metadata?.avatar_url || 
+                         parsedToken.user?.user_metadata?.picture;
+        
+        console.log('Google auth data:', {
+          metadata: parsedToken.user?.user_metadata,
+          avatarUrl
+        });
+
+        if (avatarUrl) {
           setIsGoogleUser(true);
-          setGoogleAvatar(metadata.avatar_url);
+          setGoogleAvatar(avatarUrl);
         }
       } catch (error) {
-        console.error('Error al analizar el token de autenticación de Google:', error);
+        console.error('Error parsing Google auth token:', error);
       }
     }
   }, []);
@@ -107,10 +113,14 @@ export const ProfileComponent = ({ onPostClick, targetUserUUID, refreshTrigger }
         <div className="d-flex align-items-center mb-4 position-relative">
           <div className="profile-pic-container">
             <img
-              src={isGoogleUser ? googleAvatar : (profileImage || "https://via.placeholder.com/150")}
+              src={isGoogleUser && googleAvatar ? googleAvatar : (profileImage || "https://via.placeholder.com/150")}
               className="rounded-circle profile-pic"
               alt="User Avatar"
               style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+              onError={(e) => {
+                console.error('Error loading image:', e);
+                e.target.src = "https://via.placeholder.com/150";
+              }}
             />
             {currentUserUUID === targetUserUUID && !isGoogleUser && (
               <>
