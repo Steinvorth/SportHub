@@ -1042,7 +1042,7 @@ const handleAceptarSolicitud = async (solicitudId, amigoUUID) => {
 //MÉTODO PARA MANEJAR EL SWITCH DE PRIVACIDAD
 export const updatePrivacySetting = async (userUUID, isPrivate) => {
   return supabase
-      .from('Usuarios') // Reemplaza 'users' con el nombre de tu tabla
+      .from('Usuarios') 
       .update({ PerfilPrivado: isPrivate })
       .eq('User_Auth_Id', userUUID)
       .single();
