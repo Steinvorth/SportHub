@@ -27,6 +27,7 @@ export const App = () => {
           <Routes>
             <Route index element={<HomePage />} />
             <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
+            <Route path="/logout" element={<Login onLoginSuccess={handleLoginSuccess} />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/friends" element={<Friends />} />
             <Route path="/EditProfile" element={<EditProfile />} />

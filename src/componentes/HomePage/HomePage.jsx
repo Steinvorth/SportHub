@@ -139,7 +139,7 @@ export const HomePage = () => {
           style={{ cursor: 'pointer' }}
           onClick={() => {
             setPostType('explorar');
-            navigate('/');
+            navigate('/login');
           }}
         />
         <h3 className="text-center">Sport Hub</h3>
@@ -173,7 +173,7 @@ export const HomePage = () => {
           )}          
           {authToken && (
             <li className="nav-item">
-              <Link to="/" className="nav-link text-white" onClick={logout}>
+              <Link to="/logout" className="nav-link text-white" onClick={logout}>
                 <i className="bi bi-box-arrow-right"></i> Cerrar sesión
               </Link>
             </li>
