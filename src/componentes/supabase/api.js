@@ -983,17 +983,16 @@ export const rechazarSolicitudAmistad = async (solicitudId) => {
 export const removeFriend = async (userUUID, amigoUUID) => {
   try {
     const { data, error } = await supabase
-      .from('Amigos')  
+      .from('Amigos')
       .delete()
-      .eq('UserUUID', userUUID)
-      .eq('AmigoUUID', amigoUUID);
+      .or(`and(UserUUID.eq.${userUUID},AmigoUUID.eq.${amigoUUID}),and(UserUUID.eq.${amigoUUID},AmigoUUID.eq.${userUUID})`);
 
-    if (error) throw new Error(error.message);
+    if (error) throw error;
 
-    return data;
+    return data ? true : false;
   } catch (error) {
     console.error("Error eliminando amigo:", error.message);
-    return null;
+    return false;
   }
 };
 
