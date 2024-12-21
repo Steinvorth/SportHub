@@ -780,32 +780,35 @@ export const createLike = async (postId, userUUID) => {
 // Eliminar like
 export const deleteLike = async (postId, userUUID) => {
   try {
-    // Primero obtener el ID del like
-    const { data: likeData, error: likeError } = await supabase
-      .from('Likes')
-      .select('id')
-      .eq('UserUUID', userUUID)
+    // Get the specific like for this post and user
+    const { data: likesData, error: likesError } = await supabase
+      .from('LikesPost')
+      .select(`
+        id,
+        LikeId,
+        Likes!inner (
+          UserUUID
+        )
+      `)
+      .eq('PostId', postId)
+      .eq('Likes.UserUUID', userUUID)
       .single();
 
-    if (likeError) {
-      throw likeError;
+    if (likesError) {
+      console.error('Error finding like:', likesError);
+      return false;
     }
 
-    // Eliminar de LikesPost
-    const { error: likePostError } = await supabase
-      .from('LikesPost')
-      .delete()
-      .eq('LikeId', likeData.id);
-
-    if (likePostError) {
-      throw likePostError;
+    if (!likesData) {
+      console.error('No like found');
+      return false;
     }
 
-    // Eliminar de Likes
+    // Delete the like (cascade will handle LikesPost)
     const { error: deleteError } = await supabase
       .from('Likes')
       .delete()
-      .eq('id', likeData.id);
+      .eq('id', likesData.LikeId);
 
     if (deleteError) {
       throw deleteError;
@@ -817,7 +820,6 @@ export const deleteLike = async (postId, userUUID) => {
     return false;
   }
 };
-
 //ELIMINAR USUARIOS
 export const deleteUser = async (userUUID) => {
     const { error: deleteError } = await supabase
